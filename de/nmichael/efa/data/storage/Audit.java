@@ -1271,7 +1271,10 @@ public class Audit extends Thread {
                                 "runAuditClubworks(): "
                                 + LogString.fileCreationFailed(s, International.getString("Vereinsarbeit")));
                     } else {
-                        c.close();
+                        if (Daten.project.getCurrentClubwork() != c) {
+                            // only close clubwork if it is not the currently opened one
+                            c.close();
+                        }
                     }
                 } catch (Exception e) {
                     Logger.logdebug(e);

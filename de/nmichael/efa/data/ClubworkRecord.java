@@ -8,19 +8,25 @@
  */
 package de.nmichael.efa.data;
 
-import de.nmichael.efa.*;
-import de.nmichael.efa.data.storage.*;
-import de.nmichael.efa.data.types.*;
-import de.nmichael.efa.ex.EfaException;
-import de.nmichael.efa.core.config.*;
+import de.nmichael.efa.Daten;
+import de.nmichael.efa.core.config.AdminRecord;
 import de.nmichael.efa.core.items.*;
-import de.nmichael.efa.gui.util.*;
-import de.nmichael.efa.util.*;
+import de.nmichael.efa.data.storage.DataKey;
+import de.nmichael.efa.data.storage.DataRecord;
+import de.nmichael.efa.data.storage.IDataAccess;
+import de.nmichael.efa.data.storage.MetaData;
+import de.nmichael.efa.data.types.DataTypeDate;
+import de.nmichael.efa.ex.EfaException;
+import de.nmichael.efa.gui.util.TableItem;
+import de.nmichael.efa.gui.util.TableItemHeader;
+import de.nmichael.efa.util.International;
+import de.nmichael.efa.util.Logger;
 
-import java.awt.AWTEvent;
-import java.awt.event.FocusEvent;
-import java.util.*;
-import java.util.regex.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
+import java.util.Vector;
+import java.util.regex.Pattern;
 
 // @i18n complete
 public class ClubworkRecord extends DataRecord implements IItemFactory {
@@ -191,7 +197,7 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
             return Flags.UNDEFINED;
         }
     }
-    
+
     public String getFlagAsText() {
         switch(getFlag()) {
             case Normal:
@@ -439,7 +445,7 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
             });
             sideInfo.put("earliestDate", getWorkDate());
             sideInfo.put("latestDate", getWorkDate());
-            aggregations[4] = String.valueOf(getHours());
+            aggregations[3] = String.valueOf(getHours());
         } else {
             DataTypeDate earliestDate = (DataTypeDate) sideInfo.get("earliestDate");
             if (getWorkDate().isBefore(earliestDate)) {
@@ -451,7 +457,7 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
                 sideInfo.put("latestDate", getWorkDate());
             }
 
-            aggregations[4] = String.valueOf(Double.valueOf(aggregations[4]) + getHours());
+            aggregations[3] = String.valueOf(Double.valueOf(aggregations[3]) + getHours());
         }
 
         HashSet<UUID> uniquePeople = (HashSet<UUID>) sideInfo.get("uniquePeople");
@@ -462,7 +468,6 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
             aggregations[0] = uniqueSize + International.getString("Person(s)");
             aggregations[1] = (sideInfo.get("earliestDate")).toString() + "-"
                     + (sideInfo.get("latestDate")).toString();
-            aggregations[3] = International.getString("Sum");
             Clubwork clubwork = Daten.project.getCurrentClubwork();
             if (clubwork != null) {
                 ProjectRecord clubworkBook = Daten.project.getClubworkBookRecord(clubwork.getName());
@@ -472,16 +477,16 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
                     try {
                         DataRecord[] personRecords = personContainer.data().getValidAny(new DataKey<UUID, Long, String>(id, null, null));
                         for (DataRecord personRecord : personRecords) {
-                            if (((PersonRecord) personRecord).isStatusMember()) {
+                            //vh if (((PersonRecord) personRecord).isStatusMember()) {
                                 groupMonth += ((PersonRecord) personRecord).getPersonMemberMonth(clubwork.getStartDate(), clubwork.getEndDate());
-                            }
+                            //}
                         }
                     } catch (EfaException e) {
                         e.printStackTrace();
                     }
                 }
 
-                aggregations[4] += "/" + Math.round(clubworkBook.getDefaultClubworkTargetHours() * groupMonth * 100 / 12) / 100d;
+                aggregations[3] += "/" + Math.round(clubworkBook.getDefaultMonthlyClubworkTargetHours() * groupMonth * 100) / 100d;
             }
         }
 

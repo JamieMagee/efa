@@ -2,6 +2,26 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.0_02</VersionID>
+        <ReleaseDate>29.05.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3587378</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Vereinsarbeits-Button wird manchmal beim Start von efa nicht angezigt - behoben</ChangeItem>
+            <ChangeItem>Bugfix: Erfassung uns Auswertung von Vereinsarbeitsstunden für Gäste möglich</ChangeItem>
+            <ChangeItem>Bugfix: Berücksichtige Auswertungs- und Vereinsarbeits-Zeitraum korrekt bei Berechnung der Sollstunden</ChangeItem>
+            <ChangeItem>Bugfix: Fehlermeldung bei Eingabe von unbekannten Namen für Vereinsarbeit korrigiert</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Clubwork button sometimes not shown after efa start - fixed</ChangeItem>
+            <ChangeItem>Bugfix: Entering and evaluation of clubwork hours for guests possible</ChangeItem>
+            <ChangeItem>Bugfix: Time range for clubwork calculation of target hours fixed</ChangeItem>
+            <ChangeItem>Bugfix: Error message when entering unknown namen for clubwork hours fixed</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.0_01</VersionID>
         <ReleaseDate>28.05.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>

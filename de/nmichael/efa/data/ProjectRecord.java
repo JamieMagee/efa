@@ -8,21 +8,25 @@
  */
 package de.nmichael.efa.data;
 
-import de.nmichael.efa.data.efawett.Zielfahrt;
 import de.nmichael.efa.Daten;
 import de.nmichael.efa.core.config.AdminRecord;
-import de.nmichael.efa.data.storage.*;
-import de.nmichael.efa.data.types.*;
 import de.nmichael.efa.core.items.*;
-import de.nmichael.efa.ex.EfaException;
+import de.nmichael.efa.data.efawett.Zielfahrt;
+import de.nmichael.efa.data.storage.DataKey;
+import de.nmichael.efa.data.storage.DataRecord;
+import de.nmichael.efa.data.storage.IDataAccess;
+import de.nmichael.efa.data.storage.MetaData;
+import de.nmichael.efa.data.types.DataTypeDate;
+import de.nmichael.efa.data.types.DataTypePasswordCrypted;
 import de.nmichael.efa.gui.BaseDialog;
 import de.nmichael.efa.gui.BaseTabbedDialog;
-import de.nmichael.efa.gui.util.*;
-import de.nmichael.efa.util.*;
-import java.awt.AWTEvent;
-import java.awt.GridBagConstraints;
-
-import java.util.*;
+import de.nmichael.efa.gui.util.TableItem;
+import de.nmichael.efa.gui.util.TableItemHeader;
+import de.nmichael.efa.util.International;
+import de.nmichael.efa.util.Logger;
+import java.awt.*;
+import java.util.UUID;
+import java.util.Vector;
 
 // @i18n complete
 public class ProjectRecord extends DataRecord {
@@ -662,8 +666,16 @@ public class ProjectRecord extends DataRecord {
         return getDate(ENDDATE);
     }
 
+    /**
+     * gives the amount of hours to work in a period (which can be a year or only for some month)
+     * @return
+     */
     public double getDefaultClubworkTargetHours() {
         return getDouble(DEFAULTCLUBWORKTARGETHOURS);
+    }
+
+    public double getDefaultMonthlyClubworkTargetHours() {
+        return this.getDefaultClubworkTargetHours() / this.getStartDate().getMonthsDifference(this.getEndDate());
     }
 
     public double getTransferableClubworkHours() {
@@ -749,9 +761,9 @@ public class ProjectRecord extends DataRecord {
                     v.add(item = new ItemTypeString(ProjectRecord.STORAGELOCATION, getStorageLocation(),
                             IItemType.TYPE_PUBLIC, category,
                             (getStorageType() == IDataAccess.TYPE_EFA_REMOTE
-                            ? International.getString("IP-Adresse") + " ("
-                            + International.getString("remote") + ")"
-                            : International.getString("Speicherort"))));
+                                    ? International.getString("IP-Adresse") + " ("
+                                    + International.getString("remote") + ")"
+                                    : International.getString("Speicherort"))));
                     ((ItemTypeString) item).setEnabled(getStorageType() != IDataAccess.TYPE_FILE_XML);
                     ((ItemTypeString) item).setNotNull(getStorageType() == IDataAccess.TYPE_DB_SQL);
                 }
@@ -760,21 +772,21 @@ public class ProjectRecord extends DataRecord {
                     v.add(item = new ItemTypeString(ProjectRecord.STORAGEUSERNAME, getStorageUsername(),
                             IItemType.TYPE_PUBLIC, category,
                             (getStorageType() == IDataAccess.TYPE_EFA_REMOTE
-                            ? International.getString("Admin-Name") + " ("
-                            + International.getString("remote") + ")"
-                            : International.getString("Benutzername"))));
+                                    ? International.getString("Admin-Name") + " ("
+                                    + International.getString("remote") + ")"
+                                    : International.getString("Benutzername"))));
                     ((ItemTypeString) item).setNotNull(true);
                     v.add(item = new ItemTypePassword(ProjectRecord.STORAGEPASSWORD, getStoragePassword(), true,
                             IItemType.TYPE_PUBLIC, category,
                             (getStorageType() == IDataAccess.TYPE_EFA_REMOTE
-                            ? International.getString("Paßwort") + " ("
-                            + International.getString("remote") + ")"
-                            : International.getString("Paßwort"))));
+                                    ? International.getString("Paßwort") + " ("
+                                    + International.getString("remote") + ")"
+                                    : International.getString("Paßwort"))));
                     ((ItemTypeString) item).setNotNull(true);
                     v.add(item = new ItemTypeString(ProjectRecord.REMOTEPROJECTNAME, getRemoteProjectName(),
                             IItemType.TYPE_PUBLIC, category,
                             International.getString("Name des Projekts") + " ("
-                            + International.getString("remote") + ")"));
+                                    + International.getString("remote") + ")"));
                     ((ItemTypeString) item).setNotNull(true);
                 }
 
@@ -785,11 +797,11 @@ public class ProjectRecord extends DataRecord {
                     v.add(item = new ItemTypeString(ProjectRecord.EFAONLINEUSERNAME, getEfaOnlineUsername(),
                             IItemType.TYPE_PUBLIC, category,
                             Daten.EFA_ONLINE + " - "
-                            + International.getString("Benutzername")));
+                                    + International.getString("Benutzername")));
                     v.add(item = new ItemTypePassword(ProjectRecord.EFAONLINEPASSWORD, getEfaOnlinePassword(), true,
                             IItemType.TYPE_PUBLIC, category,
                             Daten.EFA_ONLINE + " - "
-                            + International.getString("Paßwort")));
+                                    + International.getString("Paßwort")));
                 }
             }
         }
@@ -807,11 +819,11 @@ public class ProjectRecord extends DataRecord {
                 v.add(item = new ItemTypeString(ProjectRecord.ADDRESSSTREET, getAddressStreet(),
                         IItemType.TYPE_PUBLIC, category,
                         International.getString("Anschrift") + " - "
-                        + International.getString("Straße")));
+                                + International.getString("Straße")));
                 v.add(item = new ItemTypeString(ProjectRecord.ADDRESSCITY, getAddressCity(),
                         IItemType.TYPE_PUBLIC, category,
                         International.getString("Anschrift") + " - "
-                        + International.getString("Postleitzahl und Ort")));
+                                + International.getString("Postleitzahl und Ort")));
             }
 
             if (subtype == GUIITEMS_SUBTYPE_ALL || subtype == 2 || subtype == GUIITEMS_SUBTYPE_EFAWETT) {
@@ -843,29 +855,29 @@ public class ProjectRecord extends DataRecord {
                 v.add(item = new ItemTypeString(ProjectRecord.ASSOCIATIONGLOBALNAME, getGlobalAssociationName(),
                         IItemType.TYPE_PUBLIC, category,
                         International.getString("Dachverband") + " - "
-                        + International.getString("Name")));
+                                + International.getString("Name")));
                 v.add(item = new ItemTypeString(ProjectRecord.ASSOCIATIONGLOBALMEMBERNO, getGlobalAssociationMemberNo(),
                         IItemType.TYPE_PUBLIC, category,
                         International.getString("Dachverband") + " - "
-                        + International.getString("Mitgliedsnummer")));
+                                + International.getString("Mitgliedsnummer")));
                 v.add(item = new ItemTypeString(ProjectRecord.ASSOCIATIONGLOBALLOGIN, getGlobalAssociationLogin(),
                         IItemType.TYPE_PUBLIC, category,
                         International.getString("Dachverband") + " - "
-                        + International.getString("Benutzername")
-                        + (Daten.efaConfig.getValueUseFunctionalityRowingGermany() ? " (efaWett)" : "")));
+                                + International.getString("Benutzername")
+                                + (Daten.efaConfig.getValueUseFunctionalityRowingGermany() ? " (efaWett)" : "")));
                 v.add(item = new ItemTypeString(ProjectRecord.ASSOCIATIONREGIONALNAME, getRegionalAssociationName(),
                         IItemType.TYPE_PUBLIC, category,
                         International.getString("Regionalverband") + " - "
-                        + International.getString("Name")));
+                                + International.getString("Name")));
                 v.add(item = new ItemTypeString(ProjectRecord.ASSOCIATIONREGIONALMEMBERNO, getRegionalAssociationMemberNo(),
                         IItemType.TYPE_PUBLIC, category,
                         International.getString("Regionalverband") + " - "
-                        + International.getString("Mitgliedsnummer")));
+                                + International.getString("Mitgliedsnummer")));
                 v.add(item = new ItemTypeString(ProjectRecord.ASSOCIATIONREGIONALLOGIN, getRegionalAssociationLogin(),
                         IItemType.TYPE_PUBLIC, category,
                         International.getString("Regionalverband") + " - "
-                        + International.getString("Benutzername")
-                        + (Daten.efaConfig.getValueUseFunctionalityRowingGermany() ? " (efaWett)" : "")));
+                                + International.getString("Benutzername")
+                                + (Daten.efaConfig.getValueUseFunctionalityRowingGermany() ? " (efaWett)" : "")));
                 if (Daten.efaConfig.getValueUseFunctionalityRowingGermany()) {
                     v.add(item = new ItemTypeBoolean(ProjectRecord.MEMBEROFDRV, getMemberOfDRV(),
                             IItemType.TYPE_PUBLIC, category,
@@ -928,11 +940,11 @@ public class ProjectRecord extends DataRecord {
                     v.add(item = new ItemTypeDate(ProjectRecord.AUTONEWLOGBOOKDATE, getAutoNewLogbookDate(),
                             IItemType.TYPE_EXPERT, category,
                             International.getString("Fahrtenbuchwechsel") + " - "
-                            + International.getString("Datum")));
+                                    + International.getString("Datum")));
                     v.add(item = new ItemTypeString(ProjectRecord.AUTONEWLOGBOOKNAME, getAutoNewLogbookName(),
                             IItemType.TYPE_EXPERT, category,
                             International.getString("Fahrtenbuchwechsel") + " - "
-                            + International.getString("Fahrtenbuch")));
+                                    + International.getString("Fahrtenbuch")));
                 }
 
                 v.add(item = new ItemTypeButton(GUIITEM_BOATHOUSE_ADD,
@@ -1063,17 +1075,17 @@ public class ProjectRecord extends DataRecord {
 
     public static String[] getStorageTypeTypeStrings() {
         return new String[]{
-            IDataAccess.TYPESTRING_FILE_XML,
-            IDataAccess.TYPESTRING_EFA_REMOTE,
-            IDataAccess.TYPESTRING_DB_SQL
+                IDataAccess.TYPESTRING_FILE_XML,
+                IDataAccess.TYPESTRING_EFA_REMOTE,
+                IDataAccess.TYPESTRING_DB_SQL
         };
     }
 
     public static String[] getStorageTypeNameStrings() {
         return new String[]{
-            International.getString("lokales Dateisystem"),
-            Daten.EFA_REMOTE,
-            International.getString("SQL-Datenbank")
+                International.getString("lokales Dateisystem"),
+                Daten.EFA_REMOTE,
+                International.getString("SQL-Datenbank")
         };
     }
 }

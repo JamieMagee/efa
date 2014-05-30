@@ -9,26 +9,24 @@
  */
 package de.nmichael.efa.statistics;
 
-import de.nmichael.efa.data.efawett.ZielfahrtFolge;
-import de.nmichael.efa.data.efawett.Zielfahrt;
-import java.util.*;
-import de.nmichael.efa.data.*;
-import de.nmichael.efa.util.*;
-import de.nmichael.efa.*;
+import de.nmichael.efa.Daten;
 import de.nmichael.efa.core.Plugins;
 import de.nmichael.efa.core.config.AdminRecord;
-import de.nmichael.efa.data.efawett.WettDefs;
 import de.nmichael.efa.core.config.EfaTypes;
+import de.nmichael.efa.data.*;
 import de.nmichael.efa.data.StatisticsRecord.StatisticCategory;
-import static de.nmichael.efa.data.StatisticsRecord.StatisticCategory.competition;
-import static de.nmichael.efa.data.StatisticsRecord.StatisticType.boatdamages;
-import static de.nmichael.efa.data.StatisticsRecord.StatisticType.boatdamagestat;
-import static de.nmichael.efa.data.StatisticsRecord.StatisticType.boatreservations;
-import static de.nmichael.efa.data.StatisticsRecord.StatisticType.boatstatus;
-import static de.nmichael.efa.data.StatisticsRecord.StatisticType.clubwork;
-import de.nmichael.efa.data.storage.*;
+import de.nmichael.efa.data.efawett.WettDefs;
+import de.nmichael.efa.data.efawett.Zielfahrt;
+import de.nmichael.efa.data.efawett.ZielfahrtFolge;
+import de.nmichael.efa.data.storage.DataKey;
+import de.nmichael.efa.data.storage.DataKeyIterator;
+import de.nmichael.efa.data.storage.StorageObject;
 import de.nmichael.efa.data.types.*;
-import de.nmichael.efa.gui.*;
+import de.nmichael.efa.gui.BaseDialog;
+import de.nmichael.efa.gui.BaseFrame;
+import de.nmichael.efa.gui.ProgressDialog;
+import de.nmichael.efa.util.*;
+import java.util.*;
 
 public class StatisticTask extends ProgressTask {
 
@@ -1118,10 +1116,26 @@ public class StatisticTask extends ProgressTask {
             return;
         }
         int cnt = 0;
-        if (!entryPersonIsGuest && !entryPersonIsOther && !entryPersonExcludeFromClubwork && isInPersonFilter() && isInGroupFilter()) {
-            Integer month = entryPersonRecord.getPersonMemberMonth(sr.sStartDate, sr.sEndDate);
-            Double targetHours = Math.round( sr.sDefaultClubworkTargetHours*month*100/12 ) / 100d;
-            Object aggregationKey = getAggregationKeyForClubwork(r);
+        if (isInPersonFilter() && isInGroupFilter()) {
+            Object aggregationKey = null;
+            Double targetHours = 0.0;
+            if(!entryPersonIsGuest && !entryPersonIsOther && !entryPersonExcludeFromClubwork) {
+                DataTypeDate[] range = new DataTypeDate[0];
+                try {
+                    range = DataTypeDate.getRangeOverlap(sr.sStartDate, sr.sEndDate, sr.sClubworkStartDate, sr.sClubworkEndDate);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Integer month = entryPersonRecord.getPersonMemberMonth(range[0], range[1]);
+                targetHours = Math.round( sr.sDefaultClubworkTargetHours*month*100 ) / 100d;
+                aggregationKey = getAggregationKeyForClubwork(r);
+
+            }
+            else if(r.getHours() > 0) {
+                // take guest or excluded into account if he worked but leave targetHours 0
+                aggregationKey = getAggregationKeyForClubwork(r);
+            }
+
             if (aggregationKey != null) {
                 if (sr.sStatistikKey != StatisticsRecord.StatisticKey.waters) {
                     cnt = calculateAggregations(r, aggregationKey, r.getHours(), targetHours);
@@ -2191,7 +2205,9 @@ public class StatisticTask extends ProgressTask {
                 }
 
                 if (clubwork != null && DataTypeDate.isRangeOverlap(sr.sStartDate, sr.sEndDate, lbStart, lbEnd)) {
-                    sr.sDefaultClubworkTargetHours = pr.getDefaultClubworkTargetHours();
+                    sr.sClubworkStartDate = lbStart;
+                    sr.sClubworkEndDate = lbEnd;
+                    sr.sDefaultClubworkTargetHours = pr.getDefaultMonthlyClubworkTargetHours();
                     sr.sTransferableClubworkHours = pr.getTransferableClubworkHours();
                     sr.sFineForTooLittleClubwork = pr.getFineForTooLittleClubwork();
                     DataKeyIterator it;
@@ -2228,7 +2244,8 @@ public class StatisticTask extends ProgressTask {
             //assumes that statusGuest && statusOther is already set
             getEntryPerson(personRecord);
 
-            if(!entryPersonIsGuest && !entryPersonIsOther && !usedPersonIds.contains(personRecord.getId())) {
+            if(!entryPersonIsGuest && !entryPersonIsOther &&
+                !usedPersonIds.contains(personRecord.getId())) {
                 ClubworkRecord r = (ClubworkRecord)Daten.project.getCurrentClubwork().createNewRecord();
                 r.setPersonId(personRecord.getId());
                 r.setDescription("No clubwork for this person found");
