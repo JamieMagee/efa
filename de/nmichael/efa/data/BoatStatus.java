@@ -104,7 +104,7 @@ public class BoatStatus extends StorageObject {
     }
 
     public boolean areBoatsOutOnTheWater() {
-        Vector v = getBoats(BoatStatusRecord.STATUS_ONTHEWATER);
+        Vector v = getBoats(BoatStatusRecord.STATUS_ONTHEWATER, true);
         return (v != null && v.size() > 0);
     }
 

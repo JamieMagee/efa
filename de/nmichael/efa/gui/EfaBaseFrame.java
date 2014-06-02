@@ -1194,6 +1194,23 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
         setTitle();
     }
 
+    void openClubwork(String clubworkName) {
+        if (!getAdmin().isAllowedEditLogbook()) {
+            clubworkName = null;
+        }
+        if (clubworkName != null && clubworkName.length() > 0) {
+            Clubwork newClubwork = Daten.project.getClubwork(clubworkName, false);
+            if (newClubwork != null) {
+                if (!isModeBoathouse()) {
+                    Daten.project.setCurrentClubworkBookEfaBase(newClubwork.getName());
+                    Dialog.infoDialog(LogString.fileOpened(clubworkName, International.getString("Vereinsarbeit")));
+                }
+            } else {
+                Dialog.error(LogString.fileOpenFailed(clubworkName, International.getString("Vereinsarbeit")));
+            }
+        }
+    }
+
     boolean isLogbookReady() {
         return Daten.project != null && Daten.project.isOpen() && logbook != null && logbook.isOpen();
     }
@@ -2784,6 +2801,9 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
         if (cmd.equals(EfaMenuButton.BUTTON_LOGBOOKS) && permission) {
             menuFileLogbooks(e);
         }
+        if (cmd.equals(EfaMenuButton.BUTTON_CLUBWORKBOOK) && permission) {
+            menuFileClubwork(e);
+        }
 
     }
 
@@ -2832,6 +2852,21 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
         String logbookName = dlg.openDialog();
         if (logbookName != null) {
             openLogbook(logbookName);
+        }
+        setTitle();
+    }
+    
+    void menuFileClubwork(ActionEvent e) {
+        if (Daten.project == null) {
+            menuFileProjects(e);
+            if (Daten.project == null) {
+                return;
+            }
+        }
+        OpenProjectOrLogbookDialog dlg = new OpenProjectOrLogbookDialog(this, OpenProjectOrLogbookDialog.Type.clubwork, getAdmin());
+        String clubworkName = dlg.openDialog();
+        if (clubworkName != null) {
+            openClubwork(clubworkName);
         }
         setTitle();
     }

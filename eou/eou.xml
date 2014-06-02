@@ -2,6 +2,24 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.0_03</VersionID>
+        <ReleaseDate>01.06.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3587923</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Vereinsarbeit kann jetzt auch in efa-Basis administriert werden</ChangeItem>
+            <ChangeItem>Bugfix: Fehlermeldung beim Start von efa, wenn Vereinsarbeitsbuch gelöscht wurde, behoben</ChangeItem>
+            <ChangeItem>Bugfix: Aufforderung zum Schließen der Hallentore erscheint jetzt auch, wenn alle Boote zurück sind, aber einige Boote noch auf Regatta oder Wanderfahrt (nicht verfügbar) sind</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Clubwork can now also be administred in efa-Base</ChangeItem>
+            <ChangeItem>Bugfix: Error message during efa start fixed, if clubwork book had been deleted</ChangeItem>
+            <ChangeItem>Bugfix: Reminder to close the boat house if all boats are back now appears also, if some boats are at races or multi-day tours (not available)</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.0_02</VersionID>
         <ReleaseDate>29.05.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>

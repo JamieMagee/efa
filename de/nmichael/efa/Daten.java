@@ -33,8 +33,8 @@ import javax.swing.plaf.ColorUIResource;
 public class Daten {
 
     public final static String VERSION            = "2.2.0"; // Version für die Ausgabe (z.B. 2.1.0, kann aber auch Zusätze wie "alpha" o.ä. enthalten)
-    public final static String VERSIONID          = "2.2.0_02";   // VersionsID: Format: "X.Y.Z_MM"; final-Version z.B. 1.4.0_00; beta-Version z.B. 1.4.0_#1
-    public final static String VERSIONRELEASEDATE = "29.05.2014";  // Release Date: TT.MM.JJJJ
+    public final static String VERSIONID          = "2.2.0_03";   // VersionsID: Format: "X.Y.Z_MM"; final-Version z.B. 1.4.0_00; beta-Version z.B. 1.4.0_#1
+    public final static String VERSIONRELEASEDATE = "01.06.2014";  // Release Date: TT.MM.JJJJ
     public final static String MAJORVERSION       = "2";
     public final static String PROGRAMMID         = "EFA.220"; // Versions-ID für Wettbewerbsmeldungen
     public final static String PROGRAMMID_DRV     = "EFADRV.220"; // Versions-ID für Wettbewerbsmeldungen
@@ -1031,6 +1031,14 @@ public class Daten {
                 || applID == APPL_EDDI
                 || applID == APPL_DRV) &&
                 !CrontabThread.CRONJOB_THREAD_NAME.equals(Thread.currentThread().getName());
+    }
+    
+    public static boolean isApplEfaBase() {
+        return (applID == APPL_EFABASE);
+    }
+    
+    public static boolean isApplEfaBoathouse() {
+        return (applID == APPL_EFABH);
     }
     
     public static boolean isAdminMode() {

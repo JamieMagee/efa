@@ -1237,6 +1237,16 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
             if (admin == null && Daten.project.getCurrentClubworkEfaBoathouse() != null) {
                 clubworkName = Daten.project.getCurrentClubworkEfaBoathouse();
             }
+            
+            // check whether clubwork exists in project (may have been deleted)
+            if (clubworkName != null) {
+                Hashtable<String, String> allClubwork = Daten.project.getClubworks();
+                if (allClubwork == null || allClubwork.get(clubworkName) == null) {
+                    // clubwork was deleted
+                    Daten.project.setCurrentClubworkEfaBoathouse(null);
+                    clubworkName = null;
+                }
+            }
 
             if (clubworkName == null || clubworkName.length() == 0) {
                 if (admin != null && admin.isAllowedAdministerProjectClubwork()) {
