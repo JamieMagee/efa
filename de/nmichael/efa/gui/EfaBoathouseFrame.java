@@ -441,7 +441,6 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
 
         // Update Project Info
         updateProjectLogbookInfo();
-        updateGuiElements();
 
         // note: packing must happen at the very end, since it makes the frame "displayable", which then
         // does not allow to change any window settings like setUndecorated()
@@ -753,9 +752,13 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
         }
 
         // stop all previously started widgets
-        for (int i=0; widgets != null && i<widgets.size(); i++) {
-            IWidget w = widgets.get(i);
-            w.stop();
+        try {
+            for (int i = 0; widgets != null && i < widgets.size(); i++) {
+                IWidget w = widgets.get(i);
+                w.stop();
+            }
+        } catch (Exception e) {
+            Logger.logdebug(e);
         }
         widgets = new Vector<IWidget>();
 

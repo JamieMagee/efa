@@ -85,7 +85,9 @@ public class HTMLWidget extends Widget {
     }
 
     public void stop() {
-        htmlUpdater.stopHTML();
+        if (htmlUpdater != null) {
+            htmlUpdater.stopHTML();
+        }
     }
 
     public void runWidgetWarnings(int mode, boolean actionBegin, LogbookRecord r) {

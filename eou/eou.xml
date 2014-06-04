@@ -2,6 +2,20 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.0_04</VersionID>
+        <ReleaseDate>03.06.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3587698</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Probleme/Einfrieren von efa beim Starten behoben</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Problems/freeze of efa after start fixed</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.0_03</VersionID>
         <ReleaseDate>01.06.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
