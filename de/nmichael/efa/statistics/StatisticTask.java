@@ -804,6 +804,7 @@ public class StatisticTask extends ProgressTask {
         StatisticsData sd = new StatisticsData(sr, logbook.getName() + ":" + entryNo.toString());
         sd.entryNo = entryNo;
         sd.date = entryDate;
+        sd.time = r.getStartTime();
         sd.count = 1; // we count every entry as one session
         int fieldCount = sr.getLogbookFieldCount();
         if (fieldCount < 2) {
@@ -1270,6 +1271,9 @@ public class StatisticTask extends ProgressTask {
 
     private void getEntryPerson(LogbookRecord r, int pos) {
         getEntryPerson(r.getCrewId(pos));
+        if (entryPersonName == null) {
+            entryPersonName = r.getCrewName(pos);
+        }
     }
 
     private void getEntryPerson(ClubworkRecord r) {

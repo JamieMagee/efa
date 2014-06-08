@@ -23,6 +23,7 @@ import de.nmichael.efa.data.efawett.ZielfahrtFolge;
 import de.nmichael.efa.data.types.DataTypeDate;
 import de.nmichael.efa.data.types.DataTypeDistance;
 import de.nmichael.efa.data.types.DataTypeIntString;
+import de.nmichael.efa.data.types.DataTypeTime;
 import de.nmichael.efa.util.EfaUtil;
 import java.util.Hashtable;
 import java.util.UUID;
@@ -85,6 +86,7 @@ public class StatisticsData implements Comparable {
 
     DataTypeIntString entryNo;
     DataTypeDate date;
+    DataTypeTime time; // start time for logbook records
     String[] logbookFields;
     String[] otherFields;
     CompetitionData compData;
@@ -536,6 +538,13 @@ public class StatisticsData implements Comparable {
                     int res = this.date.compareTo(osd.date);
                     if (res != 0) {
                         return res * order;
+                    } else {
+                        if (this.time != null && osd.time != null) {
+                            res = this.time.compareTo(osd.time);
+                            if (res != 0) {
+                                return res * order;
+                            }
+                        }
                     }
                 }
                 break;

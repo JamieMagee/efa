@@ -2,6 +2,22 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.0_05</VersionID>
+        <ReleaseDate>07.06.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3587943</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Statistikauswertung von unbekannten Personen jetzt wieder möglich</ChangeItem>
+            <ChangeItem>Bugfix: Zeitliche Sortierung von Fahrtenbucheinträgen in Statistikausgabe berücksichtigt jetzt neben Datum auch die Uhrzeit</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Statistics evaluation of unknown persons now possible again</ChangeItem>
+            <ChangeItem>Bugfix: Sorting of logbook entries by date in statistics evaluation now also considers time</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.0_04</VersionID>
         <ReleaseDate>03.06.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
