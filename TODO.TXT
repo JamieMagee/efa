@@ -1,6 +1,8 @@
 Item
 ============================================================================================================
 
+Kilometerwettbewerbs-Statisiken für CSV (und eventuell XML) Ausgabe - http://forum.nmichael.de/viewtopic.php?f=9&t=749&p=3245#p3245
+
 Wenn beim beginnen oder beenden einer Fahrt 2 Warnungen/Hinweise angezeigt werden sollen, diese beide zeitgleich nebeneinander anzeigen und nicht nacheinander
 
 Option für Änderungswünsche im Fahrtenbuch deaktivierbar machen (http://forum.nmichael.de/viewtopic.php?f=9&p=2565#p2565)

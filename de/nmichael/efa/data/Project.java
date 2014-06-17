@@ -696,6 +696,13 @@ public class Project extends StorageObject {
                 r = null;
             }
         }
+        if (r == null) {
+            try {
+                throw new Exception("No ProjectRecord found!");
+            } catch(Exception e) {
+                Logger.logdebug(e);
+            }
+        }
         return r;
     }
 

@@ -1864,7 +1864,7 @@ public class StatisticTask extends ProgressTask {
                 continue; // don't do for maximum!
             }
 
-            sdArray[i].createStringOutputValues(sr, i, positionSet ? sdArray[i].sPosition : Integer.toString(i + 1) + ".");
+            sdArray[i].createStringOutputValues(sr, i, positionSet ? sdArray[i].sPosition : sdArray[i].getPositionString(sdArray, i) + ".");
             if (sdArray[i].matrixData != null) {
                 Object[] mkeys = sdArray[i].matrixData.keySet().toArray();
                 for (Object mk : mkeys) {

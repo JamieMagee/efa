@@ -111,8 +111,11 @@ public class ProgressDialog extends BaseDialog {
         for (int tryi=1; progressBar == null && tryi<=10; tryi++) {
             try { Thread.sleep(100*tryi); } catch(Exception e) {} // Dialog may not have been fully initialized when progress thread starts running
         }
-        progressBar.setMaximum(progressTask.getAbsoluteWork());
-        progressBar.setValue(i);
+        if (progressBar != null) {
+            // can be null for dummy ProgressDialog used in CLI
+            progressBar.setMaximum(progressTask.getAbsoluteWork());
+            progressBar.setValue(i);
+        }
     }
 
     public boolean cancel() {

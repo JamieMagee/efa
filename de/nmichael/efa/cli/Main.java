@@ -56,6 +56,7 @@ public class Main extends Program {
         super.printUsage(wrongArgument);
         printOption("[username[:password]@][host[:port]][/project]", "Connect String");
         printOption("[-cmd command]", "Run Command");
+        printOption("[-v]", "Verbose Output (Debug Logging)");
         System.exit(0);
     }
 
@@ -102,6 +103,11 @@ public class Main extends Program {
                     command = args[i];
                     args[i] = null;
                 }
+                continue;
+            }
+            if (args[i].equals("-v")) {
+                Logger.setDebugLogging(true, true);
+                args[i] = null;
                 continue;
             }
         }

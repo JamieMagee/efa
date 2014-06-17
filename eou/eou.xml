@@ -2,6 +2,24 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.0_06</VersionID>
+        <ReleaseDate>17.06.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3588448</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Position in Statistikausgabe wird jetzt bei gleicher Leistung gleichgestzt</ChangeItem>
+            <ChangeItem>Neu: Debug-Logging in efaCLI</ChangeItem>
+            <ChangeItem>Bugfix: NullPointerExceptions beim Import von Daten in efaCLI behoben</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Position in statistics output now not incremented for identical values</ChangeItem>
+            <ChangeItem>Neu: Debug-Logging in efaCLI</ChangeItem>
+            <ChangeItem>Bugfix: NullPointerExceptions during data import in efaCLI fixed</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.0_05</VersionID>
         <ReleaseDate>07.06.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>

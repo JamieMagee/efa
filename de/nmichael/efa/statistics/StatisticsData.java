@@ -15,9 +15,25 @@ import java.util.Vector;
 import de.nmichael.efa.data.LogbookRecord;
 import de.nmichael.efa.data.PersonRecord;
 import de.nmichael.efa.data.StatisticsRecord;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.avgDistance;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.boatType;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.clubwork;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.coxdistance;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.damageAvgDuration;
 import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.damageCount;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.damageDuration;
 import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.date;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.days;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.distance;
 import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.duration;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.entryNo;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.gender;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.name;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.rowdistance;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.sessions;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.speed;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.status;
+import static de.nmichael.efa.data.StatisticsRecord.SortingCriteria.yearOfBirth;
 import de.nmichael.efa.data.efawett.Zielfahrt;
 import de.nmichael.efa.data.efawett.ZielfahrtFolge;
 import de.nmichael.efa.data.types.DataTypeDate;
@@ -573,4 +589,55 @@ public class StatisticsData implements Comparable {
 
     }
 
+    Object getSortingValue() {
+        switch(sr.sSortingCriteria) {
+            case distance:
+                return distance;
+            case rowdistance:
+                return rowdistance;
+            case coxdistance:
+                return coxdistance;
+            case sessions:
+            case damageCount:
+                return count;
+            case avgDistance:
+                return avgDistance;
+            case duration:
+                return duration;
+            case days:
+            case damageDuration:
+                return days;
+            case speed:
+                return speed;
+            case name:
+                return sName;
+            case gender:
+                return sGender;
+            case status:
+                return sStatus;
+            case yearOfBirth:
+                return sYearOfBirth;
+            case boatType:
+                return sBoatType;
+            case entryNo:
+                return entryNo;
+            case date:
+                return date;
+            case damageAvgDuration:
+                return (this.count > 0 ? (float)this.days / (float)this.count : 0);
+            case clubwork:
+                return clubwork;
+        }
+        return null;
+    }
+    
+    String getPositionString(StatisticsData[] arr, int idx) {
+        Object prev = (idx>0 ? arr[idx-1].getSortingValue() : null);
+        if (prev != null && prev.equals(getSortingValue())) {
+            return arr[idx-1].getPositionString(arr, idx-1);
+        } else {
+            return Integer.toString(idx + 1);
+        }
+    }
+    
 }

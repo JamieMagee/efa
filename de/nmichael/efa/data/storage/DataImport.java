@@ -113,7 +113,10 @@ public class DataImport extends ProgressTask {
         return fields;
     }
 
-    private void logImportFailed(DataRecord r, String msg) {
+    private void logImportFailed(DataRecord r, String msg, Exception e) {
+        if (e != null) {
+            Logger.logdebug(e);
+        }
         logInfo("\nERROR: " + LogString.operationFailed(
                 International.getMessage("Import von Datensatz {record}", r.toString()),msg));
         errorCount++;
@@ -145,7 +148,7 @@ public class DataImport extends ProgressTask {
                 setCurrentWorkDone(++importCount);
             }
         } catch (Exception e) {
-            logImportFailed(r, e.toString());
+            logImportFailed(r, e.toString(), e);
         }
     }
 
@@ -155,7 +158,7 @@ public class DataImport extends ProgressTask {
                     ? dataAccess.getValidAt(r.getKey(), validAt)
                     : dataAccess.get(r.getKey()));
             if (rorig == null) {
-                logImportFailed(r, International.getString("Keine gültige Version des Datensatzes gefunden."));
+                logImportFailed(r, International.getString("Keine gültige Version des Datensatzes gefunden."), null);
                 return;
             }
 
@@ -205,7 +208,7 @@ public class DataImport extends ProgressTask {
                 setCurrentWorkDone(++importCount);
             }
         } catch (Exception e) {
-            logImportFailed(r, e.toString());
+            logImportFailed(r, e.toString(), e);
         }
     }
 
@@ -254,7 +257,7 @@ public class DataImport extends ProgressTask {
                             if (dataAccess.getMetaData().getFieldType(keyFields[i]) == IDataAccess.DATA_UUID) {
                                 r.set(keyFields[i], UUID.randomUUID());
                             } else {
-                                logImportFailed(r, "KeyField(s) not set");
+                                logImportFailed(r, "KeyField(s) not set", null);
                                 return false;
                             }
                         }
@@ -280,7 +283,7 @@ public class DataImport extends ProgressTask {
 
             if (importMode.equals(IMPORTMODE_ADD)) {
                 if (otherVersions != null && otherVersions.length > 0) {
-                    logImportFailed(r, International.getString("Datensatz existiert bereits"));
+                    logImportFailed(r, International.getString("Datensatz existiert bereits"), null);
                     return false;
                 } else {
                     addRecord(r);
@@ -289,7 +292,7 @@ public class DataImport extends ProgressTask {
             }
             if (importMode.equals(IMPORTMODE_UPD)) {
                 if (otherVersions == null || otherVersions.length == 0) {
-                    logImportFailed(r, International.getString("Datensatz nicht gefunden"));
+                    logImportFailed(r, International.getString("Datensatz nicht gefunden"), null);
                     return false;
                 } else {
                     updateRecord(r, fieldsInInport);
@@ -305,7 +308,7 @@ public class DataImport extends ProgressTask {
                 return true;
             }
         } catch (Exception e) {
-            logImportFailed(r, e.getMessage());
+            logImportFailed(r, e.getMessage(), e);
         }
         return false;
     }
