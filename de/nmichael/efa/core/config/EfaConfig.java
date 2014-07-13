@@ -79,7 +79,11 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     // Werte für FontType
     public static final String FONT_PLAIN = "PLAIN";
     public static final String FONT_BOLD = "BOLD";
-
+    
+    // Values for email security
+    public static final String SECURITY_STARTTLS = "STARTTLS";
+    public static final String SECURITY_SSL      = "SSL";
+    
     // some default values
     private static final String[] DEFAULT_BROWSER = {
         "/usr/bin/firefox",
@@ -230,6 +234,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     private ItemTypeBoolean notificationMarkReadBoatMaintenance;
     private ItemTypeString efaDirekt_emailServer;
     private ItemTypeInteger efaDirekt_emailPort;
+    private ItemTypeRadioButtons efaDirekt_emailSecurity;
     private ItemTypeString efaDirekt_emailAbsender;
     private ItemTypeString efaDirekt_emailUsername;
     private ItemTypePassword efaDirekt_emailPassword;
@@ -960,7 +965,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
             addParameter(efaDirekt_emailPort = new ItemTypeInteger("NotificationEmailPort", 25, 0, 65535, false,
                     IItemType.TYPE_PUBLIC,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_NOTIFICATIONS),
                     International.getString("email") + ": "
-                    + International.getString("SMTP-Port")));
+                    + International.getString("SMTP-Port")));           
             addParameter(efaDirekt_emailUsername = new ItemTypeString("NotificationEmailUsername", "",
                     IItemType.TYPE_PUBLIC,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_NOTIFICATIONS),
                     International.getString("email") + ": "
@@ -986,6 +991,13 @@ public class EfaConfig extends StorageObject implements IItemFactory {
                     IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_NOTIFICATIONS),
                     International.getString("email") + ": "
                     + International.getString("Signatur")));
+            addParameter(efaDirekt_emailSecurity = new ItemTypeRadioButtons("NotificationEmailSecurity", 
+                    SECURITY_STARTTLS, 
+                    new String[] { SECURITY_STARTTLS, SECURITY_SSL },
+                    new String[] { SECURITY_STARTTLS, SECURITY_SSL },
+                    IItemType.TYPE_PUBLIC,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_NOTIFICATIONS),
+                    International.getString("email") + ": "
+                    + International.getString("Sicherheit")));
 
             // ============================= SYNC =============================
             addParameter(kanuEfb_urlLogin = new ItemTypeString("KanuEfbUrlLogin", "https://efb.kanu-efb.de/services/login",
@@ -1788,6 +1800,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
 
     public int getValueEfaDirekt_emailPort() {
         return efaDirekt_emailPort.getValue();
+    }
+    
+    public boolean getValueEmailSSL() {
+        return SECURITY_SSL.equals(efaDirekt_emailSecurity.getValue());
     }
 
     public String getValueEfaDirekt_emailAbsender() {

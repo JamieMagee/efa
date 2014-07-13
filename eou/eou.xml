@@ -2,6 +2,36 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.0_08</VersionID>
+        <ReleaseDate>12.07.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3589438</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Verbesserte Unterstützung für email-Versand mittels STARTTLS oder SSL</ChangeItem>
+            <ChangeItem>Bugfix: Fehlende Anzeige von Vereinsnamen bei Steuerleuten korrigiert</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Improved support for sending email with STARTTLS or SSL</ChangeItem>
+            <ChangeItem>Bugfix: Missing club name for cox fixed</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.0_07</VersionID>
+        <ReleaseDate>18.06.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3589045</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Datenimport mittels efaCLI jetzt 100x schneller</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Data import with efaCLI now 100x faster</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.0_06</VersionID>
         <ReleaseDate>17.06.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>

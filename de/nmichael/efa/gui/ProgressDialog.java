@@ -10,6 +10,7 @@
 
 package de.nmichael.efa.gui;
 
+import de.nmichael.efa.Daten;
 import de.nmichael.efa.util.*;
 import de.nmichael.efa.util.Dialog;
 import javax.swing.*;
@@ -22,6 +23,7 @@ public class ProgressDialog extends BaseDialog {
     private JTextArea loggingTextArea;
     private JLabel currentStatusLabel;
     private JProgressBar progressBar;
+    private boolean hasProgressBar = true;
 
     public ProgressDialog(Frame parent, String title, ProgressTask progressTask, boolean autoCloseDialogWhenDone) {
         super(parent, title, International.getStringWithMnemonic("Schließen"));
@@ -108,6 +110,10 @@ public class ProgressDialog extends BaseDialog {
     }
 
     public void setCurrentWorkDone(int i) {
+        if (!hasProgressBar || 
+            (progressBar == null && Daten.applID == Daten.APPL_CLI)) {
+            return;
+        }
         for (int tryi=1; progressBar == null && tryi<=10; tryi++) {
             try { Thread.sleep(100*tryi); } catch(Exception e) {} // Dialog may not have been fully initialized when progress thread starts running
         }
@@ -115,6 +121,9 @@ public class ProgressDialog extends BaseDialog {
             // can be null for dummy ProgressDialog used in CLI
             progressBar.setMaximum(progressTask.getAbsoluteWork());
             progressBar.setValue(i);
+        } else {
+            // give up: we won't get a progress bar (don't wait each time we update progress)
+            hasProgressBar = false;
         }
     }
 

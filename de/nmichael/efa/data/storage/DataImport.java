@@ -214,6 +214,10 @@ public class DataImport extends ProgressTask {
 
     private boolean importRecord(DataRecord r, ArrayList<String> fieldsInInport) {
         try {
+            if (Logger.isDebugLogging()) {
+                Logger.log(Logger.DEBUG, Logger.MSG_DEBUG_DATA, 
+                        "importing " + r.toString());
+            }
             DataRecord[] otherVersions = null;
 
             if (importMode.equals(IMPORTMODE_ADD) &&

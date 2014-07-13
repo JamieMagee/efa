@@ -147,11 +147,17 @@ public class EmailSenderThread extends Thread {
                         "Trying to send message " + msg.getMessageId() + " to " + recipients.toString() + " ...");
             }
             boolean auth = (serverUsername != null && serverPassword != null);
+            String protocol = Daten.efaConfig.getValueEmailSSL() ? "smtps" : "smtp";
             Properties props = new Properties();
-            props.put("mail.smtp.host", serverUrl);
-            props.put("mail.smtp.port", serverPort);
+            props.put("mail." + protocol + ".host", serverUrl);
+            props.put("mail." + protocol + ".port", serverPort);
             if (auth) {
-                props.put("mail.smtp.auth", "true");
+                props.put("mail." + protocol + ".auth", "true");
+            }
+            if (Daten.efaConfig.getValueEmailSSL()) {
+                props.put("mail." + protocol + ".ssl.enable", "true");
+            } else {
+                props.put("mail." + protocol + ".starttls.enable", "true");
             }
             if (Logger.isTraceOn(Logger.TT_BACKGROUND, 5)) {
                 props.put("mail.debug", "true");
@@ -185,18 +191,20 @@ public class EmailSenderThread extends Thread {
                     + msg.getText()
                     + (mailSignature != null ? "\n\n-- \n"
                     + EfaUtil.replace(mailSignature, "$$", "\n", true) : ""), charset);
-            com.sun.mail.smtp.SMTPTransport t = (com.sun.mail.smtp.SMTPTransport) session.getTransport("smtp");
+            com.sun.mail.smtp.SMTPTransport t = (com.sun.mail.smtp.SMTPTransport) 
+                    session.getTransport(protocol);
             if (auth) {
                 t.connect(serverUrl, serverUsername, serverPassword);
             } else {
                 t.connect();
             }
-            t.send(mail, mail.getAllRecipients());
+            t.sendMessage(mail, mail.getAllRecipients());
             return true;
         } catch (Exception e) {
             Logger.log(Logger.WARNING, Logger.MSG_ERR_SENDMAILFAILED_ERROR,
                     International.getString("email-Versand fehlgeschlagen") + ": " +
                     e.toString() + " " + e.getMessage());
+            Logger.logdebug(e);
             return false;
         }
     }
@@ -212,11 +220,17 @@ public class EmailSenderThread extends Thread {
                         "Trying to send multipart message to " + recipients.toString() + " ...");
             }
             boolean auth = (serverUsername != null && serverPassword != null);
+            String protocol = Daten.efaConfig.getValueEmailSSL() ? "smtps" : "smtp";
             Properties props = new Properties();
-            props.put("mail.smtp.host", serverUrl);
-            props.put("mail.smtp.port", serverPort);
+            props.put("mail." + protocol + ".host", serverUrl);
+            props.put("mail." + protocol + ".port", serverPort);
             if (auth) {
-                props.put("mail.smtp.auth", "true");
+                props.put("mail." + protocol + ".auth", "true");
+            }
+            if (Daten.efaConfig.getValueEmailSSL()) {
+                props.put("mail." + protocol + ".ssl.enable", "true");
+            } else {
+                props.put("mail." + protocol + ".starttls.enable", "true");
             }
             if (Logger.isTraceOn(Logger.TT_BACKGROUND, 5)) {
                 props.put("mail.debug", "true");
@@ -239,13 +253,13 @@ public class EmailSenderThread extends Thread {
             mail.setSubject((mailSubjectPrefix != null ? "[" + mailSubjectPrefix + "] " : "") + msg.subject, charset);
             mail.setSentDate(new Date());
             mail.setContent(msg.message);
-            com.sun.mail.smtp.SMTPTransport t = (com.sun.mail.smtp.SMTPTransport) session.getTransport("smtp");
+            com.sun.mail.smtp.SMTPTransport t = (com.sun.mail.smtp.SMTPTransport) session.getTransport(protocol);
             if (auth) {
                 t.connect(serverUrl, serverUsername, serverPassword);
             } else {
                 t.connect();
             }
-            t.send(mail, mail.getAllRecipients());
+            t.sendMessage(mail, mail.getAllRecipients());
             if (msg.deleteAttachmentFiles) {
                 for (int i=0; msg.attachmentFileNames != null && i<msg.attachmentFileNames.length; i++) {
                     EfaUtil.deleteFile(msg.attachmentFileNames[i]);

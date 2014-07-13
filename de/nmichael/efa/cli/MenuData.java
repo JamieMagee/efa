@@ -129,7 +129,8 @@ public class MenuData extends MenuBase {
                 encoding = Daten.ENCODING_ISO;
             }
         }
-        DataExport export = new DataExport(storageObject, System.currentTimeMillis(), null,
+       cli.loginfo("Exporting data ...");
+       DataExport export = new DataExport(storageObject, System.currentTimeMillis(), null,
                 storageObject.createNewRecord().getFields(), format,
                 encoding, filename, DataExport.EXPORT_TYPE_TEXT);
         int count = export.runExport();
@@ -180,6 +181,7 @@ public class MenuData extends MenuBase {
             entryNo = DataImport.ENTRYNO_DUPLICATE_SKIP;
         }
 
+        cli.loginfo("Importing data ...");
         DataImport imp = new DataImport(storageObject, filename, encoding, csep, cquo,
                 importMode, updMode, entryNo,
                 System.currentTimeMillis());

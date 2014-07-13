@@ -1234,7 +1234,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             }
             if (field == cox) {
                 return (r != null ? r.getCoxAsName(getValidAtTimestamp(r)) +
-                                    (Daten.efaConfig.getValuePostfixPersonsWithClubName() ? PersonRecord.getAssociationPostfix(r.getCrewRecord(9, getValidAtTimestamp(r))) : "")
+                                    (Daten.efaConfig.getValuePostfixPersonsWithClubName() ? PersonRecord.getAssociationPostfix(r.getCrewRecord(0, getValidAtTimestamp(r))) : "")
                         : "");
             }
             for (int i = 0; i < crew.length; i++) {

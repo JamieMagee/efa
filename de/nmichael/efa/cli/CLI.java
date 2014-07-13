@@ -17,6 +17,7 @@ import de.nmichael.efa.core.config.Credentials;
 import de.nmichael.efa.core.config.EfaConfig;
 import de.nmichael.efa.core.config.EfaTypes;
 import de.nmichael.efa.data.Project;
+import de.nmichael.efa.data.storage.AccessStatistics;
 import de.nmichael.efa.data.storage.EfaOnlineClient;
 import de.nmichael.efa.data.storage.IDataAccess;
 import de.nmichael.efa.data.storage.RemoteEfaClient;
@@ -323,6 +324,12 @@ public class CLI {
 
     public void quit(int ret) {
         if (mode == MODE.cli) {
+            if (Logger.isDebugLogging()) {
+                String[] stats = AccessStatistics.getStatisticsAsSimpleArray();
+                for (String s : stats) {
+                    Logger.log(Logger.DEBUG, Logger.MSG_DEBUG_RMTACCESSSTATS, s);
+                }
+            }
             Daten.haltProgram(ret);
         }
     }
