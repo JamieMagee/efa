@@ -122,8 +122,9 @@ public class DataExport {
                 if (format == Format.csv) {
                     fw.write("\n");
                 }
+                return true; // exported
             }
-            return true;
+            return false; // not exported
         } catch (IOException e) {
             Logger.logdebug(e);
             return false;

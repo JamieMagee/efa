@@ -81,7 +81,7 @@ public class CompetitionLRVMeckPommWanderruderwett extends Competition {
                     // Teilnehmer ist in der Gruppe!
 
                     // Wanderfahrten zusammenstellen
-                    Hashtable<String,DRVFahrt> wanderfahrten = CompetitionDRVFahrtenabzeichen.getWanderfahrten(sd[i]);
+                    Hashtable<String,DRVFahrt> wanderfahrten = CompetitionDRVFahrtenabzeichen.getWanderfahrten(sd[i], false);
                     Object[] keys = wanderfahrten.keySet().toArray(); // Keys ermitteln
 
                     // Überprüfung, ob der Teilnehmer den DRV-Wettbewerb erfüllt hat

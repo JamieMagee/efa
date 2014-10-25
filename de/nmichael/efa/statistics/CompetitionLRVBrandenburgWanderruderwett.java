@@ -70,7 +70,7 @@ public class CompetitionLRVBrandenburgWanderruderwett extends Competition {
                     // Teilnehmer ist in der Gruppe!
 
                     // Wanderfahrten zusammenstellen
-                    Hashtable<String,DRVFahrt> wanderfahrten = CompetitionDRVFahrtenabzeichen.getWanderfahrten(sd[i]);
+                    Hashtable<String,DRVFahrt> wanderfahrten = CompetitionDRVFahrtenabzeichen.getWanderfahrten(sd[i], false);
                     int anzWafaTage = 0;
                     int anzWafa = 0; // max. 3 ausgeben
                     Object[] keys = wanderfahrten.keySet().toArray(); // Keys ermitteln

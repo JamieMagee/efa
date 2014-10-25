@@ -1420,6 +1420,10 @@ public class StatisticTask extends ProgressTask {
             return false;
         }
 
+        if (sr.sStatisticCategory == StatisticsRecord.StatisticCategory.competition &&
+                !EfaTypes.couldBeRowingBoot(boatType)) {
+            return false;
+        }
         return true;
     }
 

@@ -1,11 +1,16 @@
 Item
 ============================================================================================================
 
+Bei Auswertung von KIlometerwettbewerben alle unterlaubten Filterkriterien ignorieren
+  - zum Beispiel die Auswahl der Fahrtarten. Hat bei Stefan Schmidt (siehe email) dazu geführt,
+  - daß für den Wanderruderpreis falsch gezählt wurde, da er ausschließlich Wanderfahrten, aber
+  - keine anderen Fahrten ausgewählt hatte.
 Kilometerwettbewerbs-Statisiken für CSV (und eventuell XML) Ausgabe - http://forum.nmichael.de/viewtopic.php?f=9&t=749&p=3245#p3245
 Synchronisation korrekt protokollieren (z.B. Kanu-eFB: unveränderte Fahrten übertragen, falls nachträglich der Person eine eFB-ID zugeordnet wurde)
 
 Wenn beim beginnen oder beenden einer Fahrt 2 Warnungen/Hinweise angezeigt werden sollen, diese beide zeitgleich nebeneinander anzeigen und nicht nacheinander
 
+Statistikauswertung: Filter nach Personen, die insgesamt mindestens x km gerudert sind (um solche, die nur sehr wenig im Jahr rudern auszublenden) - http://forum.nmichael.de/viewtopic.php?f=9&t=795&p=3312#p3312
 Option für Änderungswünsche im Fahrtenbuch deaktivierbar machen (http://forum.nmichael.de/viewtopic.php?f=9&p=2565#p2565)
 Korrekturassistent: Auswahl am Anfang, was korrigiert werden soll (sowie Konfiguration ("Schwellwerte") und ggf. zurück-Button): http://forum.nmichael.de/viewtopic.php?f=9&t=635&p=2543#p2543
 Korrekturassistent: Unbekannte Namen automatisch in Personenliste übernehmen? Auswahl einzelenr Personen, dann Dialog mit allen ausgewählten Namen und Möglichkeit, Status, Gechlecht, Jahrgang zu erfassen. http://forum.nmichael.de/viewtopic.php?f=9&t=635&p=2551#p2551

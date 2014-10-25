@@ -2,6 +2,69 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.0_12</VersionID>
+        <ReleaseDate>22.10.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3591210</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Fehlerhafte Berechnung von JuM-Regatten für DRV-Fahrtenabzeichen behoben, wenn Teilnehmer *nicht* der Gruppe 3 a/b angehört</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.0_11</VersionID>
+        <ReleaseDate>18.10.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3591098</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: efa versucht email-Versand jetzt nur, wenn auch ein email-Server konfiguriert ist</ChangeItem>
+            <ChangeItem>Bugfix: Fehlerhafte Angabe zur Anzahl der exportierten Datensätze bei Datenexport korrigiert</ChangeItem>
+            <ChangeItem>Bugfix: efa fragt jetzt vor der Reservierung von "nicht verfügbaren" Booten nach, ob diese wirklich reserviert werden sollen</ChangeItem>
+            <ChangeItem>Bugfix: Für Wettbewerbsauswertungen aktiviert efa jetzt nur alle vordefinierten Fahrtarten und Bootstypen, die für Ruderfahrten in Frage kommen, und erlaubt es weiterhin, selbst definierte Fahrtarten oder Bootstypen von der Wettbewerbsauswertung auszunehmen</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: efa now onlz attempts to send email if an email server has been configured</ChangeItem>
+            <ChangeItem>Bugfix: wrong count for number of exported records fixed</ChangeItem>
+            <ChangeItem>Bugfix: efa now prompts user to confirm when attempting to reserve a boat that is currently "not available"</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.0_10</VersionID>
+        <ReleaseDate>06.08.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3589628</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Fehlende Beschreibung in Benachrichtigung bei Meldung eines ungeputzten Bootes ergänzt</ChangeItem>
+            <ChangeItem>Bugfix: Unerlaubte Filtereinstellungen bei Wettbewerbsmeldungen werden jetzt bei Auswertung ignoriert</ChangeItem>
+            <ChangeItem>Bugfix: Im Admin-Modus werden im Fahrtenbucheintrag bereits erfaßte Kilometereingaben bei Bearbeitung des Ziels nicht mehr gelöscht</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Missing notes when reporting an uncleaned boat added</ChangeItem>
+            <ChangeItem>Bugfix: Already entered distance is not lost any more when a destination is edited in admin mode</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.0_09</VersionID>
+        <ReleaseDate>24.07.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3589482</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: email-Versand ohne STARTTLS bei Verwendung von Port 25</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Sending of emails without STARTTLS when using port 25</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.0_08</VersionID>
         <ReleaseDate>12.07.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>

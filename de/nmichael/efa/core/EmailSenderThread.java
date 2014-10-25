@@ -157,7 +157,9 @@ public class EmailSenderThread extends Thread {
             if (Daten.efaConfig.getValueEmailSSL()) {
                 props.put("mail." + protocol + ".ssl.enable", "true");
             } else {
-                props.put("mail." + protocol + ".starttls.enable", "true");
+                if (Daten.efaConfig.getValueEfaDirekt_emailPort() != 25) {
+                    props.put("mail." + protocol + ".starttls.enable", "true");
+                }
             }
             if (Logger.isTraceOn(Logger.TT_BACKGROUND, 5)) {
                 props.put("mail.debug", "true");
@@ -230,7 +232,9 @@ public class EmailSenderThread extends Thread {
             if (Daten.efaConfig.getValueEmailSSL()) {
                 props.put("mail." + protocol + ".ssl.enable", "true");
             } else {
-                props.put("mail." + protocol + ".starttls.enable", "true");
+                if (Daten.efaConfig.getValueEfaDirekt_emailPort() != 25) {
+                    props.put("mail." + protocol + ".starttls.enable", "true");
+                }
             }
             if (Logger.isTraceOn(Logger.TT_BACKGROUND, 5)) {
                 props.put("mail.debug", "true");
@@ -304,7 +308,9 @@ public class EmailSenderThread extends Thread {
                                 // new message found
                                 countToBeSent++;
                                 boolean markDone = false;
-                                if (emailAddressesAdmin != null || emailAddressesBoatMaintenance != null) {
+                                if ((emailAddressesAdmin != null || emailAddressesBoatMaintenance != null) &&
+                                     (serverUrl != null || serverPort != null
+                                      || mailFromEmail != null || mailFromName != null)) {
                                     // recipient email addresses configured
                                     if (serverUrl != null && serverPort != null
                                             && mailFromEmail != null && mailFromName != null) {

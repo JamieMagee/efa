@@ -1381,6 +1381,48 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public String getFilterSessionTypeSelectedListAsText() {
         return getFilterEfaTypesSelectedListAsText(getFilterSessionType(), EfaTypes.CATEGORY_SESSION);
     }
+    
+    private boolean setCompetitionFilterAllPredefinedSessionTypes() {
+        DataTypeList<String> selected = getFilterSessionType();
+        DataTypeList<String> allknown = new DataTypeList<String>(Daten.efaTypes.makeSessionTypeArray(EfaTypes.ARRAY_STRINGLIST_VALUES));
+        boolean changed = false;
+        if (selected == null) {
+            selected = new DataTypeList<String>();
+            changed = true;
+        }
+        for (String s : EfaTypes.PREDEFINED_SESSION_TYPES) {
+            if (allknown.contains(s) && EfaTypes.couoldBeRowingSession(s) && !selected.contains(s)) {
+                selected.add(s);
+                sFilterSessionType.put(s, s);
+                changed = true;
+            }
+        }
+        if (changed) {
+            setFilterSessionType(selected);
+        }
+        return changed;
+    }
+
+    private boolean setCompetitionFilterAllPredefinedBoatTypes() {
+        DataTypeList<String> selected = getFilterBoatType();
+        DataTypeList<String> allknown = new DataTypeList<String>(Daten.efaTypes.makeBoatTypeArray(EfaTypes.ARRAY_STRINGLIST_VALUES));
+        boolean changed = false;
+        if (selected == null) {
+            selected = new DataTypeList<String>();
+            changed = true;
+        }
+        for (String s : EfaTypes.PREDEFINED_BOAT_TYPES) {
+            if (allknown.contains(s) && EfaTypes.couldBeRowingBoot(s) && !selected.contains(s)) {
+                selected.add(s);
+                sFilterBoatType.put(s, s);
+                changed = true;
+            }
+        }
+        if (changed) {
+            setFilterBoatType(selected);
+        }
+        return changed;
+    }
 
     public void setFilterBoatType(DataTypeList<String> list) {
         setList(FILTERBOATTYPE, list);
@@ -2858,7 +2900,6 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         cEntryNoLast = null;
         cEntryDateFirst = null;
         cEntryDateLast = null;
-        cWarnings = new Hashtable<String, String>();
         cCompetition = null;
 
         pParentDialog = null;
@@ -2893,6 +2934,8 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     }
 
     public boolean prepareStatisticSettings(AdminRecord admin) {
+        cWarnings = new Hashtable<String, String>();
+
         sAdmin = admin;
 
         sIsFieldsPosition = false;
@@ -3029,7 +3072,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
             sFilterStatusAll = false;
             setFilterStatusAll(false);
         }
-
+        
         sFilterSessionType = new Hashtable<String,String>();
         listString = getFilterSessionType();
         for (int i=0; listString != null && i<listString.length(); i++) {
@@ -3098,6 +3141,55 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         }
         sFilterOnlyOpenDamages = getFilterOnlyOpenDamages();
         sFilterAlsoOpenSessions = getFilterAlsoOpenSessions();
+
+        if (sStatisticCategory == StatisticCategory.competition) {
+            boolean filtersChanged = false;
+            if (!sFilterSessionTypeAll && setCompetitionFilterAllPredefinedSessionTypes()) {
+                filtersChanged = true;
+            }
+            if (!sFilterBoatTypeAll && setCompetitionFilterAllPredefinedBoatTypes()) {
+                filtersChanged = true;
+            }
+            if (!sFilterBoatSeatsAll) {
+                sFilterBoatSeatsAll = true;
+                filtersChanged = true;
+            }
+            if (!sFilterBoatRiggingAll) {
+                sFilterBoatRiggingAll = true;
+                filtersChanged = true;
+            }
+            if (!sFilterBoatCoxingAll) {
+                sFilterBoatCoxingAll = true;
+                filtersChanged = true;
+            }
+            if (!sFilterBoatOwnerAll) {
+                sFilterBoatOwnerAll = true;
+                filtersChanged = true;
+            }
+            if (sFilterFromToBoathouse) {
+                sFilterFromToBoathouse = false;
+                filtersChanged = true;
+            }
+            if (sFilterCommentsInclude != null) {
+                sFilterCommentsInclude = null;
+                filtersChanged = true;
+            }
+            if (sFilterCommentsExclude != null) {
+                sFilterCommentsExclude = null;
+                filtersChanged = true;
+            }
+            if (sFilterMinSessionDistance != null) {
+                sFilterMinSessionDistance = null;
+                filtersChanged = true;
+            }
+            if (sFilterAlsoOpenSessions) {
+                sFilterAlsoOpenSessions = false;
+                filtersChanged = true;
+            }
+            if (filtersChanged) {
+                cWarnings.put(International.getString("Einige Filtereinstellungen wurden für die Auswertung ignoriert."), "foobar");
+            }
+        }
 
         if (getFilterPromptPerson() && Daten.isGuiAppl()) {
             Object o = promptForInput(sFilterByPersonId, sFilterByPersonText,

@@ -142,6 +142,14 @@ public class BoatReservationListDialog extends DataListDialog {
                     Dialog.error(International.getString("Privatboote dürfen nicht reserviert werden!"));
                     return null;
                 }
+                BoatStatusRecord bs = b.getBoatStatus();
+                if (bs != null && BoatStatusRecord.STATUS_NOTAVAILABLE.equals(bs.getBaseStatus()) &&
+                    Dialog.yesNoDialog(International.getString("Boot nicht verfügbar"), 
+                            International.getMessage("Das ausgewählte Boot '{boat}' ist derzeit nicht verfügbar:", b.getQualifiedName()) + "\n" +
+                            International.getString("Status") + ": " + bs.getComment() + "\n" +
+                            International.getString("Möchtest Du das Boot trotzdem reservieren?")) != Dialog.YES) {
+                    return null;
+                }
             } catch(Exception e) {
                 Logger.logdebug(e);
                 return null;

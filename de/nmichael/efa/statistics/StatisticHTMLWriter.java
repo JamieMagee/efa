@@ -122,7 +122,7 @@ public class StatisticHTMLWriter extends StatisticWriter {
                 for (String s : keys) {
                     warning.append( (warning.length() > 0 ? "<br>\n" : "") + s);
                 }
-                f.write("<p class=\"warning\">" + warning.toString() + "</p>");
+                f.write("<p class=\"warning\">" + warning.toString() + "</p><br clear=\"all\">");
             }
 
             // Auswertung von Wettbewerbseinträgen

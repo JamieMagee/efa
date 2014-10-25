@@ -57,6 +57,30 @@ public class EfaTypes extends StorageObject {
     public static final String TYPE_BOAT_CANADIANTEAMCANOE= "CANADIANTEAMCANOE"; // neu für Kanuten: Mannschaftskanadier
     public static final String TYPE_BOAT_DRAGONBOAT       = "DRAGONBOAT";   // neu für Kanuten: Drachenboot
     public static final String TYPE_BOAT_OTHER            = "OTHER";        // other
+    public static final String[] PREDEFINED_BOAT_TYPES = new String[] {
+        TYPE_BOAT_RACING,
+        TYPE_BOAT_WHERRY,
+        TYPE_BOAT_TRIMMY,
+        TYPE_BOAT_AGIG,
+        TYPE_BOAT_BGIG,
+        TYPE_BOAT_CGIG,
+        TYPE_BOAT_DGIG,
+        TYPE_BOAT_EGIG,
+        TYPE_BOAT_INRIGGER,
+        TYPE_BOAT_BARQUE,
+        TYPE_BOAT_CHURCHBOAT,
+        TYPE_BOAT_MOTORBOAT,
+        TYPE_BOAT_ERG,
+        TYPE_BOAT_SEAKAYAK,
+        TYPE_BOAT_RACINGKAYAK,
+        TYPE_BOAT_WHITEWATERKAYAK,
+        TYPE_BOAT_CANADIANTOURINGCANOE,
+        TYPE_BOAT_POLOBOAT,
+        TYPE_BOAT_FOLDINGCANOE,
+        TYPE_BOAT_CANADIANTEAMCANOE,
+        TYPE_BOAT_DRAGONBOAT,
+        TYPE_BOAT_OTHER
+    };
 
     public static final String TYPE_NUMSEATS_1            = "1";            // 1
     public static final String TYPE_NUMSEATS_2            = "2";            // 2
@@ -94,6 +118,20 @@ public class EfaTypes extends StorageObject {
     public static final String TYPE_SESSION_TOUR_EFA1X2   = "MULTIDAY";     // for import efa 1.x: MEHRTAGESFAHRT
     public static final String TYPE_SESSION_CLUBTRIP      = "CLUBTRIP";     // "Vereinsfahrt" für Kanu-eFB
     public static final String TYPE_SESSION_GROUPTRIP     = "GROUPTRIP";    // "Gemeinschaftsfahrt" für Kanu-eFB
+    public static final String[] PREDEFINED_SESSION_TYPES = new String[] {
+        TYPE_SESSION_NORMAL,
+        TYPE_SESSION_TRAINING,
+        TYPE_SESSION_REGATTA,
+        TYPE_SESSION_JUMREGATTA,
+        TYPE_SESSION_TRAININGCAMP,
+        TYPE_SESSION_INSTRUCTION,
+        TYPE_SESSION_LATEENTRY,
+        TYPE_SESSION_MOTORBOAT,
+        TYPE_SESSION_ERG,
+        TYPE_SESSION_TOUR,
+        TYPE_SESSION_CLUBTRIP,
+        TYPE_SESSION_GROUPTRIP
+    };
 
     public static final String TYPE_STATUS_GUEST          = "GUEST";        // Gast
     public static final String TYPE_STATUS_OTHER          = "OTHER";        // andere
@@ -403,6 +441,43 @@ public class EfaTypes extends StorageObject {
                 );
     }
     
+    public static boolean couldBeRowingBoot(String key) {
+        if (key == null || key.length()==0) {
+            return true; // consider unknown boat types as potential rowing boats
+        }
+        int sep = key.indexOf("_");
+        String type = key;
+        if (sep > 0) {
+            type = key.substring(sep+1);
+        }
+        if (type.length() == 0) {
+            return true;
+        }
+        return (!type.equals(TYPE_BOAT_MOTORBOAT) &&
+                !type.equals(TYPE_BOAT_ERG) &&
+                !type.equals(TYPE_BOAT_SEAKAYAK) &&
+                !type.equals(TYPE_BOAT_RACINGKAYAK) &&
+                !type.equals(TYPE_BOAT_WHITEWATERKAYAK) &&
+                !type.equals(TYPE_BOAT_CANADIANTOURINGCANOE) &&
+                !type.equals(TYPE_BOAT_POLOBOAT) &&
+                !type.equals(TYPE_BOAT_FOLDINGCANOE) &&
+                !type.equals(TYPE_BOAT_CANADIANTEAMCANOE) &&
+                !type.equals(TYPE_BOAT_DRAGONBOAT)
+                );
+    }  
+    
+    public static boolean couoldBeRowingSession(String key) {
+        if (key == null || key.length()==0) {
+            return true; // consider unknown boat types as potential rowing boats
+        }
+        return (!key.equals(TYPE_SESSION_MOTORBOAT) &&
+                !key.equals(TYPE_SESSION_ERG) &&
+                !key.equals(TYPE_SESSION_TOUR) &&
+                !key.equals(TYPE_SESSION_CLUBTRIP) &&
+                !key.equals(TYPE_SESSION_GROUPTRIP)
+                );
+    }  
+
     public ArrayList<String> getDefaultCanoeBoatTypes() {
         ArrayList<String> list = new ArrayList<String>();
         if (isConfigured(CATEGORY_BOAT, TYPE_BOAT_SEAKAYAK)) {

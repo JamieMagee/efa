@@ -1848,7 +1848,13 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             if (r != null && r.getDistance() != null && r.getDistance().isSet()) {
                 distance.parseAndShowValue(r.getDistance().getAsFormattedString());
             } else {
-                distance.parseAndShowValue("");
+                // do NOT clear the distance in Admin Mode. Users complain that a previously entered
+                // distance gets lost when editing, for example for unknown destination records
+                // (with properly entered distance), when clicking the red button and adding it to
+                // the destination list.
+                if (isModeBoathouse()) {
+                    distance.parseAndShowValue("");
+                }
             }
         }
 
@@ -3176,6 +3182,10 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
                         StringBuilder message = new StringBuilder();
                         message.append(International.getMessage("{person} hat gemeldet, dass das Boot '{boat}' nicht geputzt war.", 
                                 personName, boatName) + "\n\n");
+                        if (description != null && description.length() > 0) {
+                            message.append(International.getString("Beschreibung") + ": " +
+                                    description+"\n\n");
+                        }
                         message.append(International.getString("gemeldet am") + ": " + EfaUtil.getCurrentTimeStampYYYY_MM_DD_HH_MM_SS() + "\n");
                         message.append(International.getString("gemeldet von") + ": " + personName + 
                                        " (" + logbookRecordText + ")\n\n");

@@ -81,12 +81,15 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
         return false;
     }
 
-    public static Hashtable<String, DRVFahrt> getWanderfahrten(StatisticsData sd) {
+    public static Hashtable<String, DRVFahrt> getWanderfahrten(StatisticsData sd, boolean gruppe3ab) {
         Hashtable<String, DRVFahrt> wanderfahrten = new Hashtable<String, DRVFahrt>();
 
         for (int j = 0; sd.sessionHistory != null && j < sd.sessionHistory.size(); j++) {
             LogbookRecord r = sd.sessionHistory.get(j);
             boolean jum = r.getSessionType().equals(EfaTypes.TYPE_SESSION_JUMREGATTA);
+            if (jum && !gruppe3ab) {
+                continue;
+            }
             SessionGroupRecord sessionGroup = r.getSessionGroup();
             String key = (sessionGroup == null
                     ? "##SE##" + r.getEntryId().toString() + "##" + r.getDate().toString()
@@ -137,7 +140,7 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
     }
 
     public static long getWanderfahrtenMeter(StatisticsData sd) {
-        Hashtable<String, DRVFahrt> wanderfahrten = getWanderfahrten(sd);
+        Hashtable<String, DRVFahrt> wanderfahrten = getWanderfahrten(sd, false);
         Object[] keys = wanderfahrten.keySet().toArray(); // Keys ermitteln
         long totalWafaMeters = 0; // Wafa-Meter insgesamt
         for (int k = 0; k < keys.length; k++) {
@@ -213,9 +216,12 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                 if (!sd[i].sYearOfBirth.equals("")
                         && Daten.wettDefs.inGruppe(WettDefs.DRV_FAHRTENABZEICHEN, sr.sCompYear, g, jahrgang, sd[i].gender, sd[i].disabled)) {
                     // Teilnehmer ist in der Gruppe!
+                    
+                    // is Gruppe 3 a/b
+                    boolean gruppe3ab = gruppen[g].gruppe == 3 && gruppen[g].untergruppe <= 2;
 
                     // Wanderfahrten zusammenstellen
-                    Hashtable<String,DRVFahrt> wanderfahrten = getWanderfahrten(sd[i]);
+                    Hashtable<String,DRVFahrt> wanderfahrten = getWanderfahrten(sd[i], gruppe3ab);
 
                     boolean mehrFahrten = false;
                     String[][] wafa = new String[7][6]; // 7 Einträge mit jeweils LfdNr/Abfahrt/Ankunft/Ziel/Km/Bemerk
