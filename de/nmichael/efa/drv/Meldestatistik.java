@@ -21,7 +21,7 @@ import java.io.*;
 
 public class Meldestatistik extends DatenListe {
 
-  public static final int _ANZFELDER = 26;
+  public static final int _ANZFELDER = 27;
 
   public static final int KEY = 0; // VEREINSMITGLNR#VORNAME#NACHNAME#JAHRGANG
   public static final int VEREINSMITGLNR = 1;
@@ -49,17 +49,19 @@ public class Meldestatistik extends DatenListe {
   public static final int WS_AKT19M = 23;
   public static final int WS_AKT18W = 24;
   public static final int WS_AKT19W = 25;
+  public static final int WS_VEREINSKILOMETER = 26;
 
 
   public static final String KENNUNG151 = "##EFA.151.MELDESTATISTIK##";
   public static final String KENNUNG160 = "##EFA.160.MELDESTATISTIK##";
   public static final String KENNUNG183 = "##EFA.183.MELDESTATISTIK##";
   public static final String KENNUNG190 = "##EFA.190.MELDESTATISTIK##";
+  public static final String KENNUNG221 = "##EFA.221.MELDESTATISTIK##";
 
   // Konstruktor
   public Meldestatistik(String pdat) {
     super(pdat,_ANZFELDER,1,false);
-    kennung = KENNUNG190;
+    kennung = KENNUNG221;
   }
 
 
@@ -129,6 +131,27 @@ public class Meldestatistik extends DatenListe {
              return false;
           }
           kennung = KENNUNG190;
+          if (closeFile() && writeFile(true) && openFile()) {
+            infSuccessfullyConverted(dat,kennung);
+            s = kennung;
+          } else errConvertingFile(dat,kennung);
+        }
+
+        // KONVERTIEREN: 190 -> 221
+        if (s != null && s.trim().startsWith(KENNUNG190)) {
+          // @efa1 if (Daten.backup != null) Daten.backup.create(dat,Efa1Backup.CONV,"183");
+          iniList(this.dat,27,1,true); // Rahmenbedingungen von v221 schaffen
+          try {
+            while ((s = freadLine()) != null) {
+              s = s.trim();
+              if (s.equals("") || s.startsWith("#")) continue; // Kommentare ignorieren
+              add(constructFields(s));
+            }
+          } catch(IOException e) {
+             errReadingFile(dat,e.getMessage());
+             return false;
+          }
+          kennung = KENNUNG221;
           if (closeFile() && writeFile(true) && openFile()) {
             infSuccessfullyConverted(dat,kennung);
             s = kennung;

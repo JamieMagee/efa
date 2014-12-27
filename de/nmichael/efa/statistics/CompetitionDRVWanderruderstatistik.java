@@ -34,6 +34,7 @@ public class CompetitionDRVWanderruderstatistik extends Competition {
     
     protected Hashtable<String,String> alleWW = new Hashtable<String,String>();
     protected Hashtable<UUID,String> alleAktive = new Hashtable<UUID,String>();
+    protected long summeVereinsMeter = 0;
 
     protected Waters waters = Daten.project.getWaters(false);
 
@@ -112,6 +113,7 @@ public class CompetitionDRVWanderruderstatistik extends Competition {
         int alter = sr.sCompYear - jahrgang;
 
         long distanceInMeters = (r.getDistance() != null ? r.getDistance().getValueInMeters() : 0);
+        summeVereinsMeter += distanceInMeters;
         UUID personId = person.getId();
 
         // Anzahl der aktiven Ruderer ermitteln
@@ -507,6 +509,7 @@ public class CompetitionDRVWanderruderstatistik extends Competition {
             efaWett.aktive_M_bis18 = Integer.toString(aktMbis18);
             efaWett.aktive_W_ab19 = Integer.toString(aktWab19);
             efaWett.aktive_W_bis18 = Integer.toString(aktWbis18);
+            efaWett.vereins_kilometer = Long.toString(summeVereinsMeter/1000l);
         }
     }
 

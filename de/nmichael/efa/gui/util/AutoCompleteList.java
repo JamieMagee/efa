@@ -93,7 +93,7 @@ public class AutoCompleteList {
     }
 
     /**
-     * Synchronize this list with the uderlying DataAccess, if necessary
+     * Synchronize this list with the underlying DataAccess, if necessary
      */
     public synchronized void update() {
         try {

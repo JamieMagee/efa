@@ -685,6 +685,7 @@ public class StatisticTask extends ProgressTask {
         // Note: This method only provides the aggregation key for StatisticCategory=LIST!
         switch (sr.sStatistikKey) {
             case name:
+            default:
                 if (sr.sSumGuestsByClub && entryPersonIsGuest) {
                     String clubName = International.getString("unbekannt");
                     if (entryPersonRecord != null && entryPersonRecord.getAssocitation() != null
@@ -2182,6 +2183,9 @@ public class StatisticTask extends ProgressTask {
                         k = it.getNext();
                     }
                     return true;
+                case clubwork:
+                    createStatisticClubwork(sr, statisticsNumber);
+                    return true;
             }
         } catch (Exception e) {
             Logger.logdebug(e);
@@ -2200,6 +2204,7 @@ public class StatisticTask extends ProgressTask {
         }
         Set<UUID> usedPersonIds = new HashSet<UUID>();
 
+        boolean foundAny = false;
         for (int i = 0; names != null && i < names.length; i++) {
             ProjectRecord pr = Daten.project.getClubworkBookRecord(names[i]);
             if (pr != null) {
@@ -2213,6 +2218,7 @@ public class StatisticTask extends ProgressTask {
                 }
 
                 if (clubwork != null && DataTypeDate.isRangeOverlap(sr.sStartDate, sr.sEndDate, lbStart, lbEnd)) {
+                    foundAny = true;
                     sr.sClubworkStartDate = lbStart;
                     sr.sClubworkEndDate = lbEnd;
                     sr.sDefaultClubworkTargetHours = pr.getDefaultMonthlyClubworkTargetHours();
@@ -2244,27 +2250,81 @@ public class StatisticTask extends ProgressTask {
             }
         }
 
-        Persons persons = Daten.project.getPersons(false);
+        if (foundAny) {
+            Persons persons = Daten.project.getPersons(false);
 
-        Vector<PersonRecord> personRecords = persons.getAllPersons(sr.sStartDate.getTimestamp(null), sr.sEndDate.getTimestamp(null), false, false);
+            Vector<PersonRecord> personRecords = persons.getAllPersons(sr.sStartDate.getTimestamp(null), sr.sEndDate.getTimestamp(null), false, false);
 
-        for(PersonRecord personRecord : personRecords) {
-            //assumes that statusGuest && statusOther is already set
-            getEntryPerson(personRecord);
+            for (PersonRecord personRecord : personRecords) {
+                //assumes that statusGuest && statusOther is already set
+                getEntryPerson(personRecord);
 
-            if(!entryPersonIsGuest && !entryPersonIsOther &&
-                !usedPersonIds.contains(personRecord.getId())) {
-                ClubworkRecord r = (ClubworkRecord)Daten.project.getCurrentClubwork().createNewRecord();
-                r.setPersonId(personRecord.getId());
-                r.setDescription("No clubwork for this person found");
-                r.setHours(0.0);
-                r.setWorkDate(sr.sEndDate);
-                calculateEntry(r);
-                usedPersonIds.add(r.getPersonId());
+                if (!entryPersonIsGuest && !entryPersonIsOther
+                        && !usedPersonIds.contains(personRecord.getId())) {
+                    ClubworkRecord r = (ClubworkRecord) Daten.project.getCurrentClubwork().createNewRecord();
+                    r.setPersonId(personRecord.getId());
+                    r.setDescription("No clubwork for this person found");
+                    r.setHours(0.0);
+                    r.setWorkDate(sr.sEndDate);
+                    calculateEntry(r);
+                    usedPersonIds.add(r.getPersonId());
 
+                }
             }
         }
 
+        if (sr.sIsAggrDistance) {
+            this.calculateDistanceForClubworkEntries(statisticsNumber);
+        }
+        
+        return true;
+    }
+
+    private boolean calculateDistanceForClubworkEntries(int statisticsNumber) {
+        Vector<Logbook> logbooks = getAllLogbooks();
+        if (logbooks.size() == 0) {
+            Dialog.error(International.getMessage("Keine {items} im Zeitraum {fromdate} bis {todate} gefunden.",
+                    International.getString("Fahrten"),
+                    sr.sStartDate.toString(), sr.sEndDate.toString()));
+            return false;
+        }
+        int WORK_PER_LOGBOOK = WORK_PER_STATISTIC / logbooks.size();
+        for (int i = 0; i < logbooks.size(); i++) {
+            try {
+                logbook = logbooks.get(i);
+                logInfo(International.getString("Fahrtenbuch") + " " + logbook.getName() + " ...\n");
+                DataKeyIterator it = logbook.data().getStaticIterator();
+                int size = it.size();
+                DataKey k = it.getFirst();
+                int pos = 0;
+                while (k != null) {
+                    LogbookRecord r = (LogbookRecord) logbook.data().get(k);
+                    if (r != null) {
+                        if (Logger.isTraceOn(Logger.TT_STATISTICS, 9)) {
+                            Logger.log(Logger.DEBUG, Logger.MSG_STAT_VISITEDENTRIES,
+                                    "visited: " + (r.getEntryId() != null ? r.getEntryId().toString() : "EntryId = <null>"));
+                        }
+                        if (r.getDistance() != null) {
+                            for (int j = 0; j <= LogbookRecord.CREW_MAX; j++) {
+                                getEntryPerson(r, j);
+                                Object key = getAggregationKeyForClubwork(null);
+                                if (key != null) {
+                                    StatisticsData entry = this.data.get(key);
+                                    if (entry != null) {
+                                        entry.distance += r.getDistance().getValueInDefaultUnit();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    this.setCurrentWorkDone(((++pos * WORK_PER_LOGBOOK) / size) + (i * WORK_PER_LOGBOOK) + (statisticsNumber * WORK_PER_STATISTIC));
+                    k = it.getNext();
+                }
+            } catch (Exception e) {
+                Logger.logdebug(e);
+                logInfo("ERROR: " + e.toString() + "\n");
+            }
+        }
         return true;
     }
 
@@ -2284,14 +2344,7 @@ public class StatisticTask extends ProgressTask {
         if (sr.sStatisticCategory != StatisticsRecord.StatisticCategory.other) {
             createStatisticLogbook(sr, statisticsNumber);
         } else {
-            switch(sr.sStatisticTypeEnum) {
-                case clubwork:
-                    createStatisticClubwork(sr, statisticsNumber);
-                    break;
-                default:
-                    createStatisticOther(sr, statisticsNumber);
-                    break;
-            }
+            createStatisticOther(sr, statisticsNumber);
         }
 
         StatisticsData[] sd = runPostprocessing();

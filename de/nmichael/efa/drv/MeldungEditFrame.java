@@ -267,10 +267,12 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
     JLabel vAktiveMab19Label = new JLabel();
     JLabel vAktiveWbis18Label = new JLabel();
     JLabel vAktiveWab19Label = new JLabel();
+    JLabel vVereinskilometerLabel = new JLabel();
     JTextField vAktiveMbis18 = new JTextField();
     JTextField vAktiveMab19 = new JTextField();
     JTextField vAktiveWbis18 = new JTextField();
     JTextField vAktiveWab19 = new JTextField();
+    JTextField vVereinskilometer = new JTextField();
 
     public MeldungEditFrame(JDialog parent, EfaWett ew, String qnr, int meldTyp) {
         super(parent);
@@ -879,14 +881,17 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             vAktiveMab19Label.setText("männlich ab 19: ");
             vAktiveWbis18Label.setText("weiblich bis 18: ");
             vAktiveWab19Label.setText("weiblich ab 19: ");
-            vAktiveMbis18.setPreferredSize(new Dimension(50, 19));
+            vVereinskilometerLabel.setText("Vereinskilometer: ");
+            vAktiveMbis18.setPreferredSize(new Dimension(60, 19));
             vAktiveMbis18.setEditable(false);
-            vAktiveMab19.setPreferredSize(new Dimension(50, 19));
+            vAktiveMab19.setPreferredSize(new Dimension(60, 19));
             vAktiveMab19.setEditable(false);
-            vAktiveWbis18.setPreferredSize(new Dimension(50, 19));
+            vAktiveWbis18.setPreferredSize(new Dimension(60, 19));
             vAktiveWbis18.setEditable(false);
-            vAktiveWab19.setPreferredSize(new Dimension(50, 19));
+            vAktiveWab19.setPreferredSize(new Dimension(60, 19));
             vAktiveWab19.setEditable(false);
+            vVereinskilometer.setPreferredSize(new Dimension(60, 19));
+            vVereinskilometer.setEditable(false);
             this.getContentPane().add(mainPanel, BorderLayout.CENTER);
             mainPanel.add(northPanel, BorderLayout.NORTH);
             northPanel.add(infoQnrLabel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
@@ -988,10 +993,12 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             zusammenfassungPanel.add(vAktiveMab19Label, new GridBagConstraints(7, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
             zusammenfassungPanel.add(vAktiveWbis18Label, new GridBagConstraints(7, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
             zusammenfassungPanel.add(vAktiveWab19Label, new GridBagConstraints(7, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
+            zusammenfassungPanel.add(vVereinskilometerLabel, new GridBagConstraints(7, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
             zusammenfassungPanel.add(vAktiveMbis18, new GridBagConstraints(8, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             zusammenfassungPanel.add(vAktiveMab19, new GridBagConstraints(8, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             zusammenfassungPanel.add(vAktiveWbis18, new GridBagConstraints(8, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             zusammenfassungPanel.add(vAktiveWab19, new GridBagConstraints(8, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+            zusammenfassungPanel.add(vVereinskilometer, new GridBagConstraints(8, 5, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             vereinsdatenPanel.add(notesPanel, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
             vereinsdatenPanel.add(dateiPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 10, 10, 10), 0, 0));
             notesPanel.add(vNotes, BorderLayout.CENTER);
@@ -1246,10 +1253,12 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                 vAktiveMab19Label.setVisible(false);
                 vAktiveWbis18Label.setVisible(false);
                 vAktiveWab19Label.setVisible(false);
+                vVereinskilometerLabel.setVisible(false);
                 vAktiveMbis18.setVisible(false);
                 vAktiveMab19.setVisible(false);
                 vAktiveWbis18.setVisible(false);
                 vAktiveWab19.setVisible(false);
+                vVereinskilometer.setVisible(false);
                 break;
             case MeldungenIndexFrame.MELD_WANDERRUDERSTATISTIK:
                 bestellungenPanel.setVisible(false);
@@ -1747,6 +1756,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                 this.vAktiveMab19.setText(notNull(ew.aktive_M_ab19));
                 this.vAktiveWbis18.setText(notNull(ew.aktive_W_bis18));
                 this.vAktiveWab19.setText(notNull(ew.aktive_W_ab19));
+                this.vVereinskilometer.setText(notNull(ew.vereins_kilometer));
                 break;
         }
         vBlock(true);
@@ -2130,6 +2140,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                 this.vAktiveMab19.setText(notNull(ew.aktive_M_ab19));
                 this.vAktiveWbis18.setText(notNull(ew.aktive_W_bis18));
                 this.vAktiveWab19.setText(notNull(ew.aktive_W_ab19));
+                this.vVereinskilometer.setText(notNull(ew.vereins_kilometer));
                 break;
         }
     }
@@ -2510,6 +2521,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             d.set(Meldestatistik.WS_AKT19M, ew.aktive_M_ab19);
             d.set(Meldestatistik.WS_AKT18W, ew.aktive_W_bis18);
             d.set(Meldestatistik.WS_AKT19W, ew.aktive_W_ab19);
+            d.set(Meldestatistik.WS_VEREINSKILOMETER, ew.vereins_kilometer);
             Main.drvConfig.meldestatistik.add(d);
         }
 
@@ -2670,6 +2682,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
         this.vAktiveMab19.setEditable(!blocked);
         this.vAktiveWbis18.setEditable(!blocked);
         this.vAktiveWab19.setEditable(!blocked);
+        this.vVereinskilometer.setEditable(!blocked);
         this.vNotes.setEditable(!blocked);
         if (blocked) {
             this.vUnblockButton.setText("Felder zum Bearbeiten freigeben");
@@ -2707,6 +2720,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             ew.aktive_M_ab19 = Integer.toString(EfaUtil.string2int(this.vAktiveMab19.getText().trim(), 0));
             ew.aktive_W_bis18 = Integer.toString(EfaUtil.string2int(this.vAktiveWbis18.getText().trim(), 0));
             ew.aktive_W_ab19 = Integer.toString(EfaUtil.string2int(this.vAktiveWab19.getText().trim(), 0));
+            ew.vereins_kilometer = Integer.toString(EfaUtil.string2int(this.vVereinskilometer.getText().trim(), 0));
             ew.drvint_notes = this.vNotes.getText().trim();
 
             calcOverallValues();

@@ -2068,6 +2068,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
             selectedKeys.add(AGGR_CBRELTOTARGET);
             selectedKeys.add(AGGR_CBOVERUNDERCARRYOVER);
             selectedKeys.add(AGGR_CLUBWORKCREDIT);
+            selectedKeys.add(AGGR_DISTANCE);
         }
 
         String[] result = new String[selectedKeys.size()];
@@ -3360,7 +3361,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         DataTypeList<String> aggr = getAggregations();
         for (int i = 0; aggr != null && i < aggr.length(); i++) {
             String s = aggr.get(i);
-            if (s.equals(AGGR_DISTANCE) && sStatisticCategory != StatisticCategory.other) {
+            if (s.equals(AGGR_DISTANCE) && (sStatisticCategory != StatisticCategory.other || sStatisticTypeEnum == StatisticType.clubwork)) {
                 sIsAggrDistance = true;
             } else if (s.equals(AGGR_ROWDISTANCE) && sStatisticCategory != StatisticCategory.other) {
                 sIsAggrRowDistance = true;

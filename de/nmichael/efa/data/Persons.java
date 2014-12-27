@@ -210,6 +210,16 @@ public class Persons extends StorageObject {
         }
     }
 
+    public boolean isPersonExist(UUID id) {
+        try {
+            DataRecord[] r = data().getValidAny(PersonRecord.getKey(id, -1));
+            return r != null && r.length > 0;
+        } catch(Exception e) {
+            Logger.logdebug(e);
+            return false;
+        }
+    }
+
     public boolean isPersonDeleted(UUID personId) {
         try {
             DataRecord[] records = data().getValidAny(PersonRecord.getKey(personId, -1));

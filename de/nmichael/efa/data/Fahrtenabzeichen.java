@@ -13,11 +13,13 @@ package de.nmichael.efa.data;
 import de.nmichael.efa.data.efawett.CertInfos;
 import de.nmichael.efa.data.efawett.DRVSignatur;
 import de.nmichael.efa.Daten;
+import de.nmichael.efa.core.items.ItemTypeStringAutoComplete;
 import de.nmichael.efa.data.efawett.ESigFahrtenhefte;
 import de.nmichael.efa.util.*;
 import de.nmichael.efa.data.storage.*;
 import de.nmichael.efa.ex.EfaModifyException;
 import de.nmichael.efa.data.efawett.EfaWettClient;
+import de.nmichael.efa.gui.SimpleInputDialog;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -348,6 +350,29 @@ public class Fahrtenabzeichen extends StorageObject {
                     }
                     newRecord = true;
                 }
+                
+                // if we didn't find a person record, prompt the user to enter one;
+                // we cannot import a person without a record, otherwise the audit will
+                // cleanup this record again.
+                if (fa != null && !fa.existsPersonRecord()) {
+                    if (Daten.isGuiAppl()) {
+                        ItemTypeStringAutoComplete item = fa.getUnknownPersonInputField(sig.getVorNachnameJahr());
+                        if (SimpleInputDialog.showInputDialog(Dialog.frameCurrent(), 
+                                International.getString("Person nicht gefunden"), item)) {
+                            UUID id = (UUID)item.getId(item.getValueFromField());
+                            if (id != null) {
+                                fa.setPersonId(id);
+                            } else {
+                                fa = null; // do not import
+                            }
+                        } else {
+                            fa = null; // do not import
+                        }
+                    } else {
+                        fa = null; // do not import
+                    }                        
+                }
+                
                 if (fa != null) {
                     fa.setFahrtenheft(sig.toString());
                     fa.setAbzeichen(sig.getAnzAbzeichen());

@@ -22,7 +22,8 @@ public class EfaWett {
     public static final String EFAWETT100 = "##EFA.100.WETT##";
     public static final String EFAWETT150 = "##EFA.150.WETT##";
     public static final String EFAWETT151 = "##EFA.151.WETT##";
-    public static final String EFAWETT = "##EFA.160.WETT##";
+    public static final String EFAWETT160 = "##EFA.160.WETT##";
+    public static final String EFAWETT = "##EFA.221.WETT##";
     public int wettId = -1; // ID entspricht denen in WettDefs; wird vonr readFile() *nicht* gesetzt!
     public String datei = null;
     public String kennung = null;
@@ -65,6 +66,7 @@ public class EfaWett {
     public String aktive_M_bis18 = null;
     public String aktive_W_ab19 = null;
     public String aktive_W_bis18 = null;
+    public String vereins_kilometer = null;
     // DRV-intern (müssen unbedingt in EfaWett.resetDrvIntern() zurückgesetzt werden!)
     public boolean drvint_meldegeldEingegangen = false;
     public int drvint_anzahlPapierFahrtenhefte = -1;
@@ -122,6 +124,7 @@ public class EfaWett {
         aktive_M_bis18 = null;
         aktive_W_ab19 = null;
         aktive_W_bis18 = null;
+        vereins_kilometer = null;
         EfaWettMeldung meldung = null;
     }
 
@@ -263,7 +266,7 @@ public class EfaWett {
             }
         }
 
-        if (aktive_M_ab19 != null || aktive_M_bis18 != null || aktive_W_ab19 != null || aktive_W_bis18 != null) {
+        if (aktive_M_ab19 != null || aktive_M_bis18 != null || aktive_W_ab19 != null || aktive_W_bis18 != null || vereins_kilometer != null) {
             f.write("\n[DRV_WANDERRUDERPREIS]\n");
             if (aktive_M_ab19 != null) {
                 f.write("AKTIVE_M_AB19=" + aktive_M_ab19 + "\n");
@@ -276,6 +279,9 @@ public class EfaWett {
             }
             if (aktive_W_bis18 != null) {
                 f.write("AKTIVE_W_BIS18=" + aktive_W_bis18 + "\n");
+            }
+            if (vereins_kilometer != null) {
+                f.write("VEREINS_KILOMETER=" + vereins_kilometer + "\n");
             }
         }
 
@@ -618,6 +624,9 @@ public class EfaWett {
                 }
                 if (s.startsWith("AKTIVE_W_BIS18=")) {
                     aktive_W_bis18 = s.substring(15, s.length());
+                }
+                if (s.startsWith("VEREINS_KILOMETER=")) {
+                    vereins_kilometer = s.substring(18, s.length());
                 }
             }
             if (block.equals("DRV_INTERN")) {

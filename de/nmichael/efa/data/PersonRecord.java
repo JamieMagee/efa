@@ -660,7 +660,7 @@ public class PersonRecord extends DataRecord implements IItemFactory {
     
     public static String getAssociationPostfix(PersonRecord p) {
         if (p != null && p.getAssocitation() != null && p.getAssocitation().length() > 0) {
-            return " (" + p.getAssocitation() + ")";
+            return " [" + p.getAssocitation() + "]";
         }
         return "";
     }
@@ -670,7 +670,7 @@ public class PersonRecord extends DataRecord implements IItemFactory {
     }
 
     public static String trimAssociationPostfix(String s) {
-        int pos = s.lastIndexOf(" (");
+        int pos = s.lastIndexOf(" [");
         if (pos > 0) {
             return s.substring(0, pos);
         }

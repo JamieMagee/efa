@@ -1963,6 +1963,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             }
             item.parseAndShowValue(r.getQualifiedName());
             item.setChanged();
+            
         }
         efaBaseFrameFocusManager.focusNextItem(item, item.getComponent());
     }

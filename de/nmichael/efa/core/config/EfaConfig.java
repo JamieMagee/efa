@@ -2126,6 +2126,9 @@ public class EfaConfig extends StorageObject implements IItemFactory {
 
         // if isGuiConfigChange, i.e. if interactive changes have been made by the user, set other parameters as well
         if (!isGuiConfigChange) {
+            if (dataBackupDirectory != null && dataBackupDirectory.getValue() != null) {
+                Daten.trySetEfaBackupDirectory(dataBackupDirectory.getValue());
+            }
             return;
         }
 

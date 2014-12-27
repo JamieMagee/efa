@@ -89,8 +89,12 @@ public abstract class DataListDialog extends BaseDialog implements IItemListener
         actions.add(ItemTypeDataRecordTable.ACTION_NEW);
         actions.add(ItemTypeDataRecordTable.ACTION_EDIT);
         actions.add(ItemTypeDataRecordTable.ACTION_DELETE);
-        if (persistence.data().getMetaData().isVersionized()) {
-            actions.add(ACTION_HIDE);
+        try {
+            if (persistence.data().getMetaData().isVersionized()) {
+                actions.add(ACTION_HIDE);
+            }
+        } catch (Exception e) {
+            Logger.logdebug(e); // can happen if remote project is not reachable
         }
         if (admin != null && admin.isAllowedAdvancedEdit()) {
             actions.add(ACTION_IMPORT);

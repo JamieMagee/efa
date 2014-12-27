@@ -2,6 +2,78 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.1_01</VersionID>
+        <ReleaseDate>27.12.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3592868</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Neu: Kilometerausgabe bei Auswertung der Vereinsarbeitsstunden möglich</ChangeItem>
+            <ChangeItem>Bugfix: Geändertes Backup-Verzeichnis wurde nach Neustart nicht berücksichtigt</ChangeItem>
+            <ChangeItem>Change: Meldegeld für DRV-Jugendfahrtenabzeichen auf 0,75 EUR korrigiert</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>New: Clubwork statistics can optionally also show rowed mileage</ChangeItem>
+            <ChangeItem>Bugfix: Changed backup directory was ignored after restart</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_00</VersionID>
+        <ReleaseDate>13.12.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3592458</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Neu: Wettbewerbsauswertung für DRV-Wettbewerbe aktualisiert</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>New: Calculation of German rowing competitions updated</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.0_15</VersionID>
+        <ReleaseDate>06.12.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3592432</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Vereinsnamen werden jetzt von Namenszusätzen durch eckige Klammern in der Eingabe unterscheiden, wenn die Option "Vereinsnamen in Personenliste anzeigen" aktiviert ist</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Club names are now distinguished from name add-ons through squared brackets during input if the option "Show club names in person list" has been activated</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.0_14</VersionID>
+        <ReleaseDate>30.11.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3592293</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: efa erlaubt jetzt die Eingabe des korrekten Personennamens wenn eine Person beim Einspielen von signierten Fahrtenheften (DRV-Fahrtenabzeichen) nicht gefunden werden konnte</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.0_13</VersionID>
+        <ReleaseDate>12.11.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>
+        <DownloadSize>3591766</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: NullPointerException bei Statistikberechnung der Vereinsarbeitsstunden behoben, wenn keine Arbeitsstunden im angegebenen Zeitraum gefunden wurden</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: NullPointerException during statistics calculation of clubwork fixed if no clubwork hours were found during selected period</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.0_12</VersionID>
         <ReleaseDate>22.10.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa220.zip</DownloadUrl>

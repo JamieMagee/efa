@@ -131,6 +131,16 @@ public class FahrtenabzeichenRecord extends DataRecord implements IItemListener 
         return p;
     }
 
+    public boolean existsPersonRecord() {
+        try {
+            Persons persons = getPersistence().getProject().getPersons(false);
+            return persons.isPersonExist(getPersonId());
+        } catch(Exception e) {
+            Logger.logdebug(e);
+            return false;
+        }
+    }
+    
     public PersonRecord getPersonRecord() {
         return getPersonRecord(getPersonId());
     }
@@ -292,6 +302,14 @@ public class FahrtenabzeichenRecord extends DataRecord implements IItemListener 
     protected Object getVirtualColumn(int fieldIdx) {
         String field = getFieldName(fieldIdx);
         return getDRVSignaturValue(field);
+    }
+    
+    public ItemTypeStringAutoComplete getUnknownPersonInputField(String name) {
+        return getGuiItemTypeStringAutoComplete(FahrtenabzeichenRecord.PERSONID, getPersonId(),
+                IItemType.TYPE_PUBLIC, "",
+                persistence.getProject().getPersons(false), 0, Long.MAX_VALUE,
+                International.getMessage("{name} konnte nicht in der Personenliste gefunden werden.", name) + "\n" +
+                International.getString("Bitte gib korrekten Namen der Person ein:"));
     }
 
     public Vector<IItemType> getGuiItems(AdminRecord admin) {

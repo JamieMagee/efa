@@ -468,6 +468,10 @@ public class DRVSignatur {
         return letztkm;
     }
 
+    public String getVorNachnameJahr() {
+        return vorname + " " + nachname + " (Jahrgang " + jahr + ")";
+    }
+    
     public String getSignaturDatum(boolean formatted) {
         if (!formatted) {
             return sigDatum;

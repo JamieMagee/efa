@@ -1432,7 +1432,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             String stat_complete = Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + "wanderruderstatistik.csv";
             BufferedWriter f;
             f = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stat_complete), Daten.ENCODING_ISO));
-            f.write("Vereinsnummer;Verein;Bundesland;SRV/ADH;Befahrene Gewässer;Teilnehmer insg.;Mannschafts-Km;Männer Km; Junioren Km; Frauen Km; Juniorinnen Km; Aktive M bis 18; Aktive M ab 19; Aktive W bis 18; Aktive W ab 19\n");
+            f.write("Vereinsnummer;Verein;Bundesland;SRV/ADH;Befahrene Gewässer;Teilnehmer insg.;Mannschafts-Km;Männer Km; Junioren Km; Frauen Km; Juniorinnen Km; Aktive M bis 18; Aktive M ab 19; Aktive W bis 18; Aktive W ab 19; Vereinskilometer\n");
             Hashtable mitglnr_hash = new Hashtable();
             for (DatenFelder d = Main.drvConfig.meldestatistik.getCompleteFirst(); d != null; d = Main.drvConfig.meldestatistik.getCompleteNext()) {
                 String mitgl_in = "";
@@ -1456,7 +1456,8 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                         + d.get(Meldestatistik.WS_AKT18M) + ";"
                         + d.get(Meldestatistik.WS_AKT19M) + ";"
                         + d.get(Meldestatistik.WS_AKT18W) + ";"
-                        + d.get(Meldestatistik.WS_AKT19W)
+                        + d.get(Meldestatistik.WS_AKT19W) + ";"
+                        + d.get(Meldestatistik.WS_VEREINSKILOMETER)
                         + "\n");
                 mitglnr_hash.put(d.get(Meldestatistik.VEREINSMITGLNR), "foo");
             }

@@ -2,8 +2,20 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.1_00</VersionID>
+        <ReleaseDate>13.12.2014</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>3755374</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Meldung und Auswertung von Vereinskilometers für DRV-Wanderruderstatistik</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.1.1_07</VersionID>
-        <ReleaseDate>16.02.2015</ReleaseDate>
+        <ReleaseDate>16.02.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
         <DownloadSize>3531658</DownloadSize>
 
