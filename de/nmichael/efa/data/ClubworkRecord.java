@@ -11,11 +11,13 @@ package de.nmichael.efa.data;
 import de.nmichael.efa.Daten;
 import de.nmichael.efa.core.config.AdminRecord;
 import de.nmichael.efa.core.items.*;
+import static de.nmichael.efa.data.LogbookRecord.getValidAtTimestamp;
 import de.nmichael.efa.data.storage.DataKey;
 import de.nmichael.efa.data.storage.DataRecord;
 import de.nmichael.efa.data.storage.IDataAccess;
 import de.nmichael.efa.data.storage.MetaData;
 import de.nmichael.efa.data.types.DataTypeDate;
+import de.nmichael.efa.data.types.DataTypeTime;
 import de.nmichael.efa.ex.EfaException;
 import de.nmichael.efa.gui.util.TableItem;
 import de.nmichael.efa.gui.util.TableItemHeader;
@@ -45,9 +47,9 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
     public static final String HOURS = "Hours";
     public static final String GUIITEM_PERSONIDLIST = "PersonList";
     public static final String FLAG = "Flag";
+    public static final String APPROVED = "Approved";
 
     public enum Flags {
-
         UNDEFINED,
         Normal,
         CarryOver,
@@ -82,6 +84,8 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
         t.add(IDataAccess.DATA_DOUBLE);
         f.add(FLAG);
         t.add(IDataAccess.DATA_INTEGER);
+        f.add(APPROVED);
+        t.add(IDataAccess.DATA_BOOLEAN);
 
         MetaData metaData = constructMetaData(Clubwork.DATATYPE, f, t, false);
         metaData.setKey(new String[]{ID});
@@ -198,10 +202,18 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
         }
     }
 
+    public void setApproved(boolean approved) {
+        setBool(APPROVED, approved);
+    }
+
+    public boolean getApproved() {
+        return getBool(APPROVED);
+    }
+
     public String getFlagAsText() {
         switch(getFlag()) {
             case Normal:
-                return International.getString("normal");
+                return International.getString("Arbeit");
             case CarryOver:
                 return International.getString("Übertrag");
             case Credit:
@@ -212,7 +224,9 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
     }
 
     public String getQualifiedName(boolean firstFirst) {
-        return /*getFullName(*/ getFirstName()/*, getLastName(), getNameAffix(), firstFirst)*/;
+        return getFirstName() + " " + getLastName() + 
+                " (" + getWorkDate() + "): " +
+                getDescription();
     }
 
     public String getQualifiedName() {
@@ -274,7 +288,27 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
         }
         return null;
     }
+    
+    public String getApprovedAsText() {
+        Boolean b = getBool(APPROVED);
+        if (b != null && b.booleanValue()) {
+            return International.getString("bestätigt");
+        } else {
+            return International.getString("ungeprüft");
+        }
+    }
 
+    public static long getValidAtTimestamp(DataTypeDate d) {
+        if (d != null && d.isSet()) {
+            return d.getTimestamp(null);
+        }
+        return System.currentTimeMillis();
+    }
+
+    public long getValidAtTimestamp() {
+        return getValidAtTimestamp(getWorkDate());
+    }
+    
     public String toString() {
         StringBuilder b = new StringBuilder();
         b.append("[");
@@ -303,6 +337,9 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
     public String getAsText(String fieldName) {
         if (fieldName.equals(PERSONID)) {
             return getPersonAsName(PERSONID, System.currentTimeMillis());
+        }
+        if (fieldName.equals(APPROVED)) {
+            return getApprovedAsText();
         }
         return super.getAsText(fieldName);
     }
@@ -364,6 +401,11 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
         v.add(item = new ItemTypeDouble(HOURS, getHours(), ItemTypeDouble.MIN, ItemTypeDouble.MAX,
                 IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.getString("Stunden")));
 
+        if (admin != null) {
+            v.add(item = new ItemTypeBoolean(APPROVED, getApproved(),
+                    IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.getString("Status")));
+        }
+
         return v;
     }
 
@@ -399,7 +441,11 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
     }
 
     public TableItemHeader[] getGuiTableHeader() {
-        TableItemHeader[] header = new TableItemHeader[6];
+        return getGuiTableHeader(null);
+    }
+
+    public TableItemHeader[] getGuiTableHeader(AdminRecord admin) {
+        TableItemHeader[] header = new TableItemHeader[Daten.efaConfig.getValueClubworkRequiresApproval() ? 7 : 6];
         if (Daten.efaConfig.getValueNameFormatIsFirstNameFirst()) {
             header[0] = new TableItemHeader(International.getString("Vorname"));
             header[1] = new TableItemHeader(International.getString("Nachname"));
@@ -411,11 +457,14 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
         header[3] = new TableItemHeader(International.getString("Beschreibung"));
         header[4] = new TableItemHeader(International.getString("Stunden"));
         header[5] = new TableItemHeader(International.getString("Typ"));
+        if(Daten.efaConfig.getValueClubworkRequiresApproval()) {
+            header[6] = new TableItemHeader(International.getString("Status"));
+        }
         return header;
     }
 
     public TableItem[] getGuiTableItems() {
-        TableItem[] items = new TableItem[6];
+        TableItem[] items = new TableItem[Daten.efaConfig.getValueClubworkRequiresApproval() ? 7 : 6];
         if (Daten.efaConfig.getValueNameFormatIsFirstNameFirst()) {
             items[0] = new TableItem(getFirstName());
             items[1] = new TableItem(getLastName());
@@ -427,6 +476,9 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
         items[3] = new TableItem(getDescription());
         items[4] = new TableItem(getHours());
         items[5] = new TableItem(getFlagAsText());
+        if (Daten.efaConfig.getValueClubworkRequiresApproval()) {
+            items[6] = new TableItem(getApprovedAsText());
+        }
         return items;
     }
 
@@ -478,7 +530,7 @@ public class ClubworkRecord extends DataRecord implements IItemFactory {
                         DataRecord[] personRecords = personContainer.data().getValidAny(new DataKey<UUID, Long, String>(id, null, null));
                         for (DataRecord personRecord : personRecords) {
                             //vh if (((PersonRecord) personRecord).isStatusMember()) {
-                                groupMonth += ((PersonRecord) personRecord).getPersonMemberMonth(clubwork.getStartDate(), clubwork.getEndDate());
+                            groupMonth += ((PersonRecord) personRecord).getPersonMemberMonth(clubwork.getStartDate(), clubwork.getEndDate());
                             //}
                         }
                     } catch (EfaException e) {

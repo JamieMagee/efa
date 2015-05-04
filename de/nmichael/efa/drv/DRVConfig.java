@@ -36,11 +36,12 @@ public class DRVConfig extends DatenListe {
   public static final String MELDUNGEN_FA_FILE = "meldungen.idx";
   public static final String MELDUNGEN_WS_FILE = "meldungen_ws.idx";
   public static final String TEILNEHMER_FILE = "teilnehmer.efh";
-  public static final String MELDESTATISTIK_FA_FILE = "meldestatistik.ems";
+  public static final String MELDESTATISTIK_FA_FILE = "meldestatistik_fa.ems";
   public static final String MELDESTATISTIK_WS_FILE = "meldestatistik_ws.ems";
   public static final String KEYSTORE_FILE  = "keystore.dat";
 
   // Daten, die gespeichert werden
+  public String verband;
   public int aktJahr;
   public String schluessel;
   public String efw_script;
@@ -71,12 +72,15 @@ public class DRVConfig extends DatenListe {
   public DRVConfig(String pdat) {
     super(pdat,0,0,false);
     kennung = KENNUNG190;
+    DRVConfig.actionOnChecksumLoadError = DatenListe.CHECKSUM_LOAD_NO_ACTION;
+    DRVConfig.actionOnChecksumSaveError = DatenListe.CHECKSUM_SAVE_NO_ACTION;
     reset();
     this.backupEnabled = true;
   }
 
   // Einstellungen zurücksetzen
   void reset() {
+    verband = "drv";
     aktJahr = 0;
     schluessel = "";
     efw_script = "";
@@ -86,14 +90,14 @@ public class DRVConfig extends DatenListe {
     openssl = "";
     darfFAbearbeiten = true;
     darfWSbearbeiten = true;
-    eur_meld_erw = 200;
-    eur_meld_jug = 150;
+    eur_meld_erw = 100;
+    eur_meld_jug = 75;
     eur_nadel_erw_silber = 360;
     eur_nadel_erw_gold = 475;
     eur_nadel_jug_silber = 300;
     eur_nadel_jug_gold = 300;
-    eur_stoff_erw = 481;
-    eur_stoff_jug = 348;
+    eur_stoff_erw = 494;
+    eur_stoff_jug = 357;
     testmode = false;
     readOnlyMode = false;
   }
@@ -123,6 +127,8 @@ public class DRVConfig extends DatenListe {
       while ((s = freadLine()) != null) {
         s = s.trim();
 
+        if (s.startsWith("VERBAND="))
+            verband=s.substring(8,s.length());
         if (s.startsWith("AKTJAHR="))
             aktJahr=EfaUtil.string2int(s.substring(8,s.length()).trim(),0);
         if (s.startsWith("SCHLUESSEL="))
@@ -177,6 +183,7 @@ public class DRVConfig extends DatenListe {
   public boolean writeEinstellungen() {
     // Datei schreiben
     try {
+      fwrite("VERBAND=" + verband + "\n");
       fwrite("AKTJAHR=" + aktJahr + "\n");
       fwrite("SCHLUESSEL=" + schluessel + "\n");
       fwrite("EFW_SCRIPT=" + efw_script + "\n");
@@ -208,7 +215,8 @@ public class DRVConfig extends DatenListe {
   }
 
 
-  public String makeScriptRequestString(int action, String param1, String param2, String param3, String param4) {
+  public String makeScriptRequestString(int action, 
+          String param1, String param2, String param3, String param4, String param5, String param6) {
     String saction = null;
     switch(action) {
       case ACTION_LIST   : saction = "efa_listMeldungen"; break;
@@ -218,11 +226,13 @@ public class DRVConfig extends DatenListe {
       case ACTION_UPLCERT: saction = "efa_uploadCert"; break;
     }
     if (saction == null) return null;
-    String s = efw_script+"?verband=drv&agent=efa&name="+efw_user+"&password="+efw_password+"&action="+saction;
+    String s = efw_script+"?verband=" + verband + "&agent=efa&name="+efw_user+"&password="+efw_password+"&action="+saction;
     if (param1 != null) s += "&"+param1;
     if (param2 != null) s += "&"+param2;
     if (param3 != null) s += "&"+param3;
     if (param4 != null) s += "&"+param4;
+    if (param5 != null) s += "&"+param5;
+    if (param6 != null) s += "&"+param6;
     if (testmode) s+= "&testmode=true";
     return s;
   }

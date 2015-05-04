@@ -581,7 +581,7 @@ public class ItemTypeStringAutoComplete extends ItemTypeString implements AutoCo
     }
 
     public boolean isValidInput() {
-        if (alternateFieldNameForPlainText == null && value != null && value.length() > 0) {
+        if (!alwaysReturnPlainText && alternateFieldNameForPlainText == null && value != null && value.length() > 0) {
             // make sure the entered value is a valid ID
             if (autoCompleteList.getId(value) == null) {
                 lastInvalidErrorText = International.getString("Unbekannter Name nicht erlaubt");

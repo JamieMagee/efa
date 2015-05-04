@@ -54,11 +54,14 @@ public class StatisticsData implements Comparable {
     private StatisticsRecord sr;
 
     Object key;
+    long lastTripTimestamp = 0;
     String sPosition;
     String sName;
     String sGender;
     String sStatus;
+    String sClub;
     String sYearOfBirth;
+    String sMemberNo;
     String sBoatType;
     String sDistance;
     String sRowDistance;
@@ -237,8 +240,14 @@ public class StatisticsData implements Comparable {
         if (sr.sIsFieldsStatus && sStatus == null) {
             this.sStatus = "";
         }
+        if (sr.sIsFieldsClub && sClub == null) {
+            this.sClub = "";
+        }
         if (sr.sIsFieldsYearOfBirth && sYearOfBirth == null) {
             this.sYearOfBirth = "";
+        }
+        if (sr.sIsFieldsMemberNo && sMemberNo == null) {
+            this.sMemberNo = "";
         }
         if (sr.sIsFieldsBoatType && sBoatType == null) {
             this.sBoatType = "";
@@ -533,6 +542,19 @@ public class StatisticsData implements Comparable {
                     }
                 }
                 break;
+            case memberNo:
+                if (this.sMemberNo != null && osd.sMemberNo != null) {
+                    int no1 = EfaUtil.string2int(this.sMemberNo, 0);
+                    int no2 = EfaUtil.string2int(osd.sMemberNo, 0);
+                    int res = no1 - no2;
+                    if (no1 == 0 && no2 == 0) {
+                        res = this.sMemberNo.compareTo(osd.sMemberNo);
+                    }
+                    if (res != 0) {
+                        return res * order;
+                    }
+                }
+                break;
             case boatType:
                 if (this.sBoatType != null && osd.sBoatType != null) {
                     int res = this.sBoatType.compareTo(osd.sBoatType);
@@ -617,6 +639,8 @@ public class StatisticsData implements Comparable {
                 return sStatus;
             case yearOfBirth:
                 return sYearOfBirth;
+            case memberNo:
+                return sMemberNo;
             case boatType:
                 return sBoatType;
             case entryNo:

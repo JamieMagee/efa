@@ -2,6 +2,80 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.1_10</VersionID>
+        <ReleaseDate>xx.05.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize></DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: StringIndexOutOfBoundsException beim Speichern eines Backups auf einem externen Medium behoben, wenn als Pfad unter Windows nur der Laufwerksbuchstabe eingegeben wurde</ChangeItem>
+            <ChangeItem>Neu: Vereinsarbeitsstunden können jetzt durch einen Admin geprüft und (optional) erst nach Bestätigung für die Auswertung berücksichtigt werden</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_08</VersionID>
+        <ReleaseDate>19.02.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3593903</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Neu: Für Statistikauswertungen ist jetzt konfigurierbar, ob Namen und Daten mittels des zum Ende des Auswertungszeitraumes gültigen Datensatzes angezeigt werden sollen, oder jeweils zum Zeitpunkt der letzten ausgewerteten Fahrt einer Person</ChangeItem>
+            <ChangeItem>Neu: Ausgabe der Mitgliedsnummer in Statistikauswertungen möglich</ChangeItem>
+            <ChangeItem>Bugfix: NullPointerException beim Ermitteln des Geschlechts eines Teilnehmers für die Wanderruderstatistik behoben</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>New: Membership numbers can now be reported in statistics calculations</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_04</VersionID>
+        <ReleaseDate>19.01.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3593551</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Fehlerhafte Anzeige von Zielfahrten, die aufgrund ihrere Entfernung keine sind, jetzt unterdrückt (Wertung war von diesem Fehler nicht betroffen)</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_03</VersionID>
+        <ReleaseDate>19.01.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3593246</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Fehler bei Konfiguration mehrerer Bootshäuser behoben</ChangeItem>
+            <ChangeItem>Bugfix: Allgemein verfügbare Statistiken (im Admin-Modus "blau" angezeigt) werden jetzt immer als allgemein verfügbar betrachtet, auch wenn von einem Admin berechnet. Mitglieder oder Boote, die von allgemein verfügbaren Statistiken ausgenommen werden, erscheinen jetzt auch dann nicht mehr in diesen Statistiken, wenn sie von einem Admin erstellt wurden.</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Bugs for configuration of multiple boathouses fixed</ChangeItem>
+            <ChangeItem>Bugfix: Publicly available statistics (shown as "blue" in admin mode) are now always considered as public, even when calculated by an admin. Therefore, persons and boats marked to be excluded from public statistics will no longer appear in those statistics when executed by an admin.</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_02</VersionID>
+        <ReleaseDate>11.01.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3592792</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: efaCLI gibt Meldungen jetzt wieder auf der Konsole aus</ChangeItem>
+            <ChangeItem>Bugfix: Jugendliche können goldene DRV-Jugendabzeichen erwerben, deren Erfüllung auch für die Erwachsenenabzeichen gilt</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: efaCLI is now logging to the console again</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.1_01</VersionID>
         <ReleaseDate>27.12.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>

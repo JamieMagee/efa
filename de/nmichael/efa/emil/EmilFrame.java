@@ -786,13 +786,13 @@ public class EmilFrame extends JFrame {
         wett_itemStateChanged(e);
       }
     });
-    wett.addItem("--- Bitte auswählen ---");
     for (int i=0; i<WettDefs.ANZWETT; i++)
       if (wettDefs != null && wettDefs.getWettDef(i,9999) != null &&
-          i != WettDefs.DRV_FAHRTENABZEICHEN &&
-          i != WettDefs.DRV_WANDERRUDERSTATISTIK &&
-          i != WettDefs.LRVBRB_WANDERRUDERWETT &&
-          i != WettDefs.LRVBRB_FAHRTENWETT)
+          (i == WettDefs.DRV_FAHRTENABZEICHEN ||
+           i == WettDefs.DRV_WANDERRUDERSTATISTIK ||
+           i == WettDefs.LRVBERLIN_SOMMER ||
+           i == WettDefs.LRVBERLIN_WINTER ||
+           i == WettDefs.LRVBERLIN_BLAUERWIMPEL))
         wett.addItem(wettDefs.getWettDef(i,9999).name);
     geschlecht.addItem("--- Bitte auswählen ---");
     geschlecht.addItem("männlich");
@@ -917,7 +917,6 @@ public class EmilFrame extends JFrame {
 /* EVENTS ************************************************************************************************/
 /*********************************************************************************************************/
   void wettJahr_focusLost(FocusEvent e) {
-    if (wett.getSelectedIndex() == 0) return;
     TMJ tmj = EfaUtil.string2date(wettJahr.getText(),-1,0,0);
     int year = 2000;
     if (tmj.tag>=0 && tmj.tag<100) tmj.tag += 1900;
@@ -1031,7 +1030,7 @@ public class EmilFrame extends JFrame {
     geaendertDatei = true;
     if (efw != null) {
       efw.wettId = wett.getSelectedIndex();
-      if (efw.wettId == 0) efw.wettId = -1;
+      if (efw.wettId < 0) efw.wettId = -1;
     }
     updateTeilnehmerMeldegeld();
     checkErfuellt();
@@ -1226,12 +1225,11 @@ public class EmilFrame extends JFrame {
     String s;
 
     efw.wettId = wett.getSelectedIndex();
-    if (efw.wettId == 0) efw.wettId = -1;
+    if (efw.wettId < 0) efw.wettId = -1;
 
     int wettjahr = 0;
     try { wettjahr = Integer.parseInt(wettJahr.getText().trim()); } catch(Exception e) {}
-    if (wett.getSelectedIndex() == 0) efw.allg_wett = null;
-    else efw.allg_wett = (wettDefs.getWettDef(wett.getSelectedIndex(),wettjahr) != null ? wettDefs.getWettDef(wett.getSelectedIndex(),wettjahr).key : null);
+    efw.allg_wett = (wettDefs.getWettDef(wett.getSelectedIndex(),wettjahr) != null ? wettDefs.getWettDef(wett.getSelectedIndex(),wettjahr).key : null);
     if (!(s = wettJahr.getText().trim()).equals("")) efw.allg_wettjahr = s;
     else efw.allg_wettjahr = null;
 

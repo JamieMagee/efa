@@ -309,7 +309,7 @@ public class FahrtenabzeichenRecord extends DataRecord implements IItemListener 
                 IItemType.TYPE_PUBLIC, "",
                 persistence.getProject().getPersons(false), 0, Long.MAX_VALUE,
                 International.getMessage("{name} konnte nicht in der Personenliste gefunden werden.", name) + "\n" +
-                International.getString("Bitte gib korrekten Namen der Person ein:"));
+                International.onlyFor("Bitte gib korrekten Namen der Person ein", "de") + ":");
     }
 
     public Vector<IItemType> getGuiItems(AdminRecord admin) {

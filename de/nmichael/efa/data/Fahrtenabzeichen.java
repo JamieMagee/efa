@@ -358,7 +358,7 @@ public class Fahrtenabzeichen extends StorageObject {
                     if (Daten.isGuiAppl()) {
                         ItemTypeStringAutoComplete item = fa.getUnknownPersonInputField(sig.getVorNachnameJahr());
                         if (SimpleInputDialog.showInputDialog(Dialog.frameCurrent(), 
-                                International.getString("Person nicht gefunden"), item)) {
+                                International.onlyFor("Person nicht gefunden", "de"), item)) {
                             UUID id = (UUID)item.getId(item.getValueFromField());
                             if (id != null) {
                                 fa.setPersonId(id);

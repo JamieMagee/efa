@@ -708,7 +708,7 @@ public class WettDefs extends DatenListe {
             // Jugendlicher (Gruppe 3)
             // Ab 2008 erhalten auch Jugendliche ausschließlich Fahrtenabzeichen in Gold für *Erwachsene* (s. mail vom DRV April 2008)!!
             if ((abzeichenGesamt + 1) >= 5 && (abzeichenGesamt + 1) % 5 == 0) {
-                return EfaWettMeldung.getAbzeichenGold(abzeichenGesamt + 1, true); // Erw-Gold auch für Jugendliche!
+                return EfaWettMeldung.getAbzeichenGold(abzeichenGesamt + 1, false); // Jugend-Gold für Jugendliche (aber zählen auch für Erwachenen-Abzeichen)
             }
             if ((abzeichen + 1) >= 5 && (abzeichen + 1) % 5 == 0) {
                 return EfaWettMeldung.getAbzeichenGold(abzeichen + 1, false);

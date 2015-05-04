@@ -148,6 +148,15 @@ public abstract class DataListDialog extends BaseDialog implements IItemListener
     }
 
     protected void addAction(String text, int type, String image) {
+        if (actionText == null) {
+            actionText = new String[0];
+        }
+        if (actionType == null) {
+            actionType = new int[0];
+        }
+        if (actionImage == null) {
+            actionImage = new String[0];
+        }
         String[] _actionText = actionText;
         int[] _actionType = actionType;
         String[] _actionImage = actionImage;
@@ -276,6 +285,10 @@ public abstract class DataListDialog extends BaseDialog implements IItemListener
     public void setPersistence(StorageObject persistence, long validAt) {
         this.persistence = persistence;
         this.validAt = validAt;
+    }
+    
+    public StorageObject getPersistence() {
+        return persistence;
     }
 
     // @Override

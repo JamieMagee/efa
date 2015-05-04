@@ -310,6 +310,30 @@ public class Project extends StorageObject {
             Logger.logdebug(e);
         }
 
+        // fix invalid boathouse id in boathouse records
+        try {
+            if (isOpen()) {
+                String[] bhNames = getAllBoathouseNames();
+                for (int i=0; bhNames != null && i<bhNames.length; i++) {
+                    ProjectRecord r = getBoathouseRecord(bhNames[i]);
+                    if (r != null && r.getBoathouseId() < 0) {
+                        int lastId = getHighestBoathouseId();
+                        if (lastId >= 0) {
+                            r.setBoathouseId(lastId + 1);
+                            IDataAccess data = getMyDataAccess(ProjectRecord.TYPE_BOATHOUSE);
+                            if (data != null) {
+                                data.update(r);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            if (Logger.isTraceOn(Logger.TT_CORE, 3)) {
+                Logger.log(Logger.DEBUG, Logger.MSG_DEBUG_DATA, "Project Conversion failed.");
+            }
+            Logger.logdebug(e);
+        }
     }
 
     public boolean isRemoteOpen() {
@@ -2146,6 +2170,13 @@ public class Project extends StorageObject {
                     throw new EfaModifyException(Logger.MSG_DATA_MODIFYEXCEPTION,
                             "Logbook " + lName + " not found!",
                             Thread.currentThread().getStackTrace());
+                }
+                if (r.getBoathouseIdentifier() != null && r.getBoathouseIdentifier().length() > 0 &&
+                    r.getBoathouseId() < 0) {
+                        int lastId = getHighestBoathouseId();
+                        if (lastId >= 0) {
+                            r.setBoathouseId(lastId + 1);
+                        }
                 }
             }
         }

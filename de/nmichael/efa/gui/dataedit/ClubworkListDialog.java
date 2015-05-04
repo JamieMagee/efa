@@ -16,7 +16,11 @@ import de.nmichael.efa.core.items.IItemType;
 import de.nmichael.efa.core.items.ItemTypeDataRecordTable;
 import de.nmichael.efa.data.*;
 import de.nmichael.efa.data.storage.*;
+import de.nmichael.efa.ex.EfaModifyException;
 import de.nmichael.efa.gui.BaseDialog;
+import static de.nmichael.efa.gui.dataedit.DataListDialog.ACTION_EXPORT;
+import static de.nmichael.efa.gui.dataedit.DataListDialog.ACTION_IMPORT;
+import static de.nmichael.efa.gui.dataedit.DataListDialog.ACTION_PRINTLIST;
 import de.nmichael.efa.util.*;
 
 import java.util.*;
@@ -30,6 +34,7 @@ import javax.swing.border.EmptyBorder;
 public class ClubworkListDialog extends DataListDialog {
 
     public static final int ACTION_CARRYOVER = 4;
+    public static final int ACTION_APPROVE = 5;
 
     public ClubworkListDialog(Frame parent, AdminRecord admin) {
         super(parent, International.getString("Vereinsarbeit"), Daten.project.getCurrentClubwork(), 0, admin);
@@ -54,44 +59,45 @@ public class ClubworkListDialog extends DataListDialog {
 
     protected void iniActions() {
         if(admin == null) {
-            actionText = new String[] {
-                    International.getString("Erfassen")
-            };
-
-            actionType = new int[] {
-                    ItemTypeDataRecordTable.ACTION_NEW
-            };
-
-            actionImage = new String[] {
-                    BaseDialog.IMAGE_ADD
-            };
+            addAction(International.getString("Erfassen"), 
+                      ItemTypeDataRecordTable.ACTION_NEW,
+                      BaseDialog.IMAGE_ADD);
+        } else {
+            addAction(ItemTypeDataRecordTable.ACTIONTEXT_NEW,
+                      ItemTypeDataRecordTable.ACTION_NEW,
+                      BaseDialog.IMAGE_ADD);
+            
+            addAction(ItemTypeDataRecordTable.ACTIONTEXT_EDIT,
+                      ItemTypeDataRecordTable.ACTION_EDIT,
+                      BaseDialog.IMAGE_EDIT);
+            
+            addAction(ItemTypeDataRecordTable.ACTIONTEXT_DELETE,
+                      ItemTypeDataRecordTable.ACTION_DELETE,
+                      BaseDialog.IMAGE_DELETE);
+            
+            addAction(International.getString("Importieren"),
+                      ACTION_IMPORT,
+                      BaseDialog.IMAGE_IMPORT);
+            
+            addAction(International.getString("Exportieren"),
+                      ACTION_EXPORT,
+                      BaseDialog.IMAGE_EXPORT);
+            
+            addAction(International.getString("Liste ausgeben"),
+                      ACTION_PRINTLIST,
+                      BaseDialog.IMAGE_LIST);
+            
+            if (Daten.efaConfig.getValueClubworkRequiresApproval()) {
+                addAction(International.getString("Einträge bestätigen"),
+                        ACTION_APPROVE,
+                        BaseDialog.IMAGE_ACCEPT);
+            }
+            
+            addAction(International.getString("Übertrag berechnen"),
+                      ACTION_CARRYOVER,
+                      BaseDialog.IMAGE_MERGE);
         }
-        else {
-            actionText = new String[] {
-                    ItemTypeDataRecordTable.ACTIONTEXT_NEW,
-                    ItemTypeDataRecordTable.ACTIONTEXT_EDIT,
-                    ItemTypeDataRecordTable.ACTIONTEXT_DELETE,
-                    International.getString("Liste ausgeben"),
-                    International.getString("Übertrag berechnen")
-            };
-
-            actionType = new int[] {
-                    ItemTypeDataRecordTable.ACTION_NEW,
-                    ItemTypeDataRecordTable.ACTION_EDIT,
-                    ItemTypeDataRecordTable.ACTION_DELETE,
-                    ACTION_PRINTLIST,
-                    ACTION_CARRYOVER
-            };
-
-            actionImage = new String[] {
-                    BaseDialog.IMAGE_ADD,
-                    BaseDialog.IMAGE_EDIT,
-                    BaseDialog.IMAGE_DELETE,
-                    BaseDialog.IMAGE_LIST,
-                    BaseDialog.IMAGE_MERGE
-            };
-        }
-	}
+    }
 
     protected void iniDialog() throws Exception {
         mainPanel.setLayout(new BorderLayout());
@@ -156,11 +162,39 @@ public class ClubworkListDialog extends DataListDialog {
     }
 
     public void itemListenerActionTable(int actionId, DataRecord[] records) {
-        if(actionId == ACTION_CARRYOVER) {
-            Clubwork clubwork = Daten.project.getCurrentClubwork();
+        if (actionId == ACTION_CARRYOVER) {
+            Clubwork clubwork = (Clubwork)getPersistence();
             clubwork.doCarryOver(this);
-        }
-        else {
+        } else if (actionId == ACTION_APPROVE) {
+            Clubwork clubwork = (Clubwork)getPersistence();
+            if (records == null || records.length == 0) {
+                return;
+            }
+            int res = -1;
+            if (records.length == 1) {
+                res = de.nmichael.efa.util.Dialog.yesNoDialog(International.getString("Eintrag bestätigen?"),
+                        International.getMessage("Möchtest Du den Eintrag '{record}' bestätigen?", records[0].getQualifiedName()));
+            } else {
+                res = de.nmichael.efa.util.Dialog.yesNoDialog(International.getString("Eintrag bestätigen?"),
+                        International.getMessage("Möchtest Du {count} ausgewählte Einträge bestätigen?", records.length));
+            }
+            if (res != de.nmichael.efa.util.Dialog.YES) {
+                return;
+            }
+                try {
+                    for (int i = 0; records != null && i < records.length; i++) {
+                        if (records[i] != null) {
+                            ((ClubworkRecord)records[i]).setApproved(true);
+                            persistence.data().update(records[i]);
+                        }
+                    }
+                } catch (EfaModifyException exmodify) {
+                    exmodify.displayMessage();
+                } catch (Exception ex) {
+                    Logger.logdebug(ex);
+                    de.nmichael.efa.util.Dialog.error(ex.toString());
+                }
+        } else {
             super.itemListenerActionTable(actionId, records);
         }
     }

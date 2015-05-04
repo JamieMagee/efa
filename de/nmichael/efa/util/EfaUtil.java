@@ -802,8 +802,8 @@ public class EfaUtil {
         } else {
             s = System.getProperty("file.separator");
         }
-        if (s.length() == 2 && s.charAt(1) == ':' && fileName.charAt(2) == '\\') {
-            s = s + "\\";
+        if (s.length() == 2 && s.charAt(1) == ':') {
+            s = s + System.getProperty("file.separator");
         }
         return s;
     }

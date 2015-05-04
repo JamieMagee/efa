@@ -473,7 +473,7 @@ public class KeysAdminFrame extends JDialog implements ActionListener {
             String data = Base64.encodeBytes(buf);
             data = EfaUtil.replace(data, "=", "**0**", true); // "=" als "**0**" maskieren
 
-            String request = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_UPLCERT, "cert=" + alias + ".cert64", "data=" + data, null, null);
+            String request = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_UPLCERT, "cert=" + alias + ".cert64", "data=" + data, null, null, null, null);
             int pos = request.indexOf("?");
             if (pos < 0) {
                 Dialog.error("efaWett-Anfrage zum Hochladen des Zertifikats konnte nicht erstellt werden.");

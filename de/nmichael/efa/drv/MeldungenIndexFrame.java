@@ -124,7 +124,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     closeButton_actionPerformed(e);
                 }
             });
-            downloadButton.setText("Neue Meldungen downloaden");
+            downloadButton.setText("Meldungen aktualisieren");
             downloadButton.addActionListener(new java.awt.event.ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
@@ -294,7 +294,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
         for (DatenFelder d = Main.drvConfig.meldungenIndex.getCompleteFirst(); d != null; d = Main.drvConfig.meldungenIndex.getCompleteNext()) {
             int status = EfaUtil.string2int(d.get(MeldungenIndex.STATUS), MeldungenIndex.ST_UNBEKANNT);
             if (d.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_BEARBEITET))
-                    && d.get(MeldungenIndex.BESTAETIGUNGSDATEI).length() > 0) {
+                    && (d.get(MeldungenIndex.BESTAETIGUNGSDATEI).length() > 0 && !MeldungenIndex.MANUELL_ERFASST.equals(d.get(MeldungenIndex.BESTAETIGUNGSDATEI)))) {
                 countBestaetigung++;
             }
             if (auswahl == 0 || auswahl == status) {
@@ -354,7 +354,11 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                 if (((DatenFelder) m.get(i)).get(MeldungenIndex.BESTAETIGUNGSDATEI).length() == 0) {
                     best = "ja";
                 } else {
-                    best = "noch nicht";
+                    if (MeldungenIndex.MANUELL_ERFASST.equals(((DatenFelder) m.get(i)).get(MeldungenIndex.BESTAETIGUNGSDATEI))) {
+                        best = "n/a";
+                    } else {
+                        best = "noch nicht";
+                    }
                 }
             }
             tableData[i][j++] = best;
@@ -482,7 +486,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
 
         Logger.log(Logger.INFO, "START Neue Meldungen aus dem Internet abrufen");
         String listFile = Daten.efaTmpDirectory + "meldungen.list";
-        String url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_LIST, null, null, null, null);
+        String url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_LIST, null, null, null, null, null, null);
         if ((new File(listFile)).exists() && !(new File(listFile)).delete()) {
             Dialog.error("Datei\n" + listFile + "\nkann nicht gelöscht werden.");
             Logger.log(Logger.ERROR, "Datei\n" + listFile + "\nkann nicht gelöscht werden.");
@@ -502,6 +506,9 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             f = new BufferedReader(new InputStreamReader(new FileInputStream(listFile), Daten.ENCODING_ISO));
             String s;
             while ((s = f.readLine()) != null) {
+                if (s.trim().length() == 0) {
+                    continue;
+                }
                 if (s.startsWith("ERROR")) {
                     Dialog.error("Fehler beim Download:\n" + s);
                     Logger.log(Logger.ERROR, "Fehler beim Download: " + s);
@@ -510,7 +517,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     return;
                 }
                 Vector v = EfaUtil.split(s, '|');
-                if (v.size() != 6) {
+                if (v.size() != 8) {
                     Dialog.error("Meldungen-Indexdatei hat ungültiges Format!");
                     Logger.log(Logger.ERROR, "Fehler beim Lesen der Meldungen-Indexdatei: Datei hat ungültiges Format (" + v.size() + " Felder).");
                     Logger.log(Logger.INFO, "ENDE Neue Meldungen aus dem Internet abrufen");
@@ -522,9 +529,24 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     continue; // nur Meldungen des eingestellten Jahres abrufen
                 }
                 String qnr = (String) v.get(1);
+                String status = (String) v.get(6);
+                String edituuid = (String) v.get(7);
+                if (edituuid == null || edituuid.length() < 10) {
+                    edituuid = "0";
+                }
                 DatenFelder dtmp = Main.drvConfig.meldungenIndex.getExactComplete(qnr);
-                if (dtmp == null || dtmp.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_GELOESCHT))) {
-                    url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_GET, "item=" + qnr, "verein=" + (String) v.get(5), null, null);
+                boolean isRemoteEdited = status.equals("B");
+                boolean isLocalEdited = dtmp != null && 
+                        dtmp.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_BEARBEITET));
+                int remoteStatus = (status.equals("B") ? MeldungenIndex.ST_BEARBEITET :
+                                   (status.equals("Z") ? MeldungenIndex.ST_ZURUECKGEWIESEN : MeldungenIndex.ST_UNBEARBEITET));
+                String localUUID = (dtmp == null || dtmp.get(MeldungenIndex.EDITUUID) == null ||
+                                    dtmp.get(MeldungenIndex.EDITUUID).length() < 10 ? "0" : dtmp.get(MeldungenIndex.EDITUUID));
+                if (dtmp == null || 
+                    dtmp.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_GELOESCHT)) ||
+                    remoteStatus != Integer.parseInt(dtmp.get(MeldungenIndex.STATUS)) ||
+                    (isRemoteEdited && !edituuid.equals(localUUID))) {
+                    url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_GET, "item=" + qnr, "verein=" + (String) v.get(5), null, null, null, null);
                     String localFile = Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efw";
                     Logger.log(Logger.INFO, "Download der neuen Meldung " + qnr + " ...");
                     if (!DownloadThread.getFile(this, url, localFile, true) || !EfaUtil.canOpenFile(localFile)) {
@@ -541,7 +563,9 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                                 Logger.log(Logger.ERROR, "Heruntergeladene Meldung " + qnr + " kann nicht gelesen werden.");
                                 meldungOk = false;
                             } else {
-                                efw.resetDrvIntern(); // Interne Felder entsprechend zurücksetzen (zur Sicherheit)
+                                // next line removed (we want to have the file as it was edited by another DRV person!)
+                                // efw.resetDrvIntern(); // Interne Felder entsprechend zurücksetzen (zur Sicherheit)
+                                efw.durchDRVbearbeitet = true;
                                 for (EfaWettMeldung ew = efw.meldung; ew != null; ew = ew.next) {
                                     if (ew.drv_fahrtenheft == null || ew.drv_fahrtenheft.length() == 0) {
                                         if (ew.drv_anzAbzeichen != null && ew.drv_anzAbzeichen.length() > 0
@@ -564,12 +588,44 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                             meldungOk = false;
                         }
                         if (meldungOk) {
+                            String newstatus;
+                            if (status.equals("W")) {
+                                newstatus = Integer.toString(MeldungenIndex.ST_UNBEARBEITET);
+                            } else if (status.equals("I")) {
+                                newstatus = Integer.toString(MeldungenIndex.ST_UNBEARBEITET);
+                            } else if (status.equals("B")) {
+                                newstatus = Integer.toString(MeldungenIndex.ST_BEARBEITET);
+                            } else if (status.equals("Z")) {
+                                newstatus = Integer.toString(MeldungenIndex.ST_ZURUECKGEWIESEN);
+                            } else {
+                                newstatus = Integer.toString(MeldungenIndex.ST_UNBEKANNT);
+                            }
+                            
+                            if (isLocalEdited &&
+                                !edituuid.equals(localUUID)) {
+                                if (Dialog.yesNoDialog("Warnung", 
+                                        "Lokal bearbeitete Meldung " + qnr + " (" + v.get(4) + ") wurde auf dem Server verändert.\n" +
+                                        "Soll die lokale Kopie verworfen und durch Meldung vom Server ersetzt werden?") != Dialog.YES) {
+                                    continue;
+                                }
+                            }
+                            
+                            // first delete all old submissions by this club
+                            String mitglnr = (String)v.get(2);
+                            for (DatenFelder d = Main.drvConfig.meldungenIndex.getCompleteFirst();
+                                    d != null; d = Main.drvConfig.meldungenIndex.getCompleteNext()) {
+                                if (mitglnr.equals(d.get(MeldungenIndex.MITGLNR))) {
+                                    Main.drvConfig.meldungenIndex.delete(d.get(MeldungenIndex.QNR));
+                                }
+                            }
+                            
                             DatenFelder d = new DatenFelder(MeldungenIndex._ANZFELDER);
                             d.set(MeldungenIndex.QNR, qnr);
                             d.set(MeldungenIndex.VEREIN, (String) v.get(4));
                             d.set(MeldungenIndex.MITGLNR, (String) v.get(2));
                             d.set(MeldungenIndex.DATUM, (String) v.get(3));
-                            d.set(MeldungenIndex.STATUS, Integer.toString(MeldungenIndex.ST_UNBEARBEITET));
+                            d.set(MeldungenIndex.STATUS, newstatus);
+                            d.set(MeldungenIndex.EDITUUID, edituuid);
                             if (papierFahrtenhefteErforderlich && !elektronischeFahrtenhefteVorhanden) {
                                 d.set(MeldungenIndex.FAHRTENHEFTE, Integer.toString(MeldungenIndex.FH_PAPIER));
                             } else if (!papierFahrtenhefteErforderlich && elektronischeFahrtenhefteVorhanden) {
@@ -818,7 +874,9 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                         + "Möchtest Du das Zurückweisen der Meldung jetzt rückgängig machen?") == Dialog.YES) {
                     if ((new File(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efwsig")).exists()) {
                         d.set(MeldungenIndex.STATUS, Integer.toString(MeldungenIndex.ST_BEARBEITET));
-                        d.set(MeldungenIndex.BESTAETIGUNGSDATEI, Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efwsig");
+                        if (!MeldungenIndex.MANUELL_ERFASST.equals(d.get(MeldungenIndex.BESTAETIGUNGSDATEI))) {
+                            d.set(MeldungenIndex.BESTAETIGUNGSDATEI, Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efwsig");
+                        }
                         Logger.log(Logger.INFO, "Zurückweisen von Meldung " + qnr + " rückgängig gemacht. Meldung hat jetzt den Status 'bearbeitet'!");
                         Dialog.infoDialog("Zurückweisen rückgängig gemacht",
                                 "Die Meldung hat jetzt den Status 'bearbeitet' und sollte erneut bestätigt werden!");
@@ -933,16 +991,19 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             Dialog.error("Diese Funktion ist in diesem Modus nicht erlaubt.");
             return;
         }
-        Vector bestaetigungen = new Vector();
+        ArrayList<DatenFelder> bestaetigungen = new ArrayList<DatenFelder>();
         for (DatenFelder d = Main.drvConfig.meldungenIndex.getCompleteFirst(); d != null; d = Main.drvConfig.meldungenIndex.getCompleteNext()) {
             if (d.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_BEARBEITET))
-                    && d.get(MeldungenIndex.BESTAETIGUNGSDATEI).length() > 0) {
+                    && (d.get(MeldungenIndex.BESTAETIGUNGSDATEI).length() > 0 && !MeldungenIndex.MANUELL_ERFASST.equals(d.get(MeldungenIndex.BESTAETIGUNGSDATEI)))) {
+                bestaetigungen.add(d);
+                /*
                 if (MELDTYP == MELD_FAHRTENABZEICHEN) {
                     bestaetigungen.add(d.get(MeldungenIndex.BESTAETIGUNGSDATEI));
                 }
                 if (MELDTYP == MELD_WANDERRUDERSTATISTIK) {
                     bestaetigungen.add(EfaUtil.getPathOfFile(Main.drvConfig.meldungenIndex.getFileName()) + Daten.fileSep + d.get(MeldungenIndex.QNR) + ".efw");
                 }
+                */
             }
         }
         if (bestaetigungen.size() == 0) {
@@ -971,8 +1032,15 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
         String errors = "";
         int cok = 0;
         for (int i = 0; i < bestaetigungen.size(); i++) {
-            String filename = (String) bestaetigungen.get(i);
-            if (!EfaUtil.canOpenFile(filename)) {
+            DatenFelder d = bestaetigungen.get(i);
+            String filename = null;
+            if (MELDTYP == MELD_FAHRTENABZEICHEN) {
+                filename = d.get(MeldungenIndex.BESTAETIGUNGSDATEI);
+            }
+            if (MELDTYP == MELD_WANDERRUDERSTATISTIK) {
+                filename = EfaUtil.getPathOfFile(Main.drvConfig.meldungenIndex.getFileName()) + Daten.fileSep + d.get(MeldungenIndex.QNR) + ".efw";
+            }
+            if (filename == null || !EfaUtil.canOpenFile(filename)) {
                 Logger.log(Logger.ERROR, "(Bestätigungs-)Datei " + filename + " existiert nicht.");
                 errors += "(Bestätigungs-)Datei " + filename + " existiert nicht!\n";
                 continue;
@@ -982,6 +1050,10 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             String vereinsname = null;
             String qnr = null;
             String wettid = WETTID + "." + Main.drvConfig.aktJahr;
+            String edituuid = d.get(MeldungenIndex.EDITUUID);
+            if (edituuid == null || edituuid.length() < 2) {
+                edituuid = UUID.randomUUID().toString();
+            }
             try {
 
                 if (MELDTYP == MELD_FAHRTENABZEICHEN) {
@@ -1016,7 +1088,6 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                 }
 
                 String data = "";
-
                 if (MELDTYP == MELD_FAHRTENABZEICHEN) {
                     BufferedReader f = new BufferedReader(new InputStreamReader(new FileInputStream(filename), Daten.ENCODING_ISO));
                     String z;
@@ -1027,12 +1098,33 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     }
                     f.close();
                 }
-
                 if (MELDTYP == MELD_WANDERRUDERSTATISTIK) {
                     data = "##DRV.WANDERRUDERSTATISTIK##";
                 }
 
-                String request = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_UPLOAD, "verein=" + verein, "qnr=" + qnr, "wettid=" + wettid, "data=" + data);
+                String changeddata = "";
+                String meldfile = filename;
+                if (filename.endsWith("sig")) {
+                    meldfile = meldfile.substring(0, meldfile.length()-3);
+                }
+                if (EfaUtil.canOpenFile(meldfile)) {
+                    BufferedReader f = new BufferedReader(new InputStreamReader(new FileInputStream(meldfile), Daten.ENCODING_ISO));
+                    String z;
+                    while ((z = f.readLine()) != null) {
+                        z = EfaUtil.replace(z, "\"", "**2**", true); // " als **2** maskieren
+                        z = EfaUtil.replace(z, "=", "**0**", true);  // = als **0** maskieren
+                        changeddata += z + "**#**"; // Zeilenumbrüche als **#** maskieren
+                    }
+                    f.close();
+                }
+                
+                String request = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_UPLOAD, 
+                        "verein=" + verein, 
+                        "qnr=" + qnr, 
+                        "wettid=" + wettid, 
+                        "data=" + data, 
+                        "changeddata=" + changeddata,
+                        "edituuid=" + edituuid);
                 int pos = request.indexOf("?");
                 if (pos < 0) {
                     Logger.log(Logger.ERROR, "efaWett-Anfrage für Bestätigungsdatei " + filename + " kann nicht erstellt werden.");
@@ -1066,15 +1158,10 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     }
                 }
                 if (ok) {
-                    DatenFelder d = Main.drvConfig.meldungenIndex.getExactComplete(qnr);
-                    if (d == null) {
-                        Logger.log(Logger.ERROR, "Konnte Status für Meldung " + qnr + " nicht aktualisieren: Meldung nicht gefunden!");
-                        errors += "Konnte Status für Meldung " + qnr + " nicht aktualisieren: Meldung nicht gefunden!\n";
-                    } else {
-                        d.set(MeldungenIndex.BESTAETIGUNGSDATEI, "");
-                        Main.drvConfig.meldungenIndex.delete(qnr);
-                        Main.drvConfig.meldungenIndex.add(d);
-                    }
+                    d.set(MeldungenIndex.BESTAETIGUNGSDATEI, "");
+                    d.set(MeldungenIndex.EDITUUID, edituuid);
+                    Main.drvConfig.meldungenIndex.delete(qnr);
+                    Main.drvConfig.meldungenIndex.add(d);
                     Logger.log(Logger.INFO, "Meldung " + qnr + " von Verein " + verein + " wurde erfolgreich bestätigt!ÿ");
                     cok++;
                 }
@@ -1174,7 +1261,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             return;
         }
 
-        String url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_REJECT, "verein=" + verein, "qnr=" + qnr, "grund=" + EfaUtil.replace(grund, " ", "+", true), null);
+        String url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_REJECT, "verein=" + verein, "qnr=" + qnr, "grund=" + EfaUtil.replace(grund, " ", "+", true), null, null, null);
         String localFile = Daten.efaTmpDirectory + "efwstatus.tmp";
         if (!DownloadThread.getFile(this, url, localFile, true) || !EfaUtil.canOpenFile(localFile)) {
             Logger.log(Logger.ERROR, "Zurückweisen der Meldung " + qnr + " von Verein " + verein + " fehlgeschlagen: Kann efaWett nicht erreichen");
@@ -1198,7 +1285,9 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
         }
 
         d.set(MeldungenIndex.STATUS, Integer.toString(MeldungenIndex.ST_ZURUECKGEWIESEN));
-        d.set(MeldungenIndex.BESTAETIGUNGSDATEI, "");
+        if (!MeldungenIndex.MANUELL_ERFASST.equals(d.get(MeldungenIndex.BESTAETIGUNGSDATEI))) {
+            d.set(MeldungenIndex.BESTAETIGUNGSDATEI, "");
+        }
         if (!Main.drvConfig.meldungenIndex.writeFile()) {
             Logger.log(Logger.ERROR, "Meldungen-Indexdatei konnte nicht geschrieben werden!");
         }
@@ -1209,13 +1298,154 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
 
     void meldestatistikButton_actionPerformed(ActionEvent e) {
         if (MELDTYP == MELD_FAHRTENABZEICHEN) {
+            updateMeldestatistikFA();
             createMeldestatistikFA();
         }
         if (MELDTYP == MELD_WANDERRUDERSTATISTIK) {
+            updateMeldestatistikWS();
             createMeldestatistikWS();
         }
     }
+    
+    void updateMeldestatistikFA() {
+        int countClubs = 0;
+        int countPersons = 0;
+        
+        Main.drvConfig.meldestatistik = new Meldestatistik(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + DRVConfig.MELDESTATISTIK_FA_FILE);
+        for (DatenFelder list = Main.drvConfig.meldungenIndex.getCompleteFirst(); list != null; list = Main.drvConfig.meldungenIndex.getCompleteNext()) {
+            int status = EfaUtil.string2int(list.get(MeldungenIndex.STATUS), MeldungenIndex.ST_UNBEKANNT);
+            if (list.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_BEARBEITET))) {
+                EfaWett ew = new EfaWett(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + list.get(MeldungenIndex.QNR) + ".efw");
+                try {
+                    if (ew.readFile()) {
+                        countClubs++;
+                        for (EfaWettMeldung m = ew.meldung; m != null; m = m.next) {
+                            if (m.drvint_wirdGewertetExplizitGesetzt && !m.drvint_wirdGewertet) {
+                                continue;
+                            }
+                            countPersons++;
+                            // aktuelle Anzahl der Abzeichen
+                            int anzAbz = EfaUtil.string2int(m.drv_anzAbzeichen, 0);
+                            int anzAbzAB = EfaUtil.string2int(m.drv_anzAbzeichenAB, 0);
+                            int gesKm = EfaUtil.string2int(m.drv_gesKm, 0);
+                            int gesKmAB = EfaUtil.string2int(m.drv_gesKmAB, 0);
+                            String gruppe = MeldungEditFrame.getGruppe(ew, m);
+                            anzAbz++;
+                            gesKm += EfaUtil.string2int(m.kilometer, 0);
+                            boolean isAB = (gruppe.startsWith("3a") || gruppe.startsWith("3b"));
+                            if (isAB) {
+                                anzAbzAB++;
+                                gesKmAB += EfaUtil.string2int(m.kilometer, 0);
+                            }
+                            DatenFelder d = new DatenFelder(Meldestatistik._ANZFELDER);
+                            d.set(Meldestatistik.KEY, ew.verein_mitglnr + "#" + m.vorname + "#" + m.nachname + "#" + m.jahrgang);
+                            d.set(Meldestatistik.VEREINSMITGLNR, ew.verein_mitglnr);
+                            d.set(Meldestatistik.VEREIN, ew.verein_name);
+                            d.set(Meldestatistik.VORNAME, m.vorname);
+                            d.set(Meldestatistik.NACHNAME, m.nachname);
+                            d.set(Meldestatistik.JAHRGANG, m.jahrgang);
+                            d.set(Meldestatistik.GESCHLECHT, m.geschlecht);
+                            d.set(Meldestatistik.KILOMETER, m.kilometer);
+                            d.set(Meldestatistik.GRUPPE, m.gruppe);
+                            d.set(Meldestatistik.ANZABZEICHEN, Integer.toString(anzAbz));
+                            d.set(Meldestatistik.ANZABZEICHENAB, Integer.toString(anzAbzAB));
+                            d.set(Meldestatistik.GESKM, Integer.toString(gesKm));
+                            if (m.drv_aequatorpreis != null && (m.drv_aequatorpreis.equals("1") || m.drv_aequatorpreis.equals("3"))) {
+                                d.set(Meldestatistik.AEQUATOR, m.drv_aequatorpreis);
+                            }
+                            Main.drvConfig.meldestatistik.add(d);
+                        }
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }
+        Dialog.infoDialog("Meldestatistik für " + countClubs + " Meldungen (" +
+                countPersons + " Personen) aktualisiert.");
+    }
+    
+    void updateMeldestatistikWS() {
+        int countClubs = 0;
+        int countSessions = 0;
+        
+        Main.drvConfig.meldestatistik = new Meldestatistik(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + DRVConfig.MELDESTATISTIK_WS_FILE);
+        for (DatenFelder list = Main.drvConfig.meldungenIndex.getCompleteFirst(); list != null; list = Main.drvConfig.meldungenIndex.getCompleteNext()) {
+            int status = EfaUtil.string2int(list.get(MeldungenIndex.STATUS), MeldungenIndex.ST_UNBEKANNT);
+            if (list.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_BEARBEITET))) {
+                EfaWett ew = new EfaWett(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + list.get(MeldungenIndex.QNR) + ".efw");
+                try {
+                    if (ew.readFile()) {
+                        countClubs++;
+                        
+                        Vector gewaesser = new Vector();
+                        int teilnehmer = 0;
+                        int maennerkm = 0;
+                        int juniorenkm = 0;
+                        int frauenkm = 0;
+                        int juniorinnenkm = 0;
+                        for (EfaWettMeldung m = ew.meldung; m != null; m = m.next) {
+                            if (m.drvint_wirdGewertetExplizitGesetzt && !m.drvint_wirdGewertet) {
+                                continue;
+                            }
+                            countSessions++;
+                            
+                            Vector g = null;
+                            if (m.drvWS_Gewaesser != null && m.drvWS_Gewaesser.length() > 0) {
+                                g = EfaUtil.split(EfaUtil.replace(m.drvWS_Gewaesser, ";", ",", true), ',');
+                            }
+                            for (int j = 0; g != null && j < g.size(); j++) {
+                                if (!gewaesser.contains(g.get(j))) {
+                                    gewaesser.add(g.get(j));
+                                }
+                            }
+                            teilnehmer += EfaUtil.string2int(m.drvWS_Teilnehmer, 0);
+                            maennerkm += EfaUtil.zehntelString2Int(m.drvWS_MaennerKm);
+                            juniorenkm += EfaUtil.zehntelString2Int(m.drvWS_JuniorenKm);
+                            frauenkm += EfaUtil.zehntelString2Int(m.drvWS_FrauenKm);
+                            juniorinnenkm += EfaUtil.zehntelString2Int(m.drvWS_JuniorinnenKm);                            
+                        }
+                        
+                        Object[] gewaesser_arr = gewaesser.toArray();
+                        Arrays.sort(gewaesser_arr);
+                        String gewaesser_string = "";
+                        for (int i = 0; i < gewaesser_arr.length; i++) {
+                            gewaesser_string += gewaesser_arr[i] + (i + 1 < gewaesser_arr.length ? ", " : "");
+                        }
 
+                        maennerkm = maennerkm / 10;
+                        juniorenkm = juniorenkm / 10;
+                        frauenkm = frauenkm / 10;
+                        juniorinnenkm = juniorinnenkm / 10;
+                        int mannschkm = maennerkm + juniorenkm + frauenkm + juniorinnenkm;
+                        
+                        DatenFelder d = new DatenFelder(Meldestatistik._ANZFELDER);
+                        d.set(Meldestatistik.KEY, ew.verein_mitglnr);
+                        d.set(Meldestatistik.VEREINSMITGLNR, ew.verein_mitglnr);
+                        d.set(Meldestatistik.VEREIN, ew.verein_name);
+                        d.set(Meldestatistik.WS_BUNDESLAND, ew.verein_lrv);
+                        d.set(Meldestatistik.WS_MITGLIEDIN, ew.verein_mitgl_in);
+                        d.set(Meldestatistik.WS_GEWAESSER, gewaesser_string);
+                        d.set(Meldestatistik.WS_TEILNEHMER, Integer.toString(teilnehmer));
+                        d.set(Meldestatistik.WS_MANNSCHKM, Integer.toString(mannschkm));
+                        d.set(Meldestatistik.WS_MAENNERKM, Integer.toString(maennerkm));
+                        d.set(Meldestatistik.WS_JUNIORENKM, Integer.toString(juniorenkm));
+                        d.set(Meldestatistik.WS_FRAUENKM, Integer.toString(frauenkm));
+                        d.set(Meldestatistik.WS_JUNIORINNENKM, Integer.toString(juniorinnenkm));
+                        d.set(Meldestatistik.WS_AKT18M, ew.aktive_M_bis18);
+                        d.set(Meldestatistik.WS_AKT19M, ew.aktive_M_ab19);
+                        d.set(Meldestatistik.WS_AKT18W, ew.aktive_W_bis18);
+                        d.set(Meldestatistik.WS_AKT19W, ew.aktive_W_ab19);
+                        d.set(Meldestatistik.WS_VEREINSKILOMETER, ew.vereins_kilometer);
+                        Main.drvConfig.meldestatistik.add(d);
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }
+        Dialog.infoDialog("Meldestatistik für " + countClubs + " Meldungen (" +
+                countSessions + " Fahrten) aktualisiert.");
+    }
+    
     void createMeldestatistikFA() {
         try {
             Hashtable mitglnr_hash = new Hashtable();
@@ -1397,7 +1627,15 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     "Die Statistiken wurden erfolgreich erstellt:\n"
                     + stat_complete + "\n"
                     + stat_div + "\n\n"
-                    + stat_info);
+                    + stat_info
+                    + "Um die Statistik in Excel zu öffnen:\n"
+                    + "1. Excel starten\n"
+                    + "2. ->Datei->Öffnen wählen\n"
+                    + "3. In den Ordner \"" + EfaUtil.getPathOfFile(stat_complete) + "\" wechseln\n"
+                    + "4. Bei der Auswahl der anzuzeigenden Dateien \"Alle Dateien\" wählen\n"
+                    + "5. Die Dateien \"" + EfaUtil.getFilenameWithoutPath(stat_complete) + "\" " 
+                    + "und \"" + EfaUtil.getFilenameWithoutPath(stat_div) + "\" öffnen");
+            /*
             if (Dialog.yesNoDialog("Statistiken kopieren",
                     "Sollen die erzeugten Statistiken kopiert\n"
                     + "werden (z.B. auf Diskette)?") == Dialog.YES) {
@@ -1419,7 +1657,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                         }
                     }
                 }
-            }
+            } */
         } catch (Exception ee) {
             Dialog.error("Fehler beim Erstellen der Statistik: " + ee.toString());
             Logger.log(Logger.ERROR, "Fehler beim Erstellen der Statistik: " + ee.toString());
@@ -1535,7 +1773,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     + "2. ->Datei->Öffnen wählen\n"
                     + "3. In den Ordner \"" + EfaUtil.getPathOfFile(stat_complete) + "\" wechseln\n"
                     + "4. Bei der Auswahl der anzuzeigenden Dateien \"Alle Dateien\" wählen\n"
-                    + "5. Die Dateien \"" + EfaUtil.getFilenameWithoutPath(stat_complete) + "\"\n" 
+                    + "5. Die Dateien \"" + EfaUtil.getFilenameWithoutPath(stat_complete) + "\" " 
                     + "und \"" + EfaUtil.getFilenameWithoutPath(stat_waters) + "\" öffnen");
         } catch (Exception ee) {
             Dialog.error("Fehler beim Erstellen der Statistik: " + ee.toString());
@@ -1661,6 +1899,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
         d.set(MeldungenIndex.DATUM, EfaUtil.getCurrentTimeStampYYYY_MM_DD_HH_MM_SS());
         d.set(MeldungenIndex.STATUS, Integer.toString(MeldungenIndex.ST_UNBEARBEITET));
         d.set(MeldungenIndex.FAHRTENHEFTE, Integer.toString(MeldungenIndex.FH_PAPIER));
+        d.set(MeldungenIndex.BESTAETIGUNGSDATEI, MeldungenIndex.MANUELL_ERFASST);
         Main.drvConfig.meldungenIndex.add(d);
 
         EfaWett efw = new EfaWett(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efw");

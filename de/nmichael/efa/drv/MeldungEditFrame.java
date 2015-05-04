@@ -2148,7 +2148,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
     boolean isErfuellt(EfaWettMeldung ewm, boolean testeUndKorrigiere) {
         switch (MELDTYP) {
             case MeldungenIndexFrame.MELD_FAHRTENABZEICHEN:
-                String gruppe = getGruppe(ewm);
+                String gruppe = getGruppe(ew, ewm);
                 if (gruppe != null && ewm.gruppe != null) {
                     if (!ewm.gruppe.startsWith(gruppe) && testeUndKorrigiere) {
                         warnung("Teilnehmer hat für Gruppe '" + ewm.gruppe + "' gemeldet, hat aber für Gruppe '" + gruppe + "' erfüllt. Gruppe wurde korrigiert!");
@@ -2165,7 +2165,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
         return false;
     }
 
-    String getGruppe(EfaWettMeldung ewm) {
+    public static String getGruppe(EfaWett ew, EfaWettMeldung ewm) {
         int jahrgang = EfaUtil.string2int(ewm.jahrgang, 0);
         if (jahrgang <= 0) {
             return null;
@@ -2281,13 +2281,6 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             }
         }
 
-        // Alle Meldungen dieses Vereins vorsichtshalber aus der Meldestatistik entfernen
-        for (DatenFelder d = Main.drvConfig.meldestatistik.getCompleteFirst(); d != null; d = Main.drvConfig.meldestatistik.getCompleteNext()) {
-            if (d.get(Meldestatistik.VEREINSMITGLNR).equals(ew.verein_mitglnr)) {
-                Main.drvConfig.meldestatistik.delete(d.get(Meldestatistik.KEY));
-            }
-        }
-
         String errors = "";
         String warnings = "";
 
@@ -2342,10 +2335,11 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                 int gesKmAB = EfaUtil.string2int(m.drv_gesKmAB, 0);
 
                 // Gruppe, für die der Teilnehmer erfüllt hat
-                String gruppe = getGruppe(m);
+                String gruppe = getGruppe(ew, m);
                 if (gruppe == null) {
                     errors += "Teilnehmer " + (i + 1) + " (" + m.vorname + " " + m.nachname + ") wurde nicht gewertet, da er/sie die Bedingungen nicht erfüllt hat.\n";
                     nichtGewerteteTeilnehmer.add(m.vorname + " " + m.nachname + " (Grund: Wettbewerbsbedingungen nicht erfüllt)");
+                    m.drvint_wirdGewertet = false;
                     continue;
                 }
 
@@ -2367,6 +2361,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                 if (anzAbz < anzAbzAB || gesKm < gesKmAB) {
                     errors += "Teilnehmer " + (i + 1) + " (" + m.vorname + " " + m.nachname + ") wurde nicht gewertet, da er/sie ungültige Werte der Abzeichen/Kilometer (mehr AB als normal) hat.\n";
                     nichtGewerteteTeilnehmer.add(m.vorname + " " + m.nachname + " (Grund: Unstimmige Werte der Abzeichen/Kilometer für Jugend-A/B)");
+                    m.drvint_wirdGewertet = false;
                     continue;
                 }
 
@@ -2377,6 +2372,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                         if (l < 0) {
                             errors += "Für Teilnehmer " + (i + 1) + " (" + m.vorname + " " + m.nachname + ") konnte keine Teilnehmernummer berechnet werden (-1).\n";
                             nichtGewerteteTeilnehmer.add(m.vorname + " " + m.nachname + " (Grund: Es konnte keine Teilnehmernummer berechnet werden)");
+                            m.drvint_wirdGewertet = false;
                             continue;
                         }
                         while (Main.drvConfig.teilnehmer.getExact(Long.toString(l)) != null) {
@@ -2405,6 +2401,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                         if (sig.getSignatureState() != DRVSignatur.SIG_VALID) {
                             errors += "Teilnehmer " + (i + 1) + " (" + m.vorname + " " + m.nachname + ") wurde nicht gewertet, da die für ihr erstellte Signatur ungültig ist: " + sig.getSignatureError() + "\n";
                             nichtGewerteteTeilnehmer.add(m.vorname + " " + m.nachname + " (Grund: Erstellte Signatur ist ungültig)");
+                            m.drvint_wirdGewertet = false;
                             continue;
                         } else {
                             // elektronisches Fahrtenheft
@@ -2435,94 +2432,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                     if (m.gruppe.startsWith("3")) {
                         teilnJug++;
                     }
-
-                    // Meldestatistik
-                    DatenFelder d = new DatenFelder(Meldestatistik._ANZFELDER);
-                    d.set(Meldestatistik.KEY, ew.verein_mitglnr + "#" + m.vorname + "#" + m.nachname + "#" + m.jahrgang);
-                    d.set(Meldestatistik.VEREINSMITGLNR, ew.verein_mitglnr);
-                    d.set(Meldestatistik.VEREIN, ew.verein_name);
-                    d.set(Meldestatistik.VORNAME, m.vorname);
-                    d.set(Meldestatistik.NACHNAME, m.nachname);
-                    d.set(Meldestatistik.JAHRGANG, m.jahrgang);
-                    d.set(Meldestatistik.GESCHLECHT, m.geschlecht);
-                    d.set(Meldestatistik.KILOMETER, m.kilometer);
-                    d.set(Meldestatistik.GRUPPE, m.gruppe);
-                    d.set(Meldestatistik.ANZABZEICHEN, Integer.toString(anzAbz));
-                    d.set(Meldestatistik.ANZABZEICHENAB, Integer.toString(anzAbzAB));
-                    d.set(Meldestatistik.GESKM, Integer.toString(gesKm));
-                    if (m.drv_aequatorpreis != null && (m.drv_aequatorpreis.equals("1") || m.drv_aequatorpreis.equals("3"))) {
-                        d.set(Meldestatistik.AEQUATOR, m.drv_aequatorpreis);
-                    }
-                    Main.drvConfig.meldestatistik.add(d);
                 }
             }
-        }
-
-        if (MELDTYP == MeldungenIndexFrame.MELD_WANDERRUDERSTATISTIK) {
-            Vector gewaesser = new Vector();
-            int teilnehmer = 0;
-            int maennerkm = 0;
-            int juniorenkm = 0;
-            int frauenkm = 0;
-            int juniorinnenkm = 0;
-
-            for (int i = 0; i < data.size(); i++) {
-                EfaWettMeldung m = (EfaWettMeldung) data.get(i);
-
-                // prüfen, ob diese Meldung gewertet werden soll
-                if (!m.drvint_wirdGewertet) {
-                    continue;
-                }
-
-                Vector g = null;
-                if (m.drvWS_Gewaesser != null && m.drvWS_Gewaesser.length() > 0) {
-                    g = EfaUtil.split(EfaUtil.replace(m.drvWS_Gewaesser, ";", ",", true), ',');
-                }
-                for (int j = 0; g != null && j < g.size(); j++) {
-                    if (!gewaesser.contains(g.get(j))) {
-                        gewaesser.add(g.get(j));
-                    }
-                }
-                teilnehmer += EfaUtil.string2int(m.drvWS_Teilnehmer, 0);
-                maennerkm += EfaUtil.zehntelString2Int(m.drvWS_MaennerKm);
-                juniorenkm += EfaUtil.zehntelString2Int(m.drvWS_JuniorenKm);
-                frauenkm += EfaUtil.zehntelString2Int(m.drvWS_FrauenKm);
-                juniorinnenkm += EfaUtil.zehntelString2Int(m.drvWS_JuniorinnenKm);
-            }
-
-            Object[] gewaesser_arr = gewaesser.toArray();
-            Arrays.sort(gewaesser_arr);
-            String gewaesser_string = "";
-            for (int i = 0; i < gewaesser_arr.length; i++) {
-                gewaesser_string += gewaesser_arr[i] + (i + 1 < gewaesser_arr.length ? ", " : "");
-            }
-
-            maennerkm = maennerkm / 10;
-            juniorenkm = juniorenkm / 10;
-            frauenkm = frauenkm / 10;
-            juniorinnenkm = juniorinnenkm / 10;
-            int mannschkm = maennerkm + juniorenkm + frauenkm + juniorinnenkm;
-
-            // Meldestatistik
-            DatenFelder d = new DatenFelder(Meldestatistik._ANZFELDER);
-            d.set(Meldestatistik.KEY, ew.verein_mitglnr);
-            d.set(Meldestatistik.VEREINSMITGLNR, ew.verein_mitglnr);
-            d.set(Meldestatistik.VEREIN, ew.verein_name);
-            d.set(Meldestatistik.WS_BUNDESLAND, ew.verein_lrv);
-            d.set(Meldestatistik.WS_MITGLIEDIN, ew.verein_mitgl_in);
-            d.set(Meldestatistik.WS_GEWAESSER, gewaesser_string);
-            d.set(Meldestatistik.WS_TEILNEHMER, Integer.toString(teilnehmer));
-            d.set(Meldestatistik.WS_MANNSCHKM, Integer.toString(mannschkm));
-            d.set(Meldestatistik.WS_MAENNERKM, Integer.toString(maennerkm));
-            d.set(Meldestatistik.WS_JUNIORENKM, Integer.toString(juniorenkm));
-            d.set(Meldestatistik.WS_FRAUENKM, Integer.toString(frauenkm));
-            d.set(Meldestatistik.WS_JUNIORINNENKM, Integer.toString(juniorinnenkm));
-            d.set(Meldestatistik.WS_AKT18M, ew.aktive_M_bis18);
-            d.set(Meldestatistik.WS_AKT19M, ew.aktive_M_ab19);
-            d.set(Meldestatistik.WS_AKT18W, ew.aktive_W_bis18);
-            d.set(Meldestatistik.WS_AKT19W, ew.aktive_W_ab19);
-            d.set(Meldestatistik.WS_VEREINSKILOMETER, ew.vereins_kilometer);
-            Main.drvConfig.meldestatistik.add(d);
         }
 
         try {
@@ -2571,10 +2482,6 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                 Dialog.error("Fehler beim Aktualisieren des Status für die vorliegende Meldedatei");
                 return;
             }
-            if (!Main.drvConfig.meldestatistik.writeFile()) {
-                Logger.log(Logger.ERROR, "Speichern der Meldestatistik ist fehlgeschlagen!");
-                Dialog.error("Speichern der Meldesatistik ist fehlgeschlagen!");
-            }
             cancel();
         }
     }
@@ -2613,7 +2520,10 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             return false;
         }
         d.set(MeldungenIndex.STATUS, Integer.toString(MeldungenIndex.ST_BEARBEITET));
-        d.set(MeldungenIndex.BESTAETIGUNGSDATEI, bestaetigungsdatei);
+        d.set(MeldungenIndex.EDITUUID, UUID.randomUUID().toString());
+        if (!MeldungenIndex.MANUELL_ERFASST.equals(d.get(MeldungenIndex.BESTAETIGUNGSDATEI))) {
+            d.set(MeldungenIndex.BESTAETIGUNGSDATEI, bestaetigungsdatei);
+        }
         if (Main.drvConfig.meldungenIndex.writeFile()) {
             log(false, "Status für Meldung auf 'Bearbeitet' gesetzt.");
             return true;
@@ -2840,6 +2750,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
         }
         ItemTypeStringAutoComplete item = new ItemTypeStringAutoComplete("WATERS", "",
                 IItemType.TYPE_PUBLIC, "", "Gewässer", false, waterList);
+        item.setAlwaysReturnPlainText(true);
         if (SimpleInputDialog.showInputDialog(this, "Gewässer", item)) {
             String w = item.getValueFromField();
             if (w != null) {

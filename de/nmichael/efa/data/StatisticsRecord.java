@@ -120,6 +120,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public static final String OPTIONIGNORENULLVALUES    = "OptionIgnoreNullValues";
     public static final String OPTIONSUMGUESTSANDOTHERS  = "OptionSumGuestsAndOthers";
     public static final String OPTIONSUMGUESTSBYCLUB     = "OptionSumGuestsByClub";
+    public static final String OPTIONSHOWVALIDLASTTRIP   = "OptionShowValidLastTrip";
 
 
     public static final String[] IDX_NAME = new String[] { NAME };
@@ -176,7 +177,9 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public static final String FIELDS_NAME         = "Name";
     public static final String FIELDS_GENDER       = "Gender";
     public static final String FIELDS_STATUS       = "Status";
+    public static final String FIELDS_CLUB         = "Club";
     public static final String FIELDS_YEAROFBIRTH  = "YearOfBirth";
+    public static final String FIELDS_MEMBERNO     = "MemberNo";
     public static final String FIELDS_BOATTYPE     = "BoatType";
 
     public static final String LFIELDS_ENTRYNO     = "EntryNo";
@@ -237,6 +240,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public static final String SORTING_GENDER      = "Geschlecht";
     public static final String SORTING_STATUS      = "Status";
     public static final String SORTING_YEAROFBIRTH = "YearOfBirth";
+    public static final String SORTING_MEMBERNO    = "MemberNo";
     public static final String SORTING_BOATTYPE    = "BoatType";
     public static final String SORTING_ENTRYNO     = "EntryNo";
     public static final String SORTING_DATE        = "Date";
@@ -251,6 +255,9 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public static final String BOWNER_OWN     = "OwnBoat";
     public static final String BOWNER_OTHER   = "OtherBoat";
     public static final String BOWNER_UNKNOWN = "Unknown";
+    
+    public static final String SHOWDATAVALID_STATENDTIME = "StatEndTime";
+    public static final String SHOWDATAVALID_LASTTRIPTIME = "LastTripTime";
 
     private static final int ARRAY_STRINGLIST_VALUES = 1;
     private static final int ARRAY_STRINGLIST_DISPLAY = 2;
@@ -307,6 +314,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         gender,
         status,
         yearOfBirth,
+        memberNo,
         boatType,
         entryNo,
         date,
@@ -410,7 +418,9 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public boolean sIsFieldsName;
     public boolean sIsFieldsGender;
     public boolean sIsFieldsStatus;
+    public boolean sIsFieldsClub;
     public boolean sIsFieldsYearOfBirth;
+    public boolean sIsFieldsMemberNo;
     public boolean sIsFieldsBoatType;
     public boolean sIsLFieldsEntryNo;
     public boolean sIsLFieldsDate;
@@ -497,6 +507,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public boolean sIgnoreNullValues;
     public boolean sSumGuestsAndOthers;
     public boolean sSumGuestsByClub;
+    public boolean sShowValidLastTrip;
     // --- Clubwork-Options
     public DataTypeDate sClubworkStartDate;
     public DataTypeDate sClubworkEndDate;
@@ -627,6 +638,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         f.add(OPTIONIGNORENULLVALUES);            t.add(IDataAccess.DATA_BOOLEAN);
         f.add(OPTIONSUMGUESTSANDOTHERS);          t.add(IDataAccess.DATA_BOOLEAN);
         f.add(OPTIONSUMGUESTSBYCLUB);             t.add(IDataAccess.DATA_BOOLEAN);
+        f.add(OPTIONSHOWVALIDLASTTRIP);           t.add(IDataAccess.DATA_STRING);
         MetaData metaData = constructMetaData(Statistics.DATATYPE, f, t, false);
         metaData.setKey(new String[] { ID });
         metaData.addIndex(IDX_NAME);
@@ -693,6 +705,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         setOptionIgnoreNullValues(true);
         setOptionSumGuestsAndOthers(true);
         setOptionSumGuestsByClub(false);
+        setOptionShowValidLastTrip(false);
     }
 
     public DataKey getKey() {
@@ -1851,7 +1864,9 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
                     FIELDS_NAME,
                     FIELDS_GENDER,
                     FIELDS_STATUS,
+                    FIELDS_CLUB,
                     FIELDS_YEAROFBIRTH,
+                    FIELDS_MEMBERNO,
                     FIELDS_BOATTYPE
             };
         } else {
@@ -1860,7 +1875,9 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
                     International.getString("Name"),
                     International.getString("Geschlecht"),
                     International.getString("Status"),
+                    International.getString("Verein"),
                     International.getString("Jahrgang"),
+                    International.getString("Mitgliedsnummer"),
                     International.getString("Bootstyp")
             };
         }
@@ -2170,6 +2187,8 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
             return SortingCriteria.status;
         } else if (sort.equals(SORTING_YEAROFBIRTH)) {
             return SortingCriteria.yearOfBirth;
+        } else if (sort.equals(SORTING_MEMBERNO)) {
+            return SortingCriteria.memberNo;
         } else if (sort.equals(SORTING_BOATTYPE)) {
             return SortingCriteria.boatType;
         } else if (sort.equals(SORTING_ENTRYNO)) {
@@ -2249,6 +2268,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
                     SORTING_GENDER,
                     SORTING_STATUS,
                     SORTING_YEAROFBIRTH,
+                    SORTING_MEMBERNO,
                     SORTING_BOATTYPE,
                     SORTING_ENTRYNO,
                     SORTING_DATE,
@@ -2274,6 +2294,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
                     International.getString("Geschlecht"),
                     International.getString("Status"),
                     International.getString("Jahrgang"),
+                    International.getString("Mitgliedsnummer"),
                     International.getString("Bootstyp"),
                     International.getString("LfdNr"),
                     International.getString("Datum"),
@@ -2465,6 +2486,13 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     }
     public void setOptionSumGuestsByClub(boolean byClub) {
         setBool(OPTIONSUMGUESTSBYCLUB, byClub);
+    }
+
+    public boolean getOptionShowValidLastTrip() {
+        return SHOWDATAVALID_LASTTRIPTIME.equals(getString(OPTIONSHOWVALIDLASTTRIP));
+    }
+    public void setOptionShowValidLastTrip(boolean validLastTrip) {
+        setString(OPTIONSHOWVALIDLASTTRIP, validLastTrip ? SHOWDATAVALID_LASTTRIPTIME : StatisticsRecord.SHOWDATAVALID_STATENDTIME);
     }
 
     public int getLogbookFieldCount() {
@@ -2856,6 +2884,14 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         v.add(item = new ItemTypeBoolean(StatisticsRecord.OPTIONSUMGUESTSBYCLUB, getOptionSumGuestsByClub(),
                 IItemType.TYPE_PUBLIC, CAT_OPTIONS,
                 International.getString("Gäste/Fremdboote vereinsweise zusammenfassen")));
+        v.add(item = new ItemTypeStringList(StatisticsRecord.OPTIONSHOWVALIDLASTTRIP, 
+                getOptionShowValidLastTrip() ? SHOWDATAVALID_LASTTRIPTIME: SHOWDATAVALID_STATENDTIME,
+                new String[] { SHOWDATAVALID_STATENDTIME, SHOWDATAVALID_LASTTRIPTIME },
+                new String[] { International.getString("Ende des Auswertungszeitraums"), 
+                               International.getString("Letzte jeweilige ausgewertete Fahrt") },
+                IItemType.TYPE_PUBLIC, CAT_OPTIONS,
+                International.getStringWithMnemonic("Gültigkeitszeitpunkt für Anzeige von Daten")
+        ));
 
         setVisibleItems(getOutputTypeEnum());
         return v;
@@ -2943,7 +2979,9 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         sIsFieldsName = false;
         sIsFieldsGender = false;
         sIsFieldsStatus = false;
+        sIsFieldsClub = false;
         sIsFieldsYearOfBirth = false;
+        sIsFieldsMemberNo = false;
         sIsFieldsBoatType = false;
         sIsOFieldsBaseStatus = false;
         sIsOFieldsCurrentStatus = false;
@@ -2993,11 +3031,14 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         sIsAggrClubworkOverUnderCarryOver = false;
         sIsAggrClubworkCredit = false;
 
-        if (admin != null) {
-            sPublicStatistic = false;
-        } else {
+        // we should consider publicly available ("blue") statistics even then
+        // as publicly available when calculated through an Admin (this might be
+        // the case also for efaCLI-based statistics to be uploaded to the homepage)
+        //if (admin != null) {
+        //    sPublicStatistic = false;
+        //} else {
             sPublicStatistic = getPubliclyAvailable();
-        }
+        //}
 
         sFilterOnlyLogbook = getFilterOnlyLogbook();
         if (sFilterOnlyLogbook != null && sFilterOnlyLogbook.trim().length() == 0) {
@@ -3275,8 +3316,12 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
                 sIsFieldsGender = true;
             } else if (s.equals(FIELDS_STATUS)) {
                 sIsFieldsStatus = true;
+            } else if (s.equals(FIELDS_CLUB)) {
+                sIsFieldsClub = true;
             } else if (s.equals(FIELDS_YEAROFBIRTH)) {
                 sIsFieldsYearOfBirth = true;
+            } else if (s.equals(FIELDS_MEMBERNO)) {
+                sIsFieldsMemberNo = true;
             } else if (s.equals(FIELDS_BOATTYPE)) {
                 sIsFieldsBoatType = true;
             } else if (s.equals(OFIELDS_BASESTATUS)) {
@@ -3490,6 +3535,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         sIgnoreNullValues = getOptionIgnoreNullValues();
         sSumGuestsAndOthers = getOptionSumGuestsAndOthers();
         sSumGuestsByClub = getOptionSumGuestsByClub();
+        sShowValidLastTrip = getOptionShowValidLastTrip();
 
         resetStatisticValues();
         return true;
@@ -3576,8 +3622,14 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
             if (sIsFieldsStatus) {
                 pTableColumns.add(International.getString("Status"));
             }
+            if (sIsFieldsClub) {
+                pTableColumns.add(International.getString("Verein"));
+            }
             if (sIsFieldsYearOfBirth) {
                 pTableColumns.add(International.getString("Jahrgang"));
+            }
+            if (sIsFieldsMemberNo) {
+                pTableColumns.add(International.getString("Mitgliedsnr."));
             }
             if (sIsFieldsBoatType) {
                 pTableColumns.add(International.getString("Bootstyp"));

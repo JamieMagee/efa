@@ -115,17 +115,21 @@ public class CompetitionDRVWanderruderstatistik extends Competition {
         long distanceInMeters = (r.getDistance() != null ? r.getDistance().getValueInMeters() : 0);
         summeVereinsMeter += distanceInMeters;
         UUID personId = person.getId();
+        String gender = person.getGender();
+        if (gender == null) {
+            gender = EfaTypes.TEXT_UNKNOWN;
+        }
 
         // Anzahl der aktiven Ruderer ermitteln
         if (distanceInMeters >= 1000) { // mind. 1 Km gerudert
             if (alter > 18) { // über 18 Jahre
-                if (person.getGender().equals(EfaTypes.TYPE_GENDER_MALE)) { // männlich
+                if (gender.equals(EfaTypes.TYPE_GENDER_MALE)) { // männlich
                     alleAktive.put(personId, AKTIV_M_AB19);
                 } else { // weiblich
                     alleAktive.put(personId, AKTIV_W_AB19);
                 }
             } else { // bis 18 Jahre
-                if (person.getGender().equals(EfaTypes.TYPE_GENDER_MALE)) { // männlich
+                if (gender.equals(EfaTypes.TYPE_GENDER_MALE)) { // männlich
                     alleAktive.put(personId, AKTIV_M_BIS18);
                 } else { // weiblich
                     alleAktive.put(personId, AKTIV_W_BIS18);
@@ -211,7 +215,7 @@ public class CompetitionDRVWanderruderstatistik extends Competition {
 
             // Kilometer für einzelne Altersgruppen hinzufügen
             if (alter > 18) { // über 18 Jahre
-                if (person.getGender().equals(EfaTypes.TYPE_GENDER_MALE)) { // männlich
+                if (gender.equals(EfaTypes.TYPE_GENDER_MALE)) { // männlich
                     meters = sd.compData.teilnMueber18.get(personId);
                     if (meters == null) {
                         sd.compData.teilnMueber18.put(personId, new Long(distanceInMeters));
@@ -227,7 +231,7 @@ public class CompetitionDRVWanderruderstatistik extends Competition {
                     }
                 }
             } else { // bis 18 Jahre
-                if (person.getGender().equals(EfaTypes.TYPE_GENDER_MALE)) { // männlich
+                if (gender.equals(EfaTypes.TYPE_GENDER_MALE)) { // männlich
                     meters = sd.compData.teilnMbis18.get(personId);
                     if (meters == null) {
                         sd.compData.teilnMbis18.put(personId, new Long(distanceInMeters));

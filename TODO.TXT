@@ -1,10 +1,18 @@
 Item
 ============================================================================================================
 
+Restart von efa mit REboot von efaLive
+runefa.sh mit support für Leerzeichen in Installationspfad
+Bei Erfassen von Fahrt: Schlage korrekte Fahrtart vor, wenn "Regatta" oder "Trainingslager" im Zielnamen auftaucht,
+                        oder wenn Kilometer > 100 sind (frage nach, ob mehrtägig, Traininglager, Kilometernachtrag)
+Fahrtgruppen bei Eingabe von Wanderfahrten durch Mitglieder auswählen lassen - https://kenai.com/bugzilla/show_bug.cgi?id=2231
+
 Kilometerwettbewerbs-Statisiken für CSV (und eventuell XML) Ausgabe - http://forum.nmichael.de/viewtopic.php?f=9&t=749&p=3245#p3245
 Synchronisation korrekt protokollieren (z.B. Kanu-eFB: unveränderte Fahrten übertragen, falls nachträglich der Person eine eFB-ID zugeordnet wurde)
 
 Wenn beim beginnen oder beenden einer Fahrt 2 Warnungen/Hinweise angezeigt werden sollen, diese beide zeitgleich nebeneinander anzeigen und nicht nacheinander
+Optional Arbeitsstunden erst nach Bestätigung/Kontrolle durch den Admin auswerten (um Falscheintragungen zu verrigern): http://forum.nmichael.de/viewtopic.php?f=9&t=867&p=3618#p3618
+Statistikauswertung auf Zeitraum (Uhrzeit) einschränken - http://forum.nmichael.de/viewtopic.php?f=9&t=871&p=3653#p3653
 
 Statistikauswertung: Filter nach Personen, die insgesamt mindestens x km gerudert sind (um solche, die nur sehr wenig im Jahr rudern auszublenden) - http://forum.nmichael.de/viewtopic.php?f=9&t=795&p=3312#p3312
 Option für Änderungswünsche im Fahrtenbuch deaktivierbar machen (http://forum.nmichael.de/viewtopic.php?f=9&p=2565#p2565)
@@ -13,7 +21,6 @@ Korrekturassistent: Unbekannte Namen automa tisch in Personenliste übernehmen? 
 Gewässer in Fahrtgruppe erfassen, damit nicht für alle Etappen/Boote einzeln -- NEIN
 - stattdessen Einen Button einbauen, um allen Einträgen die zu einer Fahrtgruppe gehören
 - einheitlich Fahrtart und Gewässer zuzuweisen: http://forum.nmichael.de/viewtopic.php?f=9&t=526&p=3017#p3017
-Fahrtgruppen bei Eingabe von Wanderfahrten durch Mitglieder auswählen lassen - https://kenai.com/bugzilla/show_bug.cgi?id=2231
 Funktion um als Admin einem normalen Nutzer eine Nachricht zu schrieben (z.B. ein freundlicher Hinweis diesmal das Boot bitte zu putzen, die Dollenbügel zu schließen oder Material an die vorgesehenen Stellen zurück zu legen
 Wiederkehrende Reservierungen (wöchentlich) für begrenzten Zeitraum (http://forum.nmichael.de/viewtopic.php?f=9&t=783&p=3260#p3260)
 

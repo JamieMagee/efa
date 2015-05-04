@@ -23,7 +23,7 @@ import java.io.*;
 
 public class MeldungenIndex extends DatenListe {
 
-  public static final int _ANZFELDER = 7;
+  public static final int _ANZFELDER = 8;
 
   public static final int QNR = 0;
   public static final int VEREIN = 1;
@@ -32,6 +32,7 @@ public class MeldungenIndex extends DatenListe {
   public static final int STATUS = 4;
   public static final int FAHRTENHEFTE = 5;
   public static final int BESTAETIGUNGSDATEI = 6;
+  public static final int EDITUUID = 7;
 
   public static final int ST_UNBEKANNT = 0;
   public static final int ST_UNBEARBEITET = 1;
@@ -39,6 +40,8 @@ public class MeldungenIndex extends DatenListe {
   public static final int ST_ZURUECKGEWIESEN = 3;
   public static final int ST_GELOESCHT = 4;
   public static final String[] ST_NAMES = { "unbekannt" , "unbearbeitet" , "bearbeitet" , "zurückgewiesen" , "gelöscht" };
+  
+  public static final String MANUELL_ERFASST = "MANUELL";
 
   public static final int FH_UNBEKANNT = 0;
   public static final int FH_KEINE = 1;
@@ -49,11 +52,12 @@ public class MeldungenIndex extends DatenListe {
   public static final String KENNUNG150 = "##EFA.150.DRVMELDUNGENINDEX##";
   public static final String KENNUNG160 = "##EFA.160.DRVMELDUNGENINDEX##";
   public static final String KENNUNG190 = "##EFA.190.DRVMELDUNGENINDEX##";
+  public static final String KENNUNG222 = "##EFA.222.DRVMELDUNGENINDEX##";
 
   // Konstruktor
   public MeldungenIndex(String pdat) {
     super(pdat,_ANZFELDER,1,false);
-    kennung = KENNUNG190;
+    kennung = KENNUNG222;
   }
 
   // Dateiformat überprüfen, ggf. konvertieren
@@ -104,6 +108,28 @@ public class MeldungenIndex extends DatenListe {
              return false;
           }
           kennung = KENNUNG190;
+          if (closeFile() && writeFile(true) && openFile()) {
+            infSuccessfullyConverted(dat,kennung);
+            s = kennung;
+          } else errConvertingFile(dat,kennung);
+        }
+
+        // KONVERTIEREN: 190 -> 222
+        if (s != null && s.trim().startsWith(KENNUNG190)) {
+          // @efa1 if (Daten.backup != null) Daten.backup.create(dat,Efa1Backup.CONV,"160");
+          iniList(this.dat,8,1,false); // Rahmenbedingungen von v2.2.2 schaffen
+          // Datei lesen
+          try {
+            while ((s = freadLine()) != null) {
+              s = s.trim();
+              if (s.equals("") || s.startsWith("#")) continue; // Kommentare ignorieren
+              add(constructFields(s));
+            }
+          } catch(IOException e) {
+             errReadingFile(dat,e.getMessage());
+             return false;
+          }
+          kennung = KENNUNG222;
           if (closeFile() && writeFile(true) && openFile()) {
             infSuccessfullyConverted(dat,kennung);
             s = kennung;

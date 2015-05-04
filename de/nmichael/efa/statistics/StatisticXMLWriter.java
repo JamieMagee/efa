@@ -41,7 +41,9 @@ public class StatisticXMLWriter extends StatisticWriter {
     public static final String FIELD_ITEM_NAME = "Name";
     public static final String FIELD_ITEM_GENDER = "Gender";
     public static final String FIELD_ITEM_STATUS = "Status";
+    public static final String FIELD_ITEM_CLUB = "Club";
     public static final String FIELD_ITEM_YEAROFBIRTH = "YearOfBirth";
+    public static final String FIELD_ITEM_MEMBERNO = "MemberNo";
     public static final String FIELD_ITEM_BOATTYPE = "BoatType";
     public static final String FIELD_ITEM_DISTANCE = "Distance";
     public static final String FIELD_ITEM_ROWDISTANCE = "RowDistance";
@@ -291,7 +293,9 @@ public class StatisticXMLWriter extends StatisticWriter {
                         write(f, indent, xmltag(FIELD_ITEM_NAME, sd[i].sName));
                         write(f, indent, xmltag(FIELD_ITEM_GENDER, sd[i].sGender));
                         write(f, indent, xmltag(FIELD_ITEM_STATUS, sd[i].sStatus));
+                        write(f, indent, xmltag(FIELD_ITEM_CLUB, sd[i].sClub));
                         write(f, indent, xmltag(FIELD_ITEM_YEAROFBIRTH, sd[i].sYearOfBirth));
+                        write(f, indent, xmltag(FIELD_ITEM_MEMBERNO, sd[i].sMemberNo));
                         write(f, indent, xmltag(FIELD_ITEM_BOATTYPE, sd[i].sBoatType));
                         write(f, indent, xmltag(FIELD_ITEM_DISTANCE, sd[i].sDistance));
                         write(f, indent, xmltag(FIELD_ITEM_ROWDISTANCE, sd[i].sRowDistance));

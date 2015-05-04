@@ -50,7 +50,11 @@ public class SessionHistory {
             r2.setComments( (comments != null && comments.length() > 0 ? comments + " " : "") +
                     "(" + International.getMessage("Tag {n}", dayNumber));
         }
-        r2.zielfahrt = zf;
+        if (r2.getDistance().getValueInMeters() >= 20000) {
+            r2.zielfahrt = zf;
+        } else {
+            r2.zielfahrt = null;
+        }
         sessions.add(r2);
     }
 

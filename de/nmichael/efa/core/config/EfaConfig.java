@@ -135,6 +135,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     private ItemTypeBoolean skipUhrzeit;
     private ItemTypeBoolean skipZiel;
     private ItemTypeBoolean skipBemerk;
+    private ItemTypeBoolean clubworkRequiresApproval;
     private ItemTypeBoolean fensterZentriert;
     private ItemTypeInteger windowXOffset;
     private ItemTypeInteger windowYOffset;
@@ -746,6 +747,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
             addParameter(efaDirekt_eintragNichtAenderbarKmBeiBekanntenZielen = new ItemTypeBoolean("InputDistanceNotEditableForKnownDestinations", false,
                     IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_INPUT),
                     International.getString("Vorgeschlagene Kilometer bei bekannten Zielen können nicht geändert werden")));
+            addParameter(clubworkRequiresApproval = new ItemTypeBoolean("ClubworkRequiresApproval", false,
+                    IItemType.TYPE_PUBLIC,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_INPUT),
+                    International.getString("Arbeitsstunden erst nach Bestätigung durch Admin berücksichtigen")));
+            
 
             // ============================= BOATHOUSE:GUI =============================
             addParameter(efaDirekt_startMaximized = new ItemTypeBoolean("EfaBoathouseWindowMaximized", true,
@@ -1953,6 +1958,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
 
     public ItemTypeHashtable<String> getValueTypesStatus() {
         return typesStatus;
+    }
+    
+    public boolean getValueClubworkRequiresApproval() {
+        return clubworkRequiresApproval.getValue();
     }
 
     public String getValueKanuEfb_urlLogin() {

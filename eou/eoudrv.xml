@@ -2,6 +2,67 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.1_09</VersionID>
+        <ReleaseDate>23.02.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>3758037</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Bugfix: emil Meldedateieditor</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_07</VersionID>
+        <ReleaseDate>04.02.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>3757577</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Neu: Von Hand erfasste Meldungen werden nicht mehr zum Bestätigen angeboten</ChangeItem>
+            <ChangeItem>Neu: DRV-Briefbogen mit neuer Kontonummer aktualisiert</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_06</VersionID>
+        <ReleaseDate>01.02.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>3757306</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Neu: Erstellen von Meldestatistiken für alle bearbeiteten Meldungen möglich</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_05</VersionID>
+        <ReleaseDate>25.01.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>3757133</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Neu: Synchronisation von lokal bearbeiteten Meldungen über den Server</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_02</VersionID>
+        <ReleaseDate>11.01.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>3755731</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Hinzufügen von Gewässern in DRV-Wanderruderstatistik nun möglich</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.1_00</VersionID>
         <ReleaseDate>13.12.2014</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>

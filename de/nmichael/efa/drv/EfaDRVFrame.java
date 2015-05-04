@@ -222,12 +222,6 @@ public class EfaDRVFrame extends JFrame {
       return;
     }
 
-    Main.drvConfig.meldestatistik = new Meldestatistik(Daten.efaDataDirectory+Main.drvConfig.aktJahr+Daten.fileSep+DRVConfig.MELDESTATISTIK_FA_FILE);
-    if (!Main.drvConfig.meldestatistik.readFile()) {
-      Dialog.error("Die Meldestatistik-Datei\n"+Main.drvConfig.meldestatistik.getFileName()+"\nkann nicht gelesen werden!");
-      Logger.log(Logger.ERROR,"Die Meldestatistik-Datei\n"+Main.drvConfig.meldestatistik.getFileName()+"\nkann nicht gelesen werden!");
-      return;
-    }
 
     Logger.log(Logger.INFO,"START Meldungen für "+Main.drvConfig.aktJahr+" bearbeiten");
     MeldungenIndexFrame dlg = new MeldungenIndexFrame(this,MeldungenIndexFrame.MELD_FAHRTENABZEICHEN);
@@ -255,13 +249,6 @@ public class EfaDRVFrame extends JFrame {
     if (!Main.drvConfig.teilnehmer.readFile()) {
       Dialog.error("Die Teilnehmer-Datei\n"+Main.drvConfig.teilnehmer.getFileName()+"\nkann nicht gelesen werden!");
       Logger.log(Logger.ERROR,"Die Teilnehmer-Datei\n"+Main.drvConfig.teilnehmer.getFileName()+"\nkann nicht gelesen werden!");
-      return;
-    }
-
-    Main.drvConfig.meldestatistik = new Meldestatistik(Daten.efaDataDirectory+Main.drvConfig.aktJahr+Daten.fileSep+DRVConfig.MELDESTATISTIK_WS_FILE);
-    if (!Main.drvConfig.meldestatistik.readFile()) {
-      Dialog.error("Die Meldestatistik-Datei\n"+Main.drvConfig.meldestatistik.getFileName()+"\nkann nicht gelesen werden!");
-      Logger.log(Logger.ERROR,"Die Meldestatistik-Datei\n"+Main.drvConfig.meldestatistik.getFileName()+"\nkann nicht gelesen werden!");
       return;
     }
 

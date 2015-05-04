@@ -254,7 +254,9 @@ public class StatisticHTMLWriter extends StatisticWriter {
                         outHTML(f, sd[i].sName, "entry_data");
                         outHTML(f, sd[i].sGender, "entry_data");
                         outHTML(f, sd[i].sStatus, "entry_data");
+                        outHTML(f, sd[i].sClub, "entry_data");
                         outHTML(f, sd[i].sYearOfBirth, "entry_data");
+                        outHTML(f, sd[i].sMemberNo, "entry_data");
                         outHTML(f, sd[i].sBoatType, "entry_data");
                         outHTML(f, sd[i].sDistance, sd[i].distance,
                                 (sdMaximum != null && !sd[i].isSummary ? sdMaximum.distance : 0),

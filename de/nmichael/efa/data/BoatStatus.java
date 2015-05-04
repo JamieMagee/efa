@@ -80,14 +80,25 @@ public class BoatStatus extends StorageObject {
      */
     public Vector<BoatStatusRecord> getBoats(String status, boolean getBoatsForLists) {
         try {
+            int boathouseId = getProject().getMyBoathouseId();
+            if (Logger.isTraceOn(Logger.TT_GUI, 8)) {
+                Logger.log(Logger.DEBUG, Logger.MSG_DEBUG_BOATLISTS, 
+                    "BoatStatus.getBoats(" + status + "," + getBoatsForLists + ") for boathouse=" + boathouseId);
+            }
             Vector<BoatStatusRecord> v = new Vector<BoatStatusRecord>();
             DataKeyIterator it = data().getStaticIterator();
             DataKey k = it.getFirst();
             while (k != null) {
                 BoatStatusRecord r = (BoatStatusRecord) data().get(k);
                 if (r != null && !r.getDeletedOrInvisible()) {
+                    if (Logger.isTraceOn(Logger.TT_GUI, 9)) {
+                        Logger.log(Logger.DEBUG, Logger.MSG_DEBUG_BOATLISTS,
+                                "  Boat: " + r.getQualifiedName() + 
+                                " (boathouse " + r.getOnlyInBoathouseIdAsInt() + ": " +
+                                r.getOnlyInBoathouseId() + ")");
+                    }
                     if (r.getOnlyInBoathouseIdAsInt() < 0
-                            || r.getOnlyInBoathouseIdAsInt() == getProject().getMyBoathouseId()) {
+                            || r.getOnlyInBoathouseIdAsInt() == boathouseId) {
                         String s = (getBoatsForLists ? r.getShowInList() : r.getCurrentStatus());
                         if (s != null && s.equals(status)) {
                             v.add(r);

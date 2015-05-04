@@ -245,6 +245,7 @@ public class StatisticTask extends ProgressTask {
                         && entryPersonRecord != null) ) {
             calculateSessionHistory(r, key, sd, distance);
         }
+        sd.lastTripTimestamp = Math.max(r.getValidAtTimestamp(), sd.lastTripTimestamp);
         data.put(key, sd);
         return 1;
     }
@@ -266,6 +267,7 @@ public class StatisticTask extends ProgressTask {
         if (sr.sIsAggrClubworkCredit && r.getDescription().startsWith(International.getString("Gutschrift"))) {
             sd.clubworkCredit += hours;
         }
+        sd.lastTripTimestamp = Math.max(r.getValidAtTimestamp(), sd.lastTripTimestamp);
 
         data.put(key, sd);
         return 1;
@@ -390,6 +392,7 @@ public class StatisticTask extends ProgressTask {
             sd.matrixData.put(k, sdk);
         }
 
+        sd.lastTripTimestamp = Math.max(r.getValidAtTimestamp(), sd.lastTripTimestamp);
         data.put(key, sd);
         return 1;
     }
@@ -1081,9 +1084,8 @@ public class StatisticTask extends ProgressTask {
     private void calculateEntry(ClubworkRecord r) {
         resetEntryValues();
         getEntryBasic(r);
-        if (!isInRange(r) //||
-                /*TODO: !isInFilter(r) ||
-                r.getSessionIsOpen()*/) {
+        if (!isInRange(r) ||
+            (!r.getApproved() && Daten.efaConfig.getValueClubworkRequiresApproval()) ) {
             if (Logger.isTraceOn(Logger.TT_STATISTICS, 5)) {
                 Logger.log(Logger.DEBUG, Logger.MSG_STAT_IGNOREDENTRIES, "ignored (1): " + r.toString());
             }
@@ -1745,6 +1747,8 @@ public class StatisticTask extends ProgressTask {
         for (int i = 0; i < keys.length; i++) {
             StatisticsData sd = data.get(keys[i]);
             boolean isUUID = false;
+            long validAt = (sr.sShowValidLastTrip && sd.lastTripTimestamp != 0 ?
+                    sd.lastTripTimestamp : sr.sValidAt);
 
             // replace UUID by Person Name
             if ((sr.sStatisticCategory == StatisticsRecord.StatisticCategory.competition
@@ -1757,7 +1761,7 @@ public class StatisticTask extends ProgressTask {
                     sr.sStatisticTypeEnum == StatisticsRecord.StatisticType.persons)) {
                 PersonRecord pr = null;
                 if (sd.key instanceof UUID) {
-                    pr = persons.getPerson((UUID) sd.key, sr.sTimestampBegin, sr.sTimestampEnd, sr.sValidAt);
+                    pr = persons.getPerson((UUID) sd.key, sr.sTimestampBegin, sr.sTimestampEnd, validAt);
                     isUUID = true;
                     sd.personRecord = pr;
                 }
@@ -1774,11 +1778,17 @@ public class StatisticTask extends ProgressTask {
                 if (sr.sIsFieldsStatus) {
                     sd.sStatus = (pr != null ? pr.getStatusName() : statusOtherText);
                 }
+                if (sr.sIsFieldsClub) {
+                    sd.sClub = (pr != null ? pr.getAssocitation() : "");
+                }
                 if (sr.sIsFieldsYearOfBirth) {
                     DataTypeDate birthday = (pr != null ? pr.getBirthday() : null);
                     if (birthday != null && birthday.isSet()) {
                         sd.sYearOfBirth = Integer.toString(birthday.getYear());
                     }
+                }
+                if (sr.sIsFieldsMemberNo) {
+                    sd.sMemberNo = (pr != null ? pr.getMembershipNo() : null);
                 }
                 if (sr.sStatisticCategory == StatisticsRecord.StatisticCategory.competition && pr != null) {
                     sd.gender = pr.getGender();
@@ -1799,7 +1809,7 @@ public class StatisticTask extends ProgressTask {
 
                 BoatRecord br = null;
                 if (sd.key instanceof UUID) {
-                    br = boats.getBoat((UUID) sd.key, sr.sTimestampBegin, sr.sTimestampEnd, sr.sValidAt);
+                    br = boats.getBoat((UUID) sd.key, sr.sTimestampBegin, sr.sTimestampEnd, validAt);
                     isUUID = true;
                 }
                 if (sr.sIsFieldsName) {
@@ -1807,7 +1817,7 @@ public class StatisticTask extends ProgressTask {
                             : (isUUID ? "*** " + International.getString("ungültiger Eintrag") + " ***" : sd.key.toString()));
                 }
                 if (br == null && sd.boatId != null) {
-                    br = boats.getBoat(sd.boatId, sr.sTimestampBegin, sr.sTimestampEnd, sr.sValidAt);
+                    br = boats.getBoat(sd.boatId, sr.sTimestampBegin, sr.sTimestampEnd, validAt);
                 }
                 if (sr.sIsFieldsBoatType) {
                     sd.sBoatType = (br != null ? br.getDetailedBoatType(0) : Daten.efaTypes.getValue(EfaTypes.CATEGORY_BOAT, EfaTypes.TYPE_BOAT_OTHER));
@@ -2060,7 +2070,13 @@ public class StatisticTask extends ProgressTask {
                     k = it.getNext();
                 }
             } catch (Exception e) {
-                Logger.logdebug(e);
+                Logger.log(Logger.ERROR, Logger.MSG_ERR_ERRORCREATINGSTATISTIC,
+                        LogString.operationFailed(International.getString("Statistik erstellen"), e.toString()));
+                Logger.log(e);
+                logInfo("ERROR: " + e.toString() + "\n");
+            } catch (Error e) {
+                Logger.log(Logger.ERROR, Logger.MSG_ERR_ERRORCREATINGSTATISTIC,
+                        LogString.operationFailed(International.getString("Statistik erstellen"), e.toString()));
                 logInfo("ERROR: " + e.toString() + "\n");
             }
         }

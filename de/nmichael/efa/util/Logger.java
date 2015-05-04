@@ -435,6 +435,7 @@ public class Logger {
     public static final String MSG_DEBUG_PDFFOP = "DBG021";
     public static final String MSG_DEBUG_AUTOCOMPLETE = "DBG022";
     public static final String MSG_DEBUG_RMTACCESSSTATS = "DBG023";
+    public static final String MSG_DEBUG_BOATLISTS = "DBG024";
 
     // CLI
     public static final String MSG_CLI_INFO  = "CLI001";
@@ -518,7 +519,9 @@ public class Logger {
 
                 efaErrorPrintStream = new EfaErrorPrintStream(new FileOutputStream(Daten.efaLogfile, append));
                 System.setErr(efaErrorPrintStream);
-                System.setOut(efaErrorPrintStream);
+                if (!alsoStdOut) {
+                    System.setOut(efaErrorPrintStream);
+                }
             } catch (FileNotFoundException e) {
                 Logger.log(Logger.ERROR,
                         Logger.MSG_LOGGER_FAILEDCREATELOG,
