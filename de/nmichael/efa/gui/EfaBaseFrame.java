@@ -1518,6 +1518,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             !checkBoatCaptain() ||
             !checkBoatStatus() ||
             !checkMultiDayTours() ||
+            !checkSessionType() ||
             !checkDate() ||
             !checkTime() ||
             !checkAllowedDateForLogbook() ||
@@ -2311,6 +2312,85 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
                         + "der für die ausgewählte Fahrtgruppe '{name}' angegeben wurde.",
                         entryno.getValue(), g.getName()));
                 return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean checkSessionType() {
+        String sessType = (sessiontype.isVisible() ? sessiontype.getValue() : null);
+        if (sessType == null) {
+            return true;
+        }
+        String dest = destination.getValue();
+        long dist = distance.getValue().getValueInMeters();
+        
+        String newSessType = null;
+        if (dest != null) {
+            dest = dest.toLowerCase();
+            if (dest.indexOf(International.getString("Regatta").toLowerCase()) >= 0) {
+                newSessType = EfaTypes.TYPE_SESSION_REGATTA;
+            }
+            if (dest.indexOf(International.getString("Trainingslager").toLowerCase()) >= 0) {
+                newSessType = EfaTypes.TYPE_SESSION_TRAININGCAMP;
+            }
+            if (dest.indexOf(International.getString("Nachtrag").toLowerCase()) >= 0) {
+                newSessType = EfaTypes.TYPE_SESSION_LATEENTRY;
+            }
+            if (newSessType != null && !sessType.equals(newSessType)) {
+                if (Dialog.yesNoDialog(International.getString("Fahrtart"), 
+                        International.getMessage("Ist diese Fahrt ein(e) {sessiontype}?",
+                            Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, newSessType))) == Dialog.YES) {
+                    sessType = newSessType;
+                    sessiontype.parseAndShowValue(newSessType);
+                }
+            }
+        }
+        if (dist >= 30000) {
+            newSessType = null;
+            if (!sessType.equals(EfaTypes.TYPE_SESSION_JUMREGATTA) &&
+                !sessType.equals(EfaTypes.TYPE_SESSION_LATEENTRY) &&
+                !sessType.equals(EfaTypes.TYPE_SESSION_REGATTA) &&
+                !sessType.equals(EfaTypes.TYPE_SESSION_TRAININGCAMP) &&
+                !sessType.equals(EfaTypes.TYPE_SESSION_TOUR)    ) {
+                if (sessType.equals(EfaTypes.TYPE_SESSION_TRAINING)) {
+                    if (Dialog.yesNoDialog(International.getString("Fahrtart"),
+                            International.getMessage("Ist diese Fahrt ein(e) {sessiontype}?",
+                            Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_TRAININGCAMP))) == Dialog.YES) {
+                        newSessType = EfaTypes.TYPE_SESSION_TRAININGCAMP;
+                    }
+                } else {
+                    switch(Dialog.auswahlDialog(International.getString("Fahrtart"),
+                            International.getMessage("Ist diese Fahrt ein(e) {sessiontype}?", "..."),
+                            new String[] {
+                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_TOUR),
+                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_TRAININGCAMP),
+                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_LATEENTRY),
+                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_REGATTA),
+                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_JUMREGATTA),
+                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, sessType)
+                            })) {
+                        case 0:
+                            newSessType = EfaTypes.TYPE_SESSION_TOUR;
+                            break;
+                        case 1:
+                            newSessType = EfaTypes.TYPE_SESSION_TRAININGCAMP;
+                            break;
+                        case 2:
+                            newSessType = EfaTypes.TYPE_SESSION_LATEENTRY;
+                            break;
+                        case 3:
+                            newSessType = EfaTypes.TYPE_SESSION_REGATTA;
+                            break;
+                        case 4:
+                            newSessType = EfaTypes.TYPE_SESSION_JUMREGATTA;
+                            break;
+                    }
+                }
+            }
+            if (newSessType != null) {
+                sessType = newSessType;
+                sessiontype.parseAndShowValue(newSessType);
             }
         }
         return true;

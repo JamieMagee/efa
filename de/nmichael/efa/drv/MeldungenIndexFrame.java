@@ -529,6 +529,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     continue; // nur Meldungen des eingestellten Jahres abrufen
                 }
                 String qnr = (String) v.get(1);
+                String mitglnr = (String)v.get(2);
                 String status = (String) v.get(6);
                 String edituuid = (String) v.get(7);
                 if (edituuid == null || edituuid.length() < 10) {
@@ -566,6 +567,13 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                                 // next line removed (we want to have the file as it was edited by another DRV person!)
                                 // efw.resetDrvIntern(); // Interne Felder entsprechend zurücksetzen (zur Sicherheit)
                                 efw.durchDRVbearbeitet = true;
+                                
+                                // korrigiere Mitgliedsnr
+                                if (efw.verein_mitglnr == null || efw.verein_mitglnr.trim().length() == 0 ||
+                                    (efw.verein_mitglnr.length() < 5 && mitglnr != null && mitglnr.length() == 5)) {
+                                    efw.verein_mitglnr = mitglnr;
+                                }
+                                
                                 for (EfaWettMeldung ew = efw.meldung; ew != null; ew = ew.next) {
                                     if (ew.drv_fahrtenheft == null || ew.drv_fahrtenheft.length() == 0) {
                                         if (ew.drv_anzAbzeichen != null && ew.drv_anzAbzeichen.length() > 0
@@ -611,7 +619,6 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                             }
                             
                             // first delete all old submissions by this club
-                            String mitglnr = (String)v.get(2);
                             for (DatenFelder d = Main.drvConfig.meldungenIndex.getCompleteFirst();
                                     d != null; d = Main.drvConfig.meldungenIndex.getCompleteNext()) {
                                 if (mitglnr.equals(d.get(MeldungenIndex.MITGLNR))) {
@@ -622,7 +629,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                             DatenFelder d = new DatenFelder(MeldungenIndex._ANZFELDER);
                             d.set(MeldungenIndex.QNR, qnr);
                             d.set(MeldungenIndex.VEREIN, (String) v.get(4));
-                            d.set(MeldungenIndex.MITGLNR, (String) v.get(2));
+                            d.set(MeldungenIndex.MITGLNR, (String) mitglnr);
                             d.set(MeldungenIndex.DATUM, (String) v.get(3));
                             d.set(MeldungenIndex.STATUS, newstatus);
                             d.set(MeldungenIndex.EDITUUID, edituuid);
@@ -1310,20 +1317,34 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
     void updateMeldestatistikFA() {
         int countClubs = 0;
         int countPersons = 0;
+        int countUnbearbeitet = 0;
+        int countInvalid = 0;
+        Hashtable<String,String> keyHash = new Hashtable<String,String>();
+        ArrayList<String> clubsWithoutPersons = new ArrayList<String>();
+        ArrayList<String> conflicts = new ArrayList<String>();
         
         Main.drvConfig.meldestatistik = new Meldestatistik(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + DRVConfig.MELDESTATISTIK_FA_FILE);
         for (DatenFelder list = Main.drvConfig.meldungenIndex.getCompleteFirst(); list != null; list = Main.drvConfig.meldungenIndex.getCompleteNext()) {
             int status = EfaUtil.string2int(list.get(MeldungenIndex.STATUS), MeldungenIndex.ST_UNBEKANNT);
             if (list.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_BEARBEITET))) {
                 EfaWett ew = new EfaWett(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + list.get(MeldungenIndex.QNR) + ".efw");
+                String mitglnr = list.get(MeldungenIndex.MITGLNR);
+                String qnr = list.get(MeldungenIndex.QNR);
+                if (qnr == null || qnr.length() == 0) {
+                    qnr = "unbekannt";
+                }
+                String club = list.get(MeldungenIndex.VEREIN);
+                if (club == null || club.length() == 0) {
+                    club = "unbekannt";
+                }
                 try {
                     if (ew.readFile()) {
                         countClubs++;
+                        int personsPerClub = 0;
                         for (EfaWettMeldung m = ew.meldung; m != null; m = m.next) {
                             if (m.drvint_wirdGewertetExplizitGesetzt && !m.drvint_wirdGewertet) {
                                 continue;
                             }
-                            countPersons++;
                             // aktuelle Anzahl der Abzeichen
                             int anzAbz = EfaUtil.string2int(m.drv_anzAbzeichen, 0);
                             int anzAbzAB = EfaUtil.string2int(m.drv_anzAbzeichenAB, 0);
@@ -1332,13 +1353,27 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                             String gruppe = MeldungEditFrame.getGruppe(ew, m);
                             anzAbz++;
                             gesKm += EfaUtil.string2int(m.kilometer, 0);
-                            boolean isAB = (gruppe.startsWith("3a") || gruppe.startsWith("3b"));
+                            boolean isAB = gruppe != null && (gruppe.startsWith("3a") || gruppe.startsWith("3b"));
                             if (isAB) {
                                 anzAbzAB++;
                                 gesKmAB += EfaUtil.string2int(m.kilometer, 0);
                             }
+                            if (ew.verein_mitglnr == null || ew.verein_mitglnr.trim().length() == 0) {
+                                ew.verein_mitglnr = mitglnr;
+                                if (ew.verein_mitglnr == null) {
+                                    ew.verein_mitglnr = "";
+                                }
+                            }
+                            String key = ew.verein_mitglnr + "#" + m.vorname + "#" + m.nachname + "#" + m.jahrgang;
+                            if (keyHash.get(key) == null && ew.verein_mitglnr.length() > 0) {
+                                keyHash.put(key, key);
+                            } else {
+                                conflicts.add(ew.verein_mitglnr + ": " + 
+                                        m.vorname + " " + m.nachname + " (" + m.jahrgang + ") - " + qnr + ": " + club);
+                                continue;
+                            }
                             DatenFelder d = new DatenFelder(Meldestatistik._ANZFELDER);
-                            d.set(Meldestatistik.KEY, ew.verein_mitglnr + "#" + m.vorname + "#" + m.nachname + "#" + m.jahrgang);
+                            d.set(Meldestatistik.KEY, key);
                             d.set(Meldestatistik.VEREINSMITGLNR, ew.verein_mitglnr);
                             d.set(Meldestatistik.VEREIN, ew.verein_name);
                             d.set(Meldestatistik.VORNAME, m.vorname);
@@ -1354,28 +1389,67 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                                 d.set(Meldestatistik.AEQUATOR, m.drv_aequatorpreis);
                             }
                             Main.drvConfig.meldestatistik.add(d);
+                            countPersons++;
+                            personsPerClub++;
+                        }
+                        if (personsPerClub == 0) {
+                            clubsWithoutPersons.add(ew.verein_mitglnr + " (" + qnr + ": " + club + ")");
                         }
                     }
                 } catch (Exception e) {
+                    Logger.log(e);
+                    Dialog.error("Fehler beim Erstellen der Meldestatistik: " + e);
+                }
+            } else {
+                if (list.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_UNBEARBEITET))) {
+                    countUnbearbeitet++;
+                } else {
+                    countInvalid++;
                 }
             }
         }
+        Main.drvConfig.meldestatistik.writeFile();
         Dialog.infoDialog("Meldestatistik für " + countClubs + " Meldungen (" +
-                countPersons + " Personen) aktualisiert.");
+                countPersons + " Personen) aktualisiert." +
+                (countUnbearbeitet + countInvalid > 0 ? 
+                    "\n" + countUnbearbeitet + " unbearbeitete und " + countInvalid + " gelöschte oder zurückgewiesene Meldungen wurden ignoriert."
+                : "") +
+                (clubsWithoutPersons.size() > 0 ? 
+                    "\nFür folgende Vereine wurden keine wertbaren Teilnehmer gefunden:\n" +
+                    EfaUtil.vector2string(clubsWithoutPersons, "\n")
+                : "") +
+                (conflicts.size() > 0 ? 
+                    "\nFolgende Meldungen wurden aufgrund ungültiger Mitgliedsnummern ignoriert:\n" +
+                    EfaUtil.vector2string(conflicts, "\n")
+                : ""));
+        
+        
     }
     
     void updateMeldestatistikWS() {
         int countClubs = 0;
         int countSessions = 0;
+        int countUnbearbeitet = 0;
+        int countInvalid = 0;
+        Hashtable<String,String> clubIdHash = new Hashtable<String,String>();
+        ArrayList<String> conflicts = new ArrayList<String>();
         
         Main.drvConfig.meldestatistik = new Meldestatistik(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + DRVConfig.MELDESTATISTIK_WS_FILE);
         for (DatenFelder list = Main.drvConfig.meldungenIndex.getCompleteFirst(); list != null; list = Main.drvConfig.meldungenIndex.getCompleteNext()) {
+            String mitglnr = list.get(MeldungenIndex.MITGLNR);
+            String qnr = list.get(MeldungenIndex.QNR);
+            if (qnr == null || qnr.length() == 0) {
+                qnr = "unbekannt";
+            }
+            String club = list.get(MeldungenIndex.VEREIN);
+            if (club == null || club.length() == 0) {
+                club = "unbekannt";
+            }
             int status = EfaUtil.string2int(list.get(MeldungenIndex.STATUS), MeldungenIndex.ST_UNBEKANNT);
             if (list.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_BEARBEITET))) {
                 EfaWett ew = new EfaWett(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + list.get(MeldungenIndex.QNR) + ".efw");
                 try {
                     if (ew.readFile()) {
-                        countClubs++;
                         
                         Vector gewaesser = new Vector();
                         int teilnehmer = 0;
@@ -1418,6 +1492,19 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                         juniorinnenkm = juniorinnenkm / 10;
                         int mannschkm = maennerkm + juniorenkm + frauenkm + juniorinnenkm;
                         
+                        if (ew.verein_mitglnr == null || ew.verein_mitglnr.trim().length() == 0) {
+                            ew.verein_mitglnr = mitglnr;
+                            if (ew.verein_mitglnr == null) {
+                                ew.verein_mitglnr = "";
+                            }
+                        }
+                        if (clubIdHash.get(ew.verein_mitglnr) == null && ew.verein_mitglnr.length() > 0) {
+                            clubIdHash.put(ew.verein_mitglnr, qnr + ": " + club);
+                        } else {
+                            conflicts.add(ew.verein_mitglnr + " (" + qnr + ": " + club + ")");
+                            continue;
+                        }
+                        
                         DatenFelder d = new DatenFelder(Meldestatistik._ANZFELDER);
                         d.set(Meldestatistik.KEY, ew.verein_mitglnr);
                         d.set(Meldestatistik.VEREINSMITGLNR, ew.verein_mitglnr);
@@ -1437,18 +1524,34 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                         d.set(Meldestatistik.WS_AKT19W, ew.aktive_W_ab19);
                         d.set(Meldestatistik.WS_VEREINSKILOMETER, ew.vereins_kilometer);
                         Main.drvConfig.meldestatistik.add(d);
+                        countClubs++;
                     }
                 } catch (Exception e) {
+                    Logger.log(e);
+                    Dialog.error("Fehler beim Erstellen der Meldestatistik: " + e);
+                }
+            } else {
+                if (list.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_UNBEARBEITET))) {
+                    countUnbearbeitet++;
+                } else {
+                    countInvalid++;
                 }
             }
         }
-        Dialog.infoDialog("Meldestatistik für " + countClubs + " Meldungen (" +
-                countSessions + " Fahrten) aktualisiert.");
+        Main.drvConfig.meldestatistik.writeFile();
+        Dialog.infoDialog("Meldestatistik für " + countClubs + " bearbeitete Meldungen (" +
+                countSessions + " Fahrten) aktualisiert." +
+                (countUnbearbeitet + countInvalid > 0 ? 
+                    "\n" + countUnbearbeitet + " unbearbeitete und " + countInvalid + " gelöschte oder zurückgewiesene Meldungen wurden ignoriert."
+                : "") +
+                (conflicts.size() > 0 ? 
+                    "\nFolgende Meldungen wurden aufgrund ungültiger Mitgliedsnummern ignoriert:\n" +
+                    EfaUtil.vector2string(conflicts, "\n")
+                : ""));
     }
     
     void createMeldestatistikFA() {
         try {
-            Hashtable mitglnr_hash = new Hashtable();
             String stat_complete = Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + "meldestatistik_komplett.csv";
             BufferedWriter f;
             f = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stat_complete), Daten.ENCODING_ISO));
@@ -1458,7 +1561,6 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                         + d.get(Meldestatistik.JAHRGANG) + ";" + d.get(Meldestatistik.GESCHLECHT) + ";" + d.get(Meldestatistik.KILOMETER) + ";"
                         + d.get(Meldestatistik.GRUPPE) + ";" + d.get(Meldestatistik.ANZABZEICHEN) + ";" + d.get(Meldestatistik.ANZABZEICHENAB) + ";"
                         + d.get(Meldestatistik.AEQUATOR) + "\n");
-                mitglnr_hash.put(d.get(Meldestatistik.VEREINSMITGLNR), "foo");
             }
             f.close();
 
@@ -1617,17 +1719,10 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
 
 
             f.close();
-            String stat_info = "";
-            if (mitglnr_hash.size() < Main.drvConfig.meldungenIndex.countElements()) {
-                int differenz = Main.drvConfig.meldungenIndex.countElements() - mitglnr_hash.size();
-                stat_info = "ACHTUNG: Die Statistik enthält nur die Daten von " + mitglnr_hash.size() + " bereits fertig\n"
-                        + "bearbeiteten Vereinen. " + differenz + " nicht bearbeitete Vereine wurden NICHT berücksichtigt.\n\n";
-            }
             Dialog.infoDialog("Statistiken exportiert",
                     "Die Statistiken wurden erfolgreich erstellt:\n"
                     + stat_complete + "\n"
                     + stat_div + "\n\n"
-                    + stat_info
                     + "Um die Statistik in Excel zu öffnen:\n"
                     + "1. Excel starten\n"
                     + "2. ->Datei->Öffnen wählen\n"
@@ -1756,18 +1851,10 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             }
             f.close();
 
-            String stat_info = "";
-            if (mitglnr_hash.size() < Main.drvConfig.meldungenIndex.countElements()) {
-                int differenz = Main.drvConfig.meldungenIndex.countElements() - mitglnr_hash.size();
-                stat_info = "ACHTUNG: Die Statistik enthält nur die Daten von " + mitglnr_hash.size() + " bereits fertig\n"
-                        + "bearbeiteten Vereinen. " + differenz + " nicht bearbeitete Vereine wurden NICHT berücksichtigt.\n\n";
-            }
-
             Dialog.infoDialog("Statistik exportiert",
                     "Die Statistik wurde erfolgreich erstellt:\n"
                     + stat_complete + "\n"
                     + stat_waters + "\n\n"
-                    + stat_info
                     + "Um die Statistik in Excel zu öffnen:\n"
                     + "1. Excel starten\n"
                     + "2. ->Datei->Öffnen wählen\n"

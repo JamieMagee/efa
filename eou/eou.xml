@@ -2,16 +2,31 @@
 <efaOnlineUpdate>
 
     <Version>
-        <VersionID>2.2.1_10</VersionID>
-        <ReleaseDate>xx.05.2015</ReleaseDate>
+        <VersionID>2.2.1_11</VersionID>
+        <ReleaseDate>25.05.2015</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
-        <DownloadSize></DownloadSize>
+        <DownloadSize>3597252</DownloadSize>
 
         <Changes lang="de">
-            <ChangeItem>Bugfix: StringIndexOutOfBoundsException beim Speichern eines Backups auf einem externen Medium behoben, wenn als Pfad unter Windows nur der Laufwerksbuchstabe eingegeben wurde</ChangeItem>
+            <ChangeItem>Neu: Unterstützung von Statistikausgabe im CSV-Format für Wettbewebsauswertungen</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_10</VersionID>
+        <ReleaseDate>05.05.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3596543</DownloadSize>
+
+        <Changes lang="de">
             <ChangeItem>Neu: Vereinsarbeitsstunden können jetzt durch einen Admin geprüft und (optional) erst nach Bestätigung für die Auswertung berücksichtigt werden</ChangeItem>
+            <ChangeItem>Neu: efa fragt bei allen Fahrten > 30 Km nun nach der korrekten Fahrtart oder versucht, diese automatisch zu "erraten"</ChangeItem>
+            <ChangeItem>Bugfix: StringIndexOutOfBoundsException beim Speichern eines Backups auf einem externen Medium behoben, wenn als Pfad unter Windows nur der Laufwerksbuchstabe eingegeben wurde</ChangeItem>
+            <ChangeItem>Bugfix: Abfrage von Personennamen beim Import von DRV-Fahrtenheften unbekannter Personen korrigiert</ChangeItem>
         </Changes>
         <Changes lang="en">
+            <ChangeItem>New: Clubwork hours can now be approved by admins and will only be evaluated after approval</ChangeItem>
+            <ChangeItem>Bugfix: StringIndexOutOfBoundsException fixed when creating backups under Windows using just a driver letter as destination</ChangeItem>
         </Changes>
     </Version>
 

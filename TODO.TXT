@@ -3,15 +3,12 @@ Item
 
 Restart von efa mit REboot von efaLive
 runefa.sh mit support für Leerzeichen in Installationspfad
-Bei Erfassen von Fahrt: Schlage korrekte Fahrtart vor, wenn "Regatta" oder "Trainingslager" im Zielnamen auftaucht,
-                        oder wenn Kilometer > 100 sind (frage nach, ob mehrtägig, Traininglager, Kilometernachtrag)
 Fahrtgruppen bei Eingabe von Wanderfahrten durch Mitglieder auswählen lassen - https://kenai.com/bugzilla/show_bug.cgi?id=2231
 
 Kilometerwettbewerbs-Statisiken für CSV (und eventuell XML) Ausgabe - http://forum.nmichael.de/viewtopic.php?f=9&t=749&p=3245#p3245
 Synchronisation korrekt protokollieren (z.B. Kanu-eFB: unveränderte Fahrten übertragen, falls nachträglich der Person eine eFB-ID zugeordnet wurde)
 
 Wenn beim beginnen oder beenden einer Fahrt 2 Warnungen/Hinweise angezeigt werden sollen, diese beide zeitgleich nebeneinander anzeigen und nicht nacheinander
-Optional Arbeitsstunden erst nach Bestätigung/Kontrolle durch den Admin auswerten (um Falscheintragungen zu verrigern): http://forum.nmichael.de/viewtopic.php?f=9&t=867&p=3618#p3618
 Statistikauswertung auf Zeitraum (Uhrzeit) einschränken - http://forum.nmichael.de/viewtopic.php?f=9&t=871&p=3653#p3653
 
 Statistikauswertung: Filter nach Personen, die insgesamt mindestens x km gerudert sind (um solche, die nur sehr wenig im Jahr rudern auszublenden) - http://forum.nmichael.de/viewtopic.php?f=9&t=795&p=3312#p3312

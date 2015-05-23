@@ -752,6 +752,17 @@ public class EfaUtil {
         return n;
     }
 
+    // Anzahl einer Zeichenfolge in einem String ermitteln
+    public static int countCharInString(String s, String c) {
+        int n = 0;
+        int pos;
+        while ( (pos = s.indexOf(c)) >= 0) {
+            n++;
+            s = s.substring(pos+c.length());
+        }
+        return n;
+    }
+
     // Dateinamen "fileName" ggf. um Pfadangabe "basePath" vervollständigen, falls "fileName" kein absoluter Pfad
     public static String makeFullPath(String basePath, String fileName) {
         if (basePath == null || fileName == null) {
@@ -1639,7 +1650,7 @@ public class EfaUtil {
         return sum;
     }
 
-    public static String vector2string(Vector v, String sep) {
+    public static String vector2string(AbstractList v, String sep) {
         if (v == null) {
             return null;
         }

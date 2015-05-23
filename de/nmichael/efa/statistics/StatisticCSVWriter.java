@@ -38,6 +38,18 @@ public class StatisticCSVWriter extends StatisticWriter {
         }
     }
 
+    protected String write(String current, String s) {
+        if (s == null) {
+            s = "";
+        }
+        if (quotes == null && s.indexOf(separator) >= 0) {
+            String repl = (!separator.equals("_") ? "_" : "#");
+            s = EfaUtil.replace(s, separator, repl, true);
+        }
+        return current + ((current.length() > 0 ? separator : "") + 
+                 (quotes != null ? quotes : "") + s + (quotes != null ? quotes : ""));
+    }
+
     protected synchronized void write(BufferedWriter fw, String s) throws IOException {
         if (s == null) {
             s = "";
@@ -56,6 +68,11 @@ public class StatisticCSVWriter extends StatisticWriter {
         linelength = 0;
     }
 
+    protected synchronized void writeln(BufferedWriter fw, String s) throws IOException {
+        fw.write(s + "\n");
+        linelength = 0;
+    }
+
     public boolean write() {
         BufferedWriter f = null;
 
@@ -66,6 +83,41 @@ public class StatisticCSVWriter extends StatisticWriter {
             // Create File
             f = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(sr.sOutputFile), encoding));
 
+            // Write Competition
+            if (sr.pCompGroupNames != null && sr.pCompParticipants != null) {
+                for (int i = 0; i < sr.pCompGroupNames.length; i++) {
+                    String groupPrefix = "";
+                    groupPrefix = write(groupPrefix, sr.pCompGroupNames[i][0]);
+                    groupPrefix = write(groupPrefix, sr.pCompGroupNames[i][1]);
+                    groupPrefix = write(groupPrefix, sr.pCompGroupNames[i][2]);
+                    for (StatisticsData participant = sr.pCompParticipants[i]; participant != null; participant = participant.next) {
+                        String person = groupPrefix;
+                        person = write(person, participant.sName);
+                        person = write(person, participant.sYearOfBirth);
+                        person = write(person, Boolean.toString(participant.compFulfilled));
+                        person = write(person, participant.sDistance);
+                        person = write(person, participant.sAdditional);
+                        writeln(f, person);
+                        // ausführliche Ausgabe
+                        if (participant.sDetailsArray != null && participant.sDetailsArray.length > 0) {
+                            int seps = EfaUtil.countCharInString(person, separator);
+                            person = "";
+                            for (int x=0; x<=seps; x++) {
+                                person = person + separator;
+                            }
+                            for (int y=0; y<participant.sDetailsArray.length; y++) {
+                                for (int x=0; participant.sDetailsArray[y] != null && x<participant.sDetailsArray[y].length; x++) {
+                                    person = write(person, participant.sDetailsArray[y][x]);
+                                }
+                                writeln(f, person);
+                            }
+                            
+                        }
+                    }
+                }
+            }
+            
+            
             // Write normal Output
             if (sr.pTableColumns != null && sr.pTableColumns.size() > 0) {
                 for (int i = 0; i < sr.pTableColumns.size(); i++) {

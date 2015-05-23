@@ -278,25 +278,26 @@ public class Fahrtenabzeichen extends StorageObject {
     private boolean downloadFahrtenhefte(String qnr) {
         EfaWettClient.reusePasswordForNextRequest();
         String request = EfaWettClient.makeScriptRequestString(EfaWettClient.VERBAND_DRV, EfaWettClient.ACTION_ABRUFEN, (qnr != null ? "qnr=" + qnr : null), null);
+        String qnrtxt = "[Quittungsnummber " + qnr + "]";
         if (request == null) {
-            Dialog.error("Die Bestätigungsdatei konnten nicht heruntergeladen werden!");
+            Dialog.error(qnrtxt + "Die Bestätigungsdatei konnten nicht heruntergeladen werden!");
             return false;
         }
         String localFile = Daten.efaTmpDirectory + "drvSigFahrtenhefte.efwsig";
         if (!DownloadThread.getFile((JDialog) Dialog.frameCurrent(), request, localFile, true)) {
-            Dialog.error("Die Bestätigungsdatei konnte nicht heruntergeladen werden!");
+            Dialog.error(qnrtxt + "Die Bestätigungsdatei konnte nicht heruntergeladen werden!");
             return false;
         }
         try {
             BufferedReader f = new BufferedReader(new InputStreamReader(new FileInputStream(localFile), Daten.ENCODING_ISO));
             String s = f.readLine();
             if (s != null && s.startsWith("ERROR")) {
-                Dialog.error(s);
+                Dialog.error(qnrtxt + s);
                 return false;
             }
             f.close();
         } catch (Exception e) {
-            Dialog.error("Die heruntergeladene Bestätigungsdatei konnte nicht geöffnet werden: " + e.toString());
+            Dialog.error(qnrtxt + "Die heruntergeladene Bestätigungsdatei konnte nicht geöffnet werden: " + e.toString());
             return false;
         }
         boolean success = fahrtenhefteEinspielen(localFile);
@@ -328,6 +329,7 @@ public class Fahrtenabzeichen extends StorageObject {
 
             int sigError = 0;
             int sigErrorUnknownKey = 0;
+            int importedCnt = 0;
             String keyname = null;
             String nichtImportiert = null;
             for (int i = 0; i < fahrtenhefte.size(); i++) {
@@ -354,14 +356,20 @@ public class Fahrtenabzeichen extends StorageObject {
                 // if we didn't find a person record, prompt the user to enter one;
                 // we cannot import a person without a record, otherwise the audit will
                 // cleanup this record again.
-                if (fa != null && !fa.existsPersonRecord()) {
+                if (fa == null || (fa != null && !fa.existsPersonRecord())) {
                     if (Daten.isGuiAppl()) {
-                        ItemTypeStringAutoComplete item = fa.getUnknownPersonInputField(sig.getVorNachnameJahr());
+                        ItemTypeStringAutoComplete item = (fa != null ?
+                                fa.getUnknownPersonInputField(sig.getVorNachnameJahr()) :
+                                ((FahrtenabzeichenRecord)Daten.project.getFahrtenabzeichen(false).createNewRecord()).getUnknownPersonInputField(sig.getVorNachnameJahr()));
                         if (SimpleInputDialog.showInputDialog(Dialog.frameCurrent(), 
                                 International.onlyFor("Person nicht gefunden", "de"), item)) {
                             UUID id = (UUID)item.getId(item.getValueFromField());
                             if (id != null) {
-                                fa.setPersonId(id);
+                                if (fa != null) {
+                                    fa.setPersonId(id);
+                                } else {
+                                    fa = Daten.project.getFahrtenabzeichen(false).createFahrtenabzeichenRecord(id);
+                                }
                             } else {
                                 fa = null; // do not import
                             }
@@ -384,6 +392,7 @@ public class Fahrtenabzeichen extends StorageObject {
                     } else {
                         data().update(fa);
                     }
+                    importedCnt++;
                 } else {
                     nichtImportiert = (nichtImportiert != null ? nichtImportiert + "\n" : "") +
                             sig.getVorname() + " " + sig.getNachname();
@@ -419,7 +428,7 @@ public class Fahrtenabzeichen extends StorageObject {
                 }
             }
             meldungEingespielteFahrtenhefte += (meldungEingespielteFahrtenhefte.length() > 0 ? "\n" : "")
-                    + "Quittungsnummer " + sigfile.quittungsnr + ": " + fahrtenhefte.size() + " signierte Fahrtenhefte eingespielt (" + sigGueltigInfo + ").";
+                    + "Quittungsnummer " + sigfile.quittungsnr + ": " + importedCnt + " signierte Fahrtenhefte eingespielt (" + sigGueltigInfo + ").";
             if (sigErrorUnknownKey > 0) {
                 downloadKey(keyname);
             }
