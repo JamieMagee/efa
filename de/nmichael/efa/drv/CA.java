@@ -44,11 +44,23 @@ public class CA {
     String[] cmdarr = EfaUtil.kommaList2Arr(cmd,' ');
     for (int i=0; i<cmdarr.length; i++) cmdarr[i] = EfaUtil.replace(cmdarr[i],"\\s"," ",true);
     try {
-        sun.security.tools.KeyTool.main(cmdarr);
-    }
-    catch(Exception ex) {
-        Logger.log(Logger.ERROR, "Konnte Keytool nicht starten: " + 
-                ex.getMessage());
+        // up to Java 7:
+        //sun.security.tools.KeyTool.main(cmdarr);
+        
+        // new with support for both Java < 8 and Java > 8
+        try {
+            // try Java 7 class name
+            String classname = "sun.security.tools.KeyTool";
+            Class[] args = new Class[1];
+            Class.forName(classname).getMethod("main", String[].class).invoke(null, cmdarr);
+        } catch(Throwable t) {
+            // try Java 8 class name
+            String classname = "sun.security.tools.keytool.Main";
+            Class[] args = new Class[1];
+            Class.forName(classname).getMethod("main", String[].class).invoke(null, cmdarr);
+        }
+    } catch(Throwable ex) {
+        Logger.log(Logger.ERROR, "Konnte Keytool nicht starten: " + ex);
         return false;
     }
     return true;

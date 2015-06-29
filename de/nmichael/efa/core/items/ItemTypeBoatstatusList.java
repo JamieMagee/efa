@@ -150,6 +150,7 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
                 }
                 bs.seats = seat;
                 bs.variant = variant;
+                bs.type = r.getTypeType(0);
 
                 // for BoatsOnTheWater, don't use the "real" boat name, but rather what's stored in the boat status as "BoatText"
                 bs.name = (sr.getCurrentStatus().equals(BoatStatusRecord.STATUS_ONTHEWATER) || r == null ? sr.getBoatText() : r.getQualifiedName());
@@ -209,7 +210,7 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
         int anz = -1;
         String lastSep = null;
         for (int i = 0; i < a.length; i++) {
-            if (a[i].seats != anz) {
+            if (a[i].seats != anz || a[i].seats == SEATS_OTHER) {
                 String s = null;
                 switch (a[i].seats) {
                     case 1:
@@ -241,7 +242,11 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
                         s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_NUMSEATS, d.get(Boote.ANZAHL));
                     } else {
                     */
-                        s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_NUMSEATS, EfaTypes.TYPE_NUMSEATS_OTHER);
+                    s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_NUMSEATS, EfaTypes.TYPE_NUMSEATS_OTHER);
+                    if (Daten.efaConfig.getValueEfaDirekt_boatListIndividualOthers() && a[i].type != null) {
+                        s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_BOAT, a[i].type);
+                    }
+
                     //}
                 }
                 anz = a[i].seats;
@@ -337,6 +342,7 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
         public Object record;
         public int variant;
         public Color[] colors;
+        public String type;
 
         private String normalizeString(String s) {
             if (s == null) {
@@ -438,8 +444,12 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
 
         public int compareTo(Object o) {
             BoatString other = (BoatString) o;
-            String sThis = (sortBySeats ? (seats < 10 ? "0" : "") + seats : "") + normalizeString(name);
-            String sOther = (sortBySeats ? (other.seats < 10 ? "0" : "") + other.seats : "") + normalizeString(other.name);
+            String sThis = (sortBySeats ? (seats < 10 ? "0" : "") + seats : "") + 
+                    (seats == SEATS_OTHER ? type + "#" : "") +
+                    normalizeString(name);
+            String sOther = (sortBySeats ? (other.seats < 10 ? "0" : "") + other.seats : "") + 
+                    (other.seats == SEATS_OTHER ? other.type + "#" : "") +
+                    normalizeString(other.name);
             return sThis.compareTo(sOther);
         }
     }

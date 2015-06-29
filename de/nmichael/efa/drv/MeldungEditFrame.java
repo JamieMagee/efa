@@ -31,6 +31,7 @@ import de.nmichael.efa.core.items.ItemTypeTextArea;
 import static de.nmichael.efa.data.Waters.getResourceTemplate;
 import de.nmichael.efa.gui.SimpleInputDialog;
 import de.nmichael.efa.gui.util.AutoCompleteList;
+import de.nmichael.efa.util.Base64;
 import javax.swing.event.*;
 import java.security.PrivateKey;
 
@@ -82,6 +83,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
     JTextField vVereinsname = new JTextField();
     JTextField vNutzername = new JTextField();
     JLabel labelBenutzername = new JLabel();
+    JLabel labelLandesverband = new JLabel();
+    JTextField vLandesverband = new JTextField();
     JPanel meldenderPanel = new JPanel();
     TitledBorder titledBorderMeldender;
     GridBagLayout gridBagLayout5 = new GridBagLayout();
@@ -375,12 +378,15 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             labelMitglNr.setText("Mitgliedsnummer: ");
             labelVereinsname.setText("Vereinsname: ");
             labelBenutzername.setText("Benutzername: ");
+            labelLandesverband.setText("LRV: ");
             vMitgliedsnr.setMinimumSize(new Dimension(70, 17));
             vMitgliedsnr.setPreferredSize(new Dimension(100, 17));
             vVereinsname.setMinimumSize(new Dimension(200, 17));
             vVereinsname.setPreferredSize(new Dimension(300, 17));
             vNutzername.setMinimumSize(new Dimension(50, 17));
             vNutzername.setPreferredSize(new Dimension(100, 17));
+            vLandesverband.setMinimumSize(new Dimension(200, 17));
+            vLandesverband.setPreferredSize(new Dimension(300, 17));
             meldenderPanel.setBorder(titledBorderMeldender);
             meldenderPanel.setLayout(gridBagLayout5);
             vMeldenderKontoLabel.setText("Konto: ");
@@ -933,6 +939,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             vereinPanel.add(vVereinsname, new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             vereinPanel.add(vNutzername, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             vereinPanel.add(labelBenutzername, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+            vereinPanel.add(vLandesverband, new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+            vereinPanel.add(labelLandesverband, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
             vereinsdatenPanel.add(meldenderPanel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
             meldenderPanel.add(labelName, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             meldenderPanel.add(vMeldenderKonto, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
@@ -1719,6 +1727,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
         this.vNutzername.setText(notNull(ew.verein_user));
         this.vVereinsname.setText(notNull(ew.verein_name));
         this.vMitgliedsnr.setText(notNull(ew.verein_mitglnr));
+        this.vLandesverband.setText(notNull(ew.verein_lrv));
 
         this.vMeldenderName.setText(notNull(ew.meld_name));
         this.vMeldenderEmail.setText(notNull(ew.meld_email));
@@ -2507,8 +2516,12 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                 changed = false;
                 _hasBeenSaved = true;
                 return true;
+            } else {
+                Logger.log(Logger.ERROR, Logger.MSG_CSVFILE_ERRORWRITEFILE, "Fehler beim Speichern der Meldedatei " + ew.datei + ".");
             }
         } catch (Exception e) {
+            Logger.log(Logger.ERROR, Logger.MSG_CSVFILE_ERRORWRITEFILE, "Fehler beim Speichern der Meldedatei " + ew.datei + ": " + e);
+            Logger.log(e);
             Dialog.error("Fehler beim Speichern der Meldedatei: " + e.getMessage());
         }
         return false;
@@ -2583,6 +2596,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
         this.vMeldenderName.setEditable(!blocked);
         this.vMitgliedsnr.setEditable(!blocked);
         this.vNutzername.setEditable(!blocked);
+        this.vLandesverband.setEditable(!blocked);
         this.vVereinsname.setEditable(!blocked);
         this.vVersandName.setEditable(!blocked);
         this.vVersandOrt.setEditable(!blocked);
@@ -2620,6 +2634,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             ew.meld_name = this.vMeldenderName.getText().trim();
             ew.verein_mitglnr = this.vMitgliedsnr.getText().trim();
             ew.verein_user = this.vNutzername.getText().trim();
+            ew.verein_lrv = this.vLandesverband.getText().trim();
             ew.verein_name = this.vVereinsname.getText().trim();
             ew.versand_name = this.vVersandName.getText().trim();
             ew.versand_ort = this.vVersandOrt.getText().trim();

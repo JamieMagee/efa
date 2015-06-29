@@ -245,7 +245,8 @@ public abstract class ItemType implements IItemType {
                     getName() + ": old=" + lastValue + "; new=" + s);
             }
         }
-        return s != null && !s.equals(lastValue);
+        return (s != null && !s.equals(lastValue)) ||
+               (lastValue != null && !lastValue.equals(s)) ;
     }
 
     public void registerItemListener(IItemListener listener) {

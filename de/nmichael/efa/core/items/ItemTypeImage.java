@@ -38,6 +38,7 @@ public class ItemTypeImage extends ItemType {
         this.type = type;
         this.category = category;
         this.description = description;
+        this.lastValue = value;
     }
 
     public IItemType copyOf() {
@@ -111,7 +112,7 @@ public class ItemTypeImage extends ItemType {
     }
 
     private void setImage(String filename) {
-        value = null;
+        value = "";
         if (field == null) {
             return;
         }

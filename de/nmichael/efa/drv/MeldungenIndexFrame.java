@@ -58,6 +58,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
     JButton downloadButton = new JButton();
     JButton editButton = new JButton();
     JButton deleteButton = new JButton();
+    JButton restoreButton = new JButton();
     JLabel jLabel2 = new JLabel();
     JLabel anzBestaetigte = new JLabel();
     JButton uploadButton = new JButton();
@@ -145,6 +146,13 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     deleteButton_actionPerformed(e);
                 }
             });
+            restoreButton.setText("Meldung wiederherstellen");
+            restoreButton.addActionListener(new java.awt.event.ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    restoreButton_actionPerformed(e);
+                }
+            });
             jLabel2.setText("Zu bestätigende Meldungen: ");
             anzBestaetigte.setForeground(Color.blue);
             anzBestaetigte.setText("0");
@@ -215,19 +223,22 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             southPanel.add(closeButton, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 
-            eastPanel.add(downloadButton, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 10, 0), 0, 0));
+            eastPanel.add(downloadButton, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 20, 0), 0, 0));
+
             eastPanel.add(editButton, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
             eastPanel.add(rejectButton, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
             eastPanel.add(deleteButton, new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-            eastPanel.add(addButton, new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-            eastPanel.add(importButton, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-            eastPanel.add(exportButton, new GridBagConstraints(0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-            eastPanel.add(jLabel2, new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(50, 0, 0, 0), 0, 0));
-            eastPanel.add(anzBestaetigte, new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(50, 0, 0, 0), 0, 0));
-            eastPanel.add(uploadButton, new GridBagConstraints(0, 8, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-            eastPanel.add(checkFahrtenheftButton, new GridBagConstraints(0, 9, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(50, 0, 0, 0), 0, 0));
-            eastPanel.add(meldestatistikButton, new GridBagConstraints(0, 10, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(50, 0, 0, 0), 0, 0));
-            eastPanel.add(printOverviewButton, new GridBagConstraints(0, 11, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+            eastPanel.add(restoreButton, new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 20, 0), 0, 0));
+            
+            eastPanel.add(addButton, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+            eastPanel.add(importButton, new GridBagConstraints(0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+            eastPanel.add(exportButton, new GridBagConstraints(0, 7, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+            eastPanel.add(jLabel2, new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(50, 0, 0, 0), 0, 0));
+            eastPanel.add(anzBestaetigte, new GridBagConstraints(1, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(50, 0, 0, 0), 0, 0));
+            eastPanel.add(uploadButton, new GridBagConstraints(0, 9, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+            eastPanel.add(checkFahrtenheftButton, new GridBagConstraints(0, 10, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(50, 0, 0, 0), 0, 0));
+            eastPanel.add(meldestatistikButton, new GridBagConstraints(0, 11, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(50, 0, 0, 0), 0, 0));
+            eastPanel.add(printOverviewButton, new GridBagConstraints(0, 12, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
             meldungenAuswahl.addItemListener(new java.awt.event.ItemListener() {
 
                 public void itemStateChanged(ItemEvent e) {
@@ -564,9 +575,11 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                                 Logger.log(Logger.ERROR, "Heruntergeladene Meldung " + qnr + " kann nicht gelesen werden.");
                                 meldungOk = false;
                             } else {
-                                // next line removed (we want to have the file as it was edited by another DRV person!)
-                                // efw.resetDrvIntern(); // Interne Felder entsprechend zurücksetzen (zur Sicherheit)
-                                efw.durchDRVbearbeitet = true;
+                                if (remoteStatus == MeldungenIndex.ST_BEARBEITET) {
+                                    efw.durchDRVbearbeitet = true; // we want to have the file as it was edited by another DRV person
+                                } else {
+                                    efw.resetDrvIntern(); // Interne Felder entsprechend zurücksetzen (zur Sicherheit)
+                                }
                                 
                                 // korrigiere Mitgliedsnr
                                 if (efw.verein_mitglnr == null || efw.verein_mitglnr.trim().length() == 0 ||
@@ -990,6 +1003,108 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             Logger.log(Logger.ERROR, "Meldungen-Indexdatei konnte nicht geschrieben werden!");
         }
         Logger.log(Logger.INFO, "Meldung " + qnr + " gelöscht!");
+        showMeldungen();
+    }
+
+    void restoreButton_actionPerformed(ActionEvent e) {
+        if (Main.drvConfig.readOnlyMode) {
+            Dialog.error("Diese Funktion ist in diesem Modus nicht erlaubt.");
+            return;
+        }
+        int row = meldungen.getSelectedRow();
+        if (row < 0) {
+            Dialog.error("Bitte wähle zunächst eine Meldung zum Wiederherstellen aus!");
+            return;
+        }
+        String qnr = null;
+        try {
+            qnr = (String) meldungen.getValueAt(row, 0);
+        } catch (Exception ee) {
+            return;
+        }
+        if (qnr == null) {
+            return;
+        }
+        DatenFelder d = Main.drvConfig.meldungenIndex.getExactComplete(qnr);
+        if (d == null) {
+            return;
+        }
+        String mitglnr = d.get(MeldungenIndex.MITGLNR);
+        String status = d.get(MeldungenIndex.STATUS);
+        String verein = d.get(MeldungenIndex.VEREIN);
+        if (Dialog.yesNoDialog("Meldung wiederherstellen", "Möchtest Du die Originalmeldung zu Quittungsnummer " + qnr + " wirklich wiederherstellen?\n"+
+                "Alle vom DRV vorgenommen Änderungen gehen dabei verloren!") != Dialog.YES) {
+            return;
+        }
+        String url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_GETORIG, "item=" + qnr, "verein=" + verein, null, null, null, null);
+        String localFile = Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efw";
+        String localRestoreFile = Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efw-restore";
+        Logger.log(Logger.INFO, "Download der Meldung " + qnr + " für Wiederherstellung ...");
+        if (!DownloadThread.getFile(this, url, localRestoreFile, true) || !EfaUtil.canOpenFile(localRestoreFile)) {
+            Dialog.error("Wiederherstellung der Meldung " + qnr + " fehlgeschlagen.");
+            Logger.log(Logger.ERROR, "Download der Meldung " + qnr + " fehlgeschlagen.");
+            return;
+        } else {
+            try {
+                EfaWett efw = new EfaWett(localRestoreFile);
+                StringBuilder serr = new StringBuilder();
+                if (!efw.readFile()) {
+                    try {
+                        BufferedReader f = new BufferedReader(new FileReader(localRestoreFile));
+                        String s;
+                        while ( (s = f.readLine()) != null) {
+                            serr.append((s.length() > 0 ? "\n" : "") + s);
+                        }
+                        f.close();
+                    } catch(Exception ee) {
+                        serr.append(ee.toString());
+                    }
+                    Dialog.error("Heruntergeladene Meldung " + qnr + " kann nicht gelesen werden:\n" + serr);
+                    Logger.log(Logger.ERROR, "Heruntergeladene Meldung " + qnr + " kann nicht gelesen werden: " + serr);
+                    return;
+                } else {
+                    efw.durchDRVbearbeitet = true;
+
+                    // korrigiere Mitgliedsnr
+                    if (efw.verein_mitglnr == null || efw.verein_mitglnr.trim().length() == 0
+                            || (efw.verein_mitglnr.length() < 5 && mitglnr != null && mitglnr.length() == 5)) {
+                        efw.verein_mitglnr = mitglnr;
+                    }
+                    if (Integer.toString(MeldungenIndex.ST_BEARBEITET).equals(status)) {
+                        // markiere alle Teilnehmer als "wird gewertet"
+                        for (EfaWettMeldung ew = efw.meldung; ew != null; ew = ew.next) {
+                            ew.drvint_wirdGewertet = true;
+                        }
+                    }
+                    if (!efw.writeFile()) {
+                        Dialog.error("Heruntergeladene Meldung " + qnr + " kann nicht geschrieben werden.");
+                        Logger.log(Logger.ERROR, "Heruntergeladene Meldung " + qnr + " kann nicht geschrieben werden.");
+                        return;
+                    }
+                }
+            } catch (IOException ee) {
+                Dialog.error("Heruntergeladene Meldung " + qnr + " kann nicht gelesen werden.");
+                Logger.log(Logger.ERROR, "Heruntergeladene Meldung " + qnr + " kann nicht gelesen werden: " + ee.toString());
+                return;
+            }
+        }
+        if (EfaUtil.renameFile(localRestoreFile, localFile, ".bak")) {
+            /*
+            // Nein, wir lassen der Status der Meldung unverändert; schließlich hat sich
+            // ja ihr Status auf dem DRV-Server auch nicht verändert!
+            d.set(MeldungenIndex.STATUS, Integer.toString(MeldungenIndex.ST_UNBEARBEITET));
+            Main.drvConfig.meldungenIndex.delete(qnr);
+            Main.drvConfig.meldungenIndex.add(d);
+            if (!Main.drvConfig.meldungenIndex.writeFile()) {
+                 Logger.log(Logger.ERROR, "Meldungen-Indexdatei konnte nicht geschrieben werden!");
+             }
+             */
+            Logger.log(Logger.INFO, "Meldung " + qnr + " wiederhergestellt!");
+            Dialog.infoDialog("Meldung " + qnr + " wiederhergestellt!");
+        } else {
+            Logger.log(Logger.ERROR, "Meldung " + qnr + " konnte nicht wiederhergestellt werden: Umbenennen fehlgeschlagen");
+            Dialog.error("Meldung " + qnr + " konnte nicht wiederhergestellt werden: Umbenennen fehlgeschlagen");
+        }
         showMeldungen();
     }
 
@@ -1899,6 +2014,11 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
     }
 
     void printOverviewButton_actionPerformed(ActionEvent e) {
+        if (MELDTYP == MELD_WANDERRUDERSTATISTIK &&
+            Main.drvConfig.meldestatistik == null) {
+            Dialog.error("Bitte erstelle zuerst eine Meldestatistik!");
+            return;
+        }
         int selection = Dialog.auswahlDialog("Meldungen auswählen",
                 "Meldeübersicht erzeugen für ...",
                 "Nur bearbeite Meldungen", "Alle Meldungen", false);
@@ -1911,7 +2031,9 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             f.write("<h1 align=\"center\">Meldeübersicht</h1>\n");
             f.write("<table align=\"center\" border=\"3\" width=\"100%\">\n");
             f.write("<tr><th>Verein</th><th>Status</th>"
-                    + (MELDTYP == MELD_WANDERRUDERSTATISTIK ? "<th>Gewässer</th>" : "<th>Fahrtenhefte</th>") + "</tr>\n");
+                    + (MELDTYP == MELD_WANDERRUDERSTATISTIK ? "<th>Gewässer</th>" : "<th>Fahrtenhefte</th>") + 
+                    "<th>Gewertet</th>" +
+                    "</tr>\n");
 
             for (DatenFelder d = Main.drvConfig.meldungenIndex.getCompleteFirst(); d != null; d = Main.drvConfig.meldungenIndex.getCompleteNext()) {
                 if (selection == 0 && EfaUtil.string2int(d.get(MeldungenIndex.STATUS), MeldungenIndex.ST_UNBEKANNT) != MeldungenIndex.ST_BEARBEITET) {
@@ -1947,7 +2069,25 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                             feld3 = "";
                     }
                 }
-                f.write("<tr><td>" + verein + "</td><td>" + status + "</td><td>" + feld3 + "</td></tr>\n");
+                
+                // Anzahl der gewerteten Teilnehmer
+                int gewertet = 0;
+                int total = 0;
+                String fname = EfaUtil.getPathOfFile(Main.drvConfig.meldungenIndex.getFileName()) + Daten.fileSep + d.get(MeldungenIndex.QNR) + ".efw";
+                EfaWett efw = new EfaWett(fname);
+                if (efw.readFile()) {
+                    for (EfaWettMeldung m = efw.meldung; m != null; m = m.next) {
+                        total++;
+                        if (m.drvint_wirdGewertet) {
+                            gewertet++;
+                        }
+                        
+                    }
+                }
+                String count = gewertet + " / " + total;
+                
+                f.write("<tr><td>" + verein + "</td><td>" + status + 
+                        "</td><td>" + feld3 + "</td><td>" + count + "</td></tr>\n");
             }
             f.write("</table>\n");
             f.write("</body></html>\n");
@@ -1967,6 +2107,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             */
             EfaUtil.deleteFile(tmpdatei);
         } catch (Exception ee) {
+            Logger.log(ee);
             Dialog.error("Druckdatei konnte nicht erstellt werden: " + ee.toString());
             return;
         }

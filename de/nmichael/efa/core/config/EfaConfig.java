@@ -197,6 +197,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     private ItemTypeString efaDirekt_butSpezialCmd;
     private ItemTypeBoolean efaDirekt_showButtonHotkey;
     private ItemTypeBoolean efaDirekt_sortByAnzahl;
+    private ItemTypeBoolean efaDirekt_boatListIndividualOthers;
     private ItemTypeBoolean efaDirekt_autoPopupOnBoatLists;
     private ItemTypeBoolean efaDirekt_listAllowToggleBoatsPersons;
     private ItemTypeBoolean efaDirekt_showEingabeInfos;
@@ -785,6 +786,9 @@ public class EfaConfig extends StorageObject implements IItemFactory {
             addParameter(efaDirekt_sortByAnzahl = new ItemTypeBoolean("BoatListSortBySeats", true,
                     IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_GUI),
                     International.getString("sortiere Boote nach Anzahl der Bootsplätze")));
+            addParameter(efaDirekt_boatListIndividualOthers = new ItemTypeBoolean("BoatListIndividualOthers", false,
+                    IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_GUI),
+                    International.getString("andere Boote in Bootslisten individuell gruppieren")));
             addParameter(efaDirekt_autoPopupOnBoatLists = new ItemTypeBoolean("BoatListShowPopup", true,
                     IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_GUI),
                     International.getString("automatisches Popup-Menü für Mausclicks in den Bootslisten")));
@@ -1640,6 +1644,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
 
     public boolean getValueEfaDirekt_sortByAnzahl() {
         return efaDirekt_sortByAnzahl.getValue();
+    }
+    
+    public boolean getValueEfaDirekt_boatListIndividualOthers() {
+        return efaDirekt_boatListIndividualOthers.getValue();
     }
 
     public boolean getValueEfaDirekt_autoPopupOnBoatLists() {

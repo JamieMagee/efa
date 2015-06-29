@@ -2,6 +2,34 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.1_13</VersionID>
+        <ReleaseDate>27.06.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>3766341</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Neu: Feld "wird gewertet" bei unbearbeiteten Meldungen standardmäßig gesetzt</ChangeItem>
+            <ChangeItem>Neu: Landesruderverband kann in Meldungen bearbeitet werden</ChangeItem>
+            <ChangeItem>Bugfix: Verbesserte Fehlermeldung, wenn Wiederherstellen einer Meldung fehlschlägt</ChangeItem>
+            <ChangeItem>Neu: Sicherungskopie der Meldung vor Wiederherstellung wird lokal gespeichert</ChangeItem>
+            <ChangeItem>Neu: Anzahl der gewerteten und Teilnehmer insgesamt wird jetzt bei "Übersicht drucken" mit ausgegeben</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_12</VersionID>
+        <ReleaseDate>27.05.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>3765889</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Neu: Wiederherstellen der Originalmeldung eines Vereins</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.1_11</VersionID>
         <ReleaseDate>23.05.2015</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>

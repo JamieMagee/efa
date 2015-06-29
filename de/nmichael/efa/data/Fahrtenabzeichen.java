@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import de.nmichael.efa.util.Base64;
 import javax.swing.JDialog;
 
 // @i18n complete

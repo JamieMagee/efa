@@ -621,6 +621,26 @@ public class EfaUtil {
         }
         return true;
     }
+    
+    public static boolean renameFile(String from, String to, String baksuffix) {
+        try {
+            File ffrom = new File(from);
+            if (!ffrom.isFile()) {
+                return false;
+            }
+            File fto = new File(to);
+            if (fto.isFile()) {
+                File fbak = new File(to + baksuffix);
+                if (fbak.isFile()) {
+                    fbak.delete();
+                }
+                fto.renameTo(fbak);
+            }
+            return ffrom.renameTo(fto);
+        } catch(Exception e) {
+            return false;
+        }
+    }
 
     // Suchen und Ersetzen in Strings
     public static String replace(String org, String such, String ers) {

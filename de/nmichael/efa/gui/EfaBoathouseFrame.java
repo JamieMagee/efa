@@ -555,7 +555,8 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
     }
 
     private void updateGuiLogo() {
-        if (Daten.efaConfig.getValueEfaDirekt_vereinsLogo().length() > 0) {
+        if (Daten.efaConfig.getValueEfaDirekt_vereinsLogo() != null &&
+            Daten.efaConfig.getValueEfaDirekt_vereinsLogo().length() > 0) {
             try {
                 logoLabel.setIcon(new ImageIcon(Daten.efaConfig.getValueEfaDirekt_vereinsLogo()));
                 logoLabel.setMinimumSize(new Dimension(200, 80));

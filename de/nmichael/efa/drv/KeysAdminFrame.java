@@ -15,6 +15,7 @@ import de.nmichael.efa.core.*;
 import de.nmichael.efa.gui.EnterPasswordDialog;
 import de.nmichael.efa.util.*;
 import de.nmichael.efa.util.Dialog;
+import de.nmichael.efa.util.Base64;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;

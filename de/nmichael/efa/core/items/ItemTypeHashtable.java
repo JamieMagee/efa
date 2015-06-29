@@ -16,6 +16,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import de.nmichael.efa.*;
 import de.nmichael.efa.util.*;
+import de.nmichael.efa.util.Base64;
 import de.nmichael.efa.util.Dialog;
 import de.nmichael.efa.gui.BaseDialog;
 import de.nmichael.efa.gui.BaseFrame;
