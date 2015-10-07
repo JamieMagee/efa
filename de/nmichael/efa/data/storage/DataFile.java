@@ -111,6 +111,34 @@ public abstract class DataFile extends DataAccess {
             throw new EfaException(Logger.MSG_DATA_CREATEFAILED, LogString.fileCreationFailed(filename, storageLocation, e.toString()), Thread.currentThread().getStackTrace());
         }
     }
+    
+    private void printFileInfoBeforeRecovery(String filename) {
+        try {
+            String fname = (new File(filename)).getName();
+            String dirname = (new File(filename)).getParent();
+            Logger.log(Logger.INFO, Logger.MSG_DATA_RECOVERYINFO,
+                    "Directory listing of " + dirname + " before recovery:");
+            File dir = new File(dirname);
+            if (!dir.exists()) {
+                Logger.log(Logger.ERROR, Logger.MSG_DATA_RECOVERYINFO,
+                        "Directory " + dirname + " does not exist.");
+            }
+            File[] files = dir.listFiles();
+            if (files == null || files.length == 0) {
+                Logger.log(Logger.ERROR, Logger.MSG_DATA_RECOVERYINFO,
+                        "Directory " + dirname + " is empty.");
+            }
+            for (File file : files) {
+                if (file.getName().startsWith(fname)) {
+                    Logger.log(Logger.INFO, Logger.MSG_DATA_RECOVERYINFO,
+                            String.format("%-30s %7d byte  %s", file.getName(), file.length(), EfaUtil.getTimeStamp(file.lastModified())));
+                }
+            }
+        } catch(Exception e) {
+            Logger.log(Logger.WARNING, Logger.MSG_DATA_RECOVERYINFO, 
+                    "Failed to get file information: " + e);
+        }
+    }
 
     private void saveOriginalFileBeforeRecovery(String filename) {
         String bakFile = null;
@@ -192,6 +220,7 @@ public abstract class DataFile extends DataAccess {
                 try {
                     Logger.log(Logger.ERROR, Logger.MSG_DATA_OPENFAILED,
                             LogString.fileOpenFailed(filename, getStorageObjectName() + "." + getStorageObjectType() , e1.toString()));
+                    printFileInfoBeforeRecovery(filename);
                     saveOriginalFileBeforeRecovery(filename);
                     tryfilename = filename + BACKUP_MOSTRECENT;
                     recovered = tryOpenStorageObject(tryfilename, true);

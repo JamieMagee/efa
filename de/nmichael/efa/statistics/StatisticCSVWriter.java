@@ -150,6 +150,9 @@ public class StatisticCSVWriter extends StatisticWriter {
                         if (sr.sIsFieldsYearOfBirth) {
                             write(f, sd[i].sYearOfBirth);
                         }
+                        if (sr.sIsFieldsMemberNo) {
+                            write(f, sd[i].sMemberNo);
+                        }
                         if (sr.sIsFieldsBoatType) {
                             write(f, sd[i].sBoatType);
                         }

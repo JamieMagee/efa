@@ -492,22 +492,24 @@ public class BoatReservationRecord extends DataRecord {
     }
 
     public TableItemHeader[] getGuiTableHeader() {
-        TableItemHeader[] header = new TableItemHeader[5];
+        TableItemHeader[] header = new TableItemHeader[6];
         header[0] = new TableItemHeader(International.getString("Boot"));
         header[1] = new TableItemHeader(International.getString("Von"));
         header[2] = new TableItemHeader(International.getString("Bis"));
         header[3] = new TableItemHeader(International.getString("Reserviert für"));
         header[4] = new TableItemHeader(International.getString("Grund"));
+        header[5] = new TableItemHeader(International.getString("Kontakt"));
         return header;
     }
 
     public TableItem[] getGuiTableItems() {
-        TableItem[] items = new TableItem[5];
+        TableItem[] items = new TableItem[6];
         items[0] = new TableItem(getBoatName());
         items[1] = new TableItem(getDateTimeFromDescription());
         items[2] = new TableItem(getDateTimeToDescription());
         items[3] = new TableItem(getPersonAsName());
         items[4] = new TableItem(getReason());
+        items[5] = new TableItem(getContact());
         return items;
     }
 

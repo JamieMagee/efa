@@ -422,7 +422,7 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
                 boatsAvailableList.setFieldSize(width, 400);
                 personsAvailableList.setFieldSize(width, 400);
                 boatsOnTheWaterList.setFieldSize(width, 200);
-                boatsNotAvailableList.setFieldSize(width, 100); //(int) (newsize.getHeight() / 4));
+                boatsNotAvailableList.setFieldSize(width, Daten.efaConfig.getValueListSizeUnavailableBoats()); //(int) (newsize.getHeight() / 4));
                 int height = (int) (20.0f * (Dialog.getFontSize() < 10 ? 12 : Dialog.getFontSize()) / Dialog.getDefaultFontSize());
                 toggleAvailableBoatsToBoats.setPreferredSize(new Dimension(width / 2, height));
                 toggleAvailableBoatsToPersons.setPreferredSize(new Dimension(width / 2, height));
@@ -1891,7 +1891,7 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
         }
         BoatDamageRecord[] damages = (boatId != null ?
                 boatDamages.getBoatDamages(boatId, true, true) : null);
-        if (damages != null && damages.length > 0) {
+        if (damages != null && damages.length > 0 && BoatDamages.warnDamage(damages[0])) {
             if (Dialog.yesNoDialog(International.getString("Bootsschaden gemeldet"),
                     International.getMessage("Für das Boot {boat} wurde folgender Bootsschaden gemeldet:", item.boatStatus.getBoatText()) + "\n"
                             + "\""

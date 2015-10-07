@@ -150,7 +150,7 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
                 }
                 bs.seats = seat;
                 bs.variant = variant;
-                bs.type = r.getTypeType(0);
+                bs.type = (r != null ? r.getTypeType(0) : EfaTypes.TYPE_BOAT_OTHER);
 
                 // for BoatsOnTheWater, don't use the "real" boat name, but rather what's stored in the boat status as "BoatText"
                 bs.name = (sr.getCurrentStatus().equals(BoatStatusRecord.STATUS_ONTHEWATER) || r == null ? sr.getBoatText() : r.getQualifiedName());

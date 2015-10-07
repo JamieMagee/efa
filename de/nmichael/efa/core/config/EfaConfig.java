@@ -158,6 +158,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     private ItemTypeBoolean efaDirekt_checkAllowedGroupsForBoat;
     private ItemTypeBoolean efaDirekt_checkAllowedMinGroupForBoat;
     private ItemTypeBoolean efaDirekt_eintragErlaubeNurMaxRudererzahl;
+    private ItemTypeBoolean efaDirekt_warnEvenNonCriticalBoatDamages;
     private ItemTypeBoolean efaDirekt_eintragNichtAenderbarUhrzeit;
     private ItemTypeBoolean efaDirekt_eintragNichtAenderbarKmBeiBekanntenZielen;
     private ItemTypeBoolean efaBoathouseOnlyEnterKnownBoats;
@@ -207,6 +208,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     private ItemTypeInteger efaDirekt_anzFBAnzeigenFahrten;
     private ItemTypeBoolean efaDirekt_FBAnzeigenAuchUnvollstaendige;
     private ItemTypeInteger efaDirekt_notificationWindowTimeout;
+    private ItemTypeInteger efaDirekt_boatsNotAvailableListSize;
     private ItemTypeInteger efaDirekt_fontSize;
     private ItemTypeStringList efaDirekt_fontStyle;
     private ItemTypeBoolean efaDirekt_colorizeInputField;
@@ -721,6 +723,9 @@ public class EfaConfig extends StorageObject implements IItemFactory {
             addParameter(efaDirekt_eintragErlaubeNurMaxRudererzahl = new ItemTypeBoolean("InputAllowOnlyMaxCrewNumber", true,
                     IItemType.TYPE_PUBLIC,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_INPUT),
                     International.getString("Nur für das Boot maximal mögliche Anzahl an Personen erlauben")));
+            addParameter(efaDirekt_warnEvenNonCriticalBoatDamages = new ItemTypeBoolean("InputWarnOnlyCriticalBoatDamages", false,
+                    IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_INPUT),
+                    International.getString("Bei Bootsbenutzung auch im Fall von unkritischen Bootsschäden warnen")));
             addParameter(efaDirekt_eintragErzwingeObmann = new ItemTypeBoolean("InputMustSelectBoatCaptain", false,
                     IItemType.TYPE_PUBLIC,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_INPUT),
                     International.getString("Obmann muß ausgewählt werden")));
@@ -815,6 +820,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
             addParameter(efaDirekt_notificationWindowTimeout = new ItemTypeInteger("NotificationWindowTimeout", 10, 0, Integer.MAX_VALUE,
                     IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_GUI),
                     International.getString("Timeout für Hinweis-Fenster")));
+            addParameter(efaDirekt_boatsNotAvailableListSize = new ItemTypeInteger("BoatsNotAvailableListSize", 100, 100, 600,
+                    IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_GUI),
+                    International.getString("Listengröße") + 
+                    " '" + International.getString("nicht verfügbare Boote") + "'"));
 
             // ============================= BOATHOUSE:GUIBUTTONS =============================
             addParameter(efaDirekt_butFahrtBeginnen = new ItemTypeConfigButton("ButtonStartSession",
@@ -1488,6 +1497,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     public boolean getValueEfaDirekt_eintragErlaubeNurMaxRudererzahl() {
         return efaDirekt_eintragErlaubeNurMaxRudererzahl.getValue();
     }
+    
+    public boolean getValueWarnEvenNonCriticalBoatDamages() {
+        return efaDirekt_warnEvenNonCriticalBoatDamages.getValue();
+    }
 
     public boolean getValueEfaDirekt_eintragNichtAenderbarUhrzeit() {
         return efaDirekt_eintragNichtAenderbarUhrzeit.getValue();
@@ -1684,6 +1697,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     
     public int getValueNotificationWindowTimeout() {
         return efaDirekt_notificationWindowTimeout.getValue();
+    }
+
+    public int getValueListSizeUnavailableBoats() {
+        return efaDirekt_boatsNotAvailableListSize.getValue();
     }
 
     public int getValueEfaDirekt_fontSize() {

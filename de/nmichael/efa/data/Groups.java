@@ -155,7 +155,9 @@ public class Groups extends StorageObject {
         if (add || update) {
             assertFieldNotEmpty(record, GroupRecord.ID);
             assertFieldNotEmpty(record, GroupRecord.NAME);
-            assertUnique(record, GroupRecord.NAME);
+            // the following assertion cannot be enforced, as it forbids to split a 
+            // version and create multi-versionized entries
+            // assertUnique(record, GroupRecord.NAME);
         }
         if (delete) {
             assertNotReferenced(record, getProject().getBoats(false), new String[] { BoatRecord.ALLOWEDGROUPIDLIST });

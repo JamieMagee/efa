@@ -17,8 +17,7 @@ import de.nmichael.efa.data.StatisticsRecord;
 import de.nmichael.efa.data.types.DataTypeDistance;
 import de.nmichael.efa.util.Dialog;
 import de.nmichael.efa.util.EfaUtil;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.ArrayList;
 
 public class CompetitionLRVBerlinBlauerWimpel extends Competition {
 
@@ -30,19 +29,37 @@ public class CompetitionLRVBerlinBlauerWimpel extends Competition {
             return;
         }
         sr.pTableColumns = null;
-        int numberOfMembers = Daten.project.getPersons(false).getNumberOfMembers(sr.sTimestampBegin, false);
-
-        if (sr.getOutputTypeEnum() == StatisticsRecord.OutputTypes.efawett) {
-            String s = Dialog.inputDialog("Anzahl der Mitglieder am 1.1. des Jahres",
-                    "Wie viele Mitglieder hatte der Verein am " + EfaUtil.getTimeStamp(sr.sTimestampBegin) + "?\n" +
-                    "efa hat anhand der Personenliste " + numberOfMembers + " Mitglieder ermittelt.",
-                    Integer.toString(numberOfMembers));
-            if (s != null) {
-                numberOfMembers = EfaUtil.string2int(s, numberOfMembers);
+        int numberOfMembers = -1;
+        if (sr.sCompYear < 2015) {
+            numberOfMembers = Daten.project.getPersons(false).getNumberOfMembers(sr.sTimestampBegin, false);
+        } else {
+            numberOfMembers = 0;
+            for (int i = 0; i < sd.length; i++) {
+                if (sd[i].distance >= 1000) {
+                    numberOfMembers++;
+                }
             }
         }
-        int anzWertung = 20 + (int) (0.1 * numberOfMembers); // Anzahl der zu wertenden Mitglieder
-        efaWett.wimpel_anzMitglieder = numberOfMembers;
+
+        if (sr.sCompYear < 2015) {
+            if (sr.getOutputTypeEnum() == StatisticsRecord.OutputTypes.efawett) {
+                String s = Dialog.inputDialog("Anzahl der Mitglieder am 1.1. des Jahres",
+                        "Wie viele Mitglieder hatte der Verein am " + EfaUtil.getTimeStamp(sr.sTimestampBegin) + "?\n"
+                        + "efa hat anhand der Personenliste " + numberOfMembers + " Mitglieder ermittelt.",
+                        Integer.toString(numberOfMembers));
+                if (s != null) {
+                    numberOfMembers = EfaUtil.string2int(s, numberOfMembers);
+                }
+            }
+        }
+        int anzWertung = Integer.MAX_VALUE;
+        if (sr.sCompYear < 2015) {
+            anzWertung = 20 + (int) (0.1 * numberOfMembers); // Anzahl der zu wertenden Mitglieder
+            efaWett.wimpel_anzMitglieder = numberOfMembers;
+        } else {
+            anzWertung = 10 + (int) (0.2 * numberOfMembers); // Anzahl der zu wertenden Mitglieder
+            efaWett.wimpel_anzMitglieder = numberOfMembers;
+        }
 
         if (sr.sIsOutputCompRules) {
             sr.pCompRules = createAusgabeBedingungen(sr, wett.key, sr.pCompRulesBold, sr.pCompRulesItalics);
@@ -53,13 +70,14 @@ public class CompetitionLRVBerlinBlauerWimpel extends Competition {
         }
 
         long totalDistanceInDefaultUnit = 0;
+        
+        ArrayList<String[]> pAdditionalTable = new ArrayList<String[]>();
 
         if (!sr.sIsOutputCompWithoutDetails) {
             sr.pAdditionalTable1Title = new String[3];
             sr.pAdditionalTable1Title[0] = "Nummer";
             sr.pAdditionalTable1Title[1] = "Name";
             sr.pAdditionalTable1Title[2] = "Kilometer";
-            sr.pAdditionalTable1 = new String[anzWertung][3];
         }
 
         sr.pCompParticipants = new StatisticsData[0];
@@ -78,10 +96,11 @@ public class CompetitionLRVBerlinBlauerWimpel extends Competition {
                         efaWett.letzteMeldung().next = ewm;
                     }
                 } else {
-                    sr.pAdditionalTable1[i] = new String[3];
-                    sr.pAdditionalTable1[i][0] = Integer.toString(i+1);
-                    sr.pAdditionalTable1[i][1] = sd[i].sName;
-                    sr.pAdditionalTable1[i][2] = DataTypeDistance.getDistance(sd[i].distance).getStringValueInKilometers(false, 0, 0);
+                    String[] item = new String[3];
+                    item[0] = Integer.toString(i+1);
+                    item[1] = sd[i].sName;
+                    item[2] = DataTypeDistance.getDistance(sd[i].distance).getStringValueInKilometers(false, 0, 0);
+                    pAdditionalTable.add(item);
                 }
 
             }
@@ -94,12 +113,13 @@ public class CompetitionLRVBerlinBlauerWimpel extends Competition {
         } else {
             sr.pAdditionalTable2 = new String[3][2];
             sr.pAdditionalTable2[0][0] = "Anzahl der ausgewerteten Ruderer:";
-            sr.pAdditionalTable2[0][1] = anzWertung + " (von " + numberOfMembers + " Mitgliedern)";
-            sr.pAdditionalTable2[1][0] = "Gesamtkilometer der ersten " + anzWertung + " Ruderer:";
+            sr.pAdditionalTable2[0][1] = pAdditionalTable.size() + (numberOfMembers > 0 ? " (von " + numberOfMembers + (sr.sCompYear < 2015 ? "" : "aktiven ") + " Mitgliedern)" : "");
+            sr.pAdditionalTable2[1][0] = "Gesamtkilometer" + (numberOfMembers > 0 ? " der ersten " + anzWertung + " Ruderer:" : ":");
             sr.pAdditionalTable2[1][1] = DataTypeDistance.getDistance(totalDistanceInDefaultUnit).getStringValueInKilometers(true, 0, 0);
             sr.pAdditionalTable2[2][0] = "Durchschnittskilometer pro Ruderer:";
             sr.pAdditionalTable2[2][1] = DataTypeDistance.getDistance(totalDistanceInDefaultUnit/anzWertung).getStringValueInKilometers(true, 0, 1);
         }
-
+        
+        sr.pAdditionalTable1 = pAdditionalTable.toArray(new String[0][]);
     }
 }

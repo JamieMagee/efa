@@ -2318,6 +2318,9 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
     }
     
     private boolean checkSessionType() {
+        if (!isNewRecord && !isModeBoathouse() && !sessiontype.isChanged()) {
+            return true;
+        }
         String sessType = (sessiontype.isVisible() ? sessiontype.getValue() : null);
         if (sessType == null) {
             return true;
@@ -2360,31 +2363,34 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
                         newSessType = EfaTypes.TYPE_SESSION_TRAININGCAMP;
                     }
                 } else {
-                    switch(Dialog.auswahlDialog(International.getString("Fahrtart"),
+                    ArrayList<String> sessTypeSelection = new ArrayList<String>();
+                    if (Daten.efaTypes.isConfigured(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_TOUR)) {
+                        sessTypeSelection.add(EfaTypes.TYPE_SESSION_TOUR);
+                    }
+                    if (Daten.efaTypes.isConfigured(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_TRAININGCAMP)) {
+                        sessTypeSelection.add(EfaTypes.TYPE_SESSION_TRAININGCAMP);
+                    }
+                    if (Daten.efaTypes.isConfigured(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_LATEENTRY)) {
+                        sessTypeSelection.add(EfaTypes.TYPE_SESSION_LATEENTRY);
+                    }
+                    if (Daten.efaTypes.isConfigured(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_REGATTA)) {
+                        sessTypeSelection.add(EfaTypes.TYPE_SESSION_REGATTA);
+                    }
+                    if (Daten.efaTypes.isConfigured(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_JUMREGATTA)) {
+                        sessTypeSelection.add(EfaTypes.TYPE_SESSION_JUMREGATTA);
+                    }
+                    if (Daten.efaTypes.isConfigured(EfaTypes.CATEGORY_SESSION, sessType)) {
+                        sessTypeSelection.add(sessType);
+                    }
+                    ArrayList<String> sessTypeDisplay = new ArrayList<String>();
+                    for (String type : sessTypeSelection) {
+                        sessTypeDisplay.add(Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, type));
+                    }
+                    int res = (Dialog.auswahlDialog(International.getString("Fahrtart"),
                             International.getMessage("Ist diese Fahrt ein(e) {sessiontype}?", "..."),
-                            new String[] {
-                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_TOUR),
-                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_TRAININGCAMP),
-                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_LATEENTRY),
-                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_REGATTA),
-                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_JUMREGATTA),
-                                Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, sessType)
-                            })) {
-                        case 0:
-                            newSessType = EfaTypes.TYPE_SESSION_TOUR;
-                            break;
-                        case 1:
-                            newSessType = EfaTypes.TYPE_SESSION_TRAININGCAMP;
-                            break;
-                        case 2:
-                            newSessType = EfaTypes.TYPE_SESSION_LATEENTRY;
-                            break;
-                        case 3:
-                            newSessType = EfaTypes.TYPE_SESSION_REGATTA;
-                            break;
-                        case 4:
-                            newSessType = EfaTypes.TYPE_SESSION_JUMREGATTA;
-                            break;
+                            sessTypeDisplay.toArray(new String[0])));
+                    if (res >= 0 && res < sessTypeSelection.size()) {
+                        newSessType = sessTypeSelection.get(res);
                     }
                 }
             }
@@ -4334,6 +4340,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
         this.setTitle(International.getString("Nachtrag"));
         saveButton.setDescription(International.getStringWithMnemonic("Nachtrag"));
         createNewRecord(false);
+        date.parseAndShowValue(EfaUtil.getCurrentTimeStampDD_MM_YYYY());
 
         setFieldEnabled(false, true, entryno);
         setFieldEnabled(true, true, date);

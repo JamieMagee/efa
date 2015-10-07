@@ -2143,6 +2143,9 @@ public class StatisticTask extends ProgressTask {
                                 if (sr.sIsOFieldsReason) {
                                     fields.add(r.getReason());
                                 }
+                                if (sr.sIsOFieldsContact) {
+                                    fields.add(r.getContact());
+                                }
                                 calculateEntry(br.getQualifiedName() + StatisticsData.KEY_MODIFIER + count, br, r.getDateFrom(), fields, 0);
                             }
                         }

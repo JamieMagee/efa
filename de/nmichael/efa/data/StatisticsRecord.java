@@ -206,6 +206,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public static final String OFIELDS_RESERVEDTO     = "ReservedTo";
     public static final String OFIELDS_RESERVEDFOR    = "ReservedFor";
     public static final String OFIELDS_REASON         = "Reason";
+    public static final String OFIELDS_CONTACT        = "Contact";
     public static final String OFIELDS_DAMAGE         = "Damage";
     public static final String OFIELDS_DAMAGESEVERITY = "DamageSeverity";
     public static final String OFIELDS_REPORTEDON     = "ReportedOn";
@@ -445,6 +446,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public boolean sIsOFieldsReservedTo;
     public boolean sIsOFieldsReservedFor;
     public boolean sIsOFieldsReason;
+    public boolean sIsOFieldsContact;
     public boolean sIsOFieldsDamage;
     public boolean sIsOFieldsDamageSeverity;
     public boolean sIsOFieldsReportedOn;
@@ -1976,7 +1978,8 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
                             OFIELDS_RESERVEDFROM,
                             OFIELDS_RESERVEDTO,
                             OFIELDS_RESERVEDFOR,
-                            OFIELDS_REASON
+                            OFIELDS_REASON,
+                            OFIELDS_CONTACT
                     };
                 } else {
                     return new String[]{
@@ -1985,7 +1988,8 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
                             International.getString("Reserviert von"),
                             International.getString("Reserviert bis"),
                             International.getString("Reserviert für"),
-                            International.getString("Grund")
+                            International.getString("Grund"),
+                            International.getString("Kontakt")
                     };
                 }
             case boatdamages:
@@ -2990,6 +2994,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         sIsOFieldsReservedTo = false;
         sIsOFieldsReservedFor = false;
         sIsOFieldsReason = false;
+        sIsOFieldsContact = false;
         sIsOFieldsDamage = false;
         sIsOFieldsDamageSeverity = false;
         sIsOFieldsReportedOn = false;
@@ -3338,6 +3343,8 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
                 sIsOFieldsReservedFor = true;
             } else if (s.equals(OFIELDS_REASON)) {
                 sIsOFieldsReason = true;
+            } else if (s.equals(OFIELDS_CONTACT)) {
+                sIsOFieldsContact = true;
             } else if (s.equals(OFIELDS_DAMAGE)) {
                 sIsOFieldsDamage = true;
             } else if (s.equals(OFIELDS_DAMAGESEVERITY)) {
@@ -3654,6 +3661,9 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
             }
             if (sIsOFieldsReason) {
                 pTableColumns.add(International.getString("Grund"));
+            }
+            if (sIsOFieldsContact) {
+                pTableColumns.add(International.getString("Kontakt"));
             }
             if (sIsOFieldsDamage) {
                 pTableColumns.add(International.getString("Schaden"));

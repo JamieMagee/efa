@@ -245,7 +245,10 @@ public class EfaWettSelectAndCompleteDialog extends BaseDialog implements Action
             this.teiln4Label.setText("Aktive Mitglieder (weiblich bis 18): ");
         } else if (ew.wettId == WettDefs.LRVBERLIN_BLAUERWIMPEL) {
             this.meldungenLabel.setText("Ergebnisse für 'Blauer Wimpel'");
-            this.teilnLabel.setText("Anzahl der Mitglieder im Verein: ");
+            if (false && EfaUtil.string2int(ew.allg_wettjahr, 0) >= 2015) {
+                this.teilnLabel.setVisible(false);
+                this.teilnAnz.setVisible(false);
+            }
             this.teiln1Label.setText("gewertete Mitglieder: ");
             this.teiln2Label.setText("Gesamtkilometer der gewerteten Mitglieder: ");
             this.teiln3Label.setText("Kilometer pro gewertetes Mitglied: ");
@@ -992,7 +995,9 @@ public class EfaWettSelectAndCompleteDialog extends BaseDialog implements Action
                 break;
             case WettDefs.LRVBERLIN_BLAUERWIMPEL:
                 // Gesamtwerte berechnen
-                efaWett.verein_mitglieder = teilnAnz.getText();
+                if (true || EfaUtil.string2int(efaWett.allg_wettjahr, 0) < 2015) {
+                    efaWett.verein_mitglieder = teilnAnz.getText();
+                }
                 efaWett.wimpel_mitglieder = teiln1Anz.getText();
                 efaWett.wimpel_km = teiln2Anz.getText();
                 efaWett.wimpel_schnitt = teiln3Anz.getText();

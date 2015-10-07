@@ -2,6 +2,92 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.1_20</VersionID>
+        <ReleaseDate>06.10.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3602911</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Nachfrage nach Fahrtarten fragt jetzt nicht mehr nach nicht vorhandenen Fahrtarten</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Prompt for session type now does not offer non-configured session types</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_19</VersionID>
+        <ReleaseDate>27.09.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3602043</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Ausgabe von Mitgliedsnummer jetzt in CSV-Ausgabe möglich</ChangeItem>
+            <ChangeItem>Change: efa warnt jetzt bei Bootsbenutzung nur bei Bootsschäden, die unkritisch sind ("Boot voll benutzbar"). Falls efa auch bei Bootsschäden voll benutzbarer Boots warnen soll, kann die Option "Bei Bootsbenutzung auch im Fall von unkritischen Bootsschäden warnen" im Expertenmodus der efa-Konfigutation unter "efa-Bootshaus - Eingabe" gesetzt werden</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Output of membership number now possible in CSV output</ChangeItem>
+            <ChangeItem>Change: Per default, efa now only warns in case of critical boat damages, but not those where the boat is marked as fully useable</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_18</VersionID>
+        <ReleaseDate>30.08.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3601601</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Neu: Wettbewerbsbedingungen für LRV Berlin (Blauer Wimpel) aktualisiert für 2015</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_17</VersionID>
+        <ReleaseDate>26.08.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3601467</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Erstellen von mehreren Versionen von Gruppen ist jetzt möglich</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Creation of multi-versionized groups now possible</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_16</VersionID>
+        <ReleaseDate>24.08.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3601464</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Neu: Wettbewerbsbedingungen für LRV Berlin (Sommer-Wettbewerb und Blauer Wimpel) aktualisiert für 2015</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.1_15</VersionID>
+        <ReleaseDate>12.07.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>
+        <DownloadSize>3601066</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Neu: Kontaktinformationen bei Bootsreservierungen werden in Liste sowie Statistik der Bootsreservierungen jetzt angezeigt</ChangeItem>
+            <ChangeItem>Neu: Größe der Liste der 'nicht verfügbaren Boote' ist jetzt im Expertenmodus konfigurierbar</ChangeItem>
+            <ChangeItem>Bugfix: Fehler aus Version 2.2.1_14 (unbekannte Boote fehlen in Boots-Auswahllisten) behoben</ChangeItem>
+            <ChangeItem>Bugfix: Vorgeschlagenes Datum beim Nachtrag von Fahrten ist jetzt immer das aktuelle Datum (anstatt das Datum eines zuletzt erfaßten Eintrags)</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>New: Contact information of boat reservation is now displayed in reservation listst and statistics</ChangeItem>
+            <ChangeItem>Neu: Size of list 'not available boats' is now configurable in expert mode</ChangeItem>
+            <ChangeItem>Bugfix: Bug from version 2.2.1_14 (unknown boats missing in boat selection lists) fixed</ChangeItem>
+            <ChangeItem>Bugfix: Suggested data for late entries is now always the current date (instead that of a previous entry)</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.1_14</VersionID>
         <ReleaseDate>28.06.2015</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa221.zip</DownloadUrl>

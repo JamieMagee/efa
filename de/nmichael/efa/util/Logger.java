@@ -198,6 +198,7 @@ public class Logger {
     public static final String MSG_DATA_REPLAYINCOMPLETE  = "DAT053";
     public static final String MSG_DATA_DATAACCESS  = "DAT054";
     public static final String MSG_DATA_NOLOCKHELD  = "DAT055";
+    public static final String MSG_DATA_RECOVERYINFO  = "DAT056";
     
     public static final String MSG_REFA_SERVERSTATUS                 = "RMT001";
     public static final String MSG_REFA_SERVERERROR                  = "RMT002";

@@ -10,6 +10,7 @@
 
 package de.nmichael.efa.data;
 
+import de.nmichael.efa.Daten;
 import de.nmichael.efa.util.*;
 import de.nmichael.efa.data.storage.*;
 import de.nmichael.efa.ex.EfaModifyException;
@@ -115,6 +116,12 @@ public class BoatDamages extends StorageObject {
             assertFieldNotEmpty(record, BoatDamageRecord.DAMAGE);
             assertFieldNotEmpty(record, BoatDamageRecord.SEVERITY);
         }
+    }
+    
+    public static boolean warnDamage(BoatDamageRecord r) {
+        return (Daten.efaConfig.getValueWarnEvenNonCriticalBoatDamages() ||
+            BoatDamageRecord.SEVERITY_NOTUSEABLE.equals(r.getSeverity()) ||
+            BoatDamageRecord.SEVERITY_LIMITEDUSEABLE.equals(r.getSeverity()));
     }
     
 }
