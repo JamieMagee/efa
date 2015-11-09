@@ -270,9 +270,10 @@ public class PDFOutput {
                 writeRow(f, "Nachname:", sig.getNachname(), fontSize);
                 writeRow(f, "Jahrgang:", sig.getJahrgang(), fontSize);
                 writeRow(f, "Fahrtenabzeichen:", Integer.toString(sig.getAnzAbzeichen()), fontSize);
-                writeRow(f, "Kilometer (ges.):", Integer.toString(sig.getGesKm()), fontSize);
-                writeRow(f, "FAbzeichen (Jug A/B):", Integer.toString(sig.getAnzAbzeichenAB()), fontSize);
-                writeRow(f, "Kilometer (Jug A/B):", Integer.toString(sig.getGesKmAB()), fontSize);
+                writeRow(f, "Kilometer:", Integer.toString(sig.getGesKm()), fontSize);
+                //@AB writeRow(f, "Kilometer (ges.):", Integer.toString(sig.getGesKm()), fontSize);
+                //@AB writeRow(f, "FAbzeichen (Jug A/B):", Integer.toString(sig.getAnzAbzeichenAB()), fontSize);
+                //@AB writeRow(f, "Kilometer (Jug A/B):", Integer.toString(sig.getGesKmAB()), fontSize);
                 writeRow(f, "Meldejahr:", Integer.toString(sig.getJahr()), fontSize);
                 writeRow(f, "Kilometer " + Integer.toString(sig.getJahr()) + ":", Integer.toString(sig.getLetzteKm()), fontSize);
                 writeRow(f, "Ausstellungsdatum:", sig.getSignaturDatum(true), fontSize);

@@ -238,8 +238,6 @@ public class CompetitionLRVBerlinWinter extends Competition {
                                 participant.sAdditional += " (davon nur " + winterAnz + " wertbare Fahrten, da mehrere Fahrten am selben Tag)";
                             }
                         }
-                        participant.sCompAttr1 = Long.toString(sd[i].count);
-                        participant.sCompAttr2 = Integer.toString(anzMonate);
                         participant.compFulfilled = erfuellt;
 
                         // Berechnung der Winterfahrten (beide Ausgabemodi)

@@ -176,8 +176,9 @@ public class FahrtenabzeichenRecord extends DataRecord implements IItemListener 
         setInt(ABZEICHENAB, abzeichen);
     }
     public int getAbzeichenAB() {
-        int sigValue = Integer.parseInt(getDRVSignaturValue(ABZEICHENAB));
-        return (sigValue > 0 ? sigValue : getInt(ABZEICHENAB));
+        //@AB int sigValue = Integer.parseInt(getDRVSignaturValue(ABZEICHENAB));
+        //@AB return (sigValue > 0 ? sigValue : getInt(ABZEICHENAB));
+        return 0;
     }
 
     public void setKilometer(int km) {
@@ -192,8 +193,9 @@ public class FahrtenabzeichenRecord extends DataRecord implements IItemListener 
         setInt(KILOMETERAB, km);
     }
     public int getKilometerAB() {
-        int sigValue = Integer.parseInt(getDRVSignaturValue(KILOMETERAB));
-        return (sigValue > 0 ? sigValue : getInt(KILOMETERAB));
+        //@AB int sigValue = Integer.parseInt(getDRVSignaturValue(KILOMETERAB));
+        //@AB return (sigValue > 0 ? sigValue : getInt(KILOMETERAB));
+        return 0;
     }
 
     public void setFahrtenheft(String data) {
@@ -341,10 +343,10 @@ public class FahrtenabzeichenRecord extends DataRecord implements IItemListener 
                 IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.onlyFor("Anzahl der bereits erfüllten Abzeichen","de")));
         v.add(item = new ItemTypeInteger(FahrtenabzeichenRecord.KILOMETER, getKilometer(), 0, Integer.MAX_VALUE,
                 IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.onlyFor("Insgesamt bereits nachgewiesene Kilometer","de")));
-        v.add(item = new ItemTypeInteger(FahrtenabzeichenRecord.ABZEICHENAB, getAbzeichenAB(), 0, 99,
-                IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.onlyFor("... davon Abzeichen in den Jugend-Gruppen A/B","de")));
-        v.add(item = new ItemTypeInteger(FahrtenabzeichenRecord.KILOMETERAB, getKilometerAB(), 0, Integer.MAX_VALUE,
-                IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.onlyFor("... davon Kilometer in den Jugend-Gruppen A/B","de")));
+        //@AB v.add(item = new ItemTypeInteger(FahrtenabzeichenRecord.ABZEICHENAB, getAbzeichenAB(), 0, 99,
+        //@AB         IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.onlyFor("... davon Abzeichen in den Jugend-Gruppen A/B","de")));
+        //@AB v.add(item = new ItemTypeInteger(FahrtenabzeichenRecord.KILOMETERAB, getKilometerAB(), 0, Integer.MAX_VALUE,
+        //@AB         IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.onlyFor("... davon Kilometer in den Jugend-Gruppen A/B","de")));
         v.add(item = new ItemTypeString(GUI_LETZTESFAHRTENABZEICHEN, getLetzteMeldungDescription(),
                 IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.onlyFor("Letztes elektronisches Fahrtenabzeichen","de")));
         item.setEditable(false);
@@ -370,12 +372,12 @@ public class FahrtenabzeichenRecord extends DataRecord implements IItemListener 
         v.add(item = new ItemTypeString(GUI_ANZKM, "",
                 IItemType.TYPE_PUBLIC, CAT_FAHRTENABZEICHEN, International.onlyFor("Insgesamt nachgewiesene Kilometer", "de")));
         item.setEditable(false);
-        v.add(item = new ItemTypeString(GUI_ANZABZEICHENAB, "",
-                IItemType.TYPE_PUBLIC, CAT_FAHRTENABZEICHEN, International.onlyFor("... davon Fahrtenabzeichen Jugend A/B", "de")));
-        item.setEditable(false);
-        v.add(item = new ItemTypeString(GUI_ANZKMAB, "",
-                IItemType.TYPE_PUBLIC, CAT_FAHRTENABZEICHEN, International.onlyFor("... davon Kilometer Jugend A/B", "de")));
-        item.setEditable(false);
+        //@AB v.add(item = new ItemTypeString(GUI_ANZABZEICHENAB, "",
+        //@AB         IItemType.TYPE_PUBLIC, CAT_FAHRTENABZEICHEN, International.onlyFor("... davon Fahrtenabzeichen Jugend A/B", "de")));
+        //@AB item.setEditable(false);
+        //@AB v.add(item = new ItemTypeString(GUI_ANZKMAB, "",
+        //@AB         IItemType.TYPE_PUBLIC, CAT_FAHRTENABZEICHEN, International.onlyFor("... davon Kilometer Jugend A/B", "de")));
+        //@AB item.setEditable(false);
         v.add(item = new ItemTypeString(GUI_LETZTESJAHR, "",
                 IItemType.TYPE_PUBLIC, CAT_FAHRTENABZEICHEN, International.onlyFor("Jahr der letzten elektronischen Meldung", "de")));
         item.setEditable(false);
@@ -486,13 +488,13 @@ public class FahrtenabzeichenRecord extends DataRecord implements IItemListener 
                         !sigName.equals(person.getFirstLastName()));
         getGuiItem(ABZEICHEN).setEditable(drvSignatur == null);
         getGuiItem(KILOMETER).setEditable(drvSignatur == null);
-        getGuiItem(ABZEICHENAB).setEditable(drvSignatur == null);
-        getGuiItem(KILOMETERAB).setEditable(drvSignatur == null);
+        //@AB getGuiItem(ABZEICHENAB).setEditable(drvSignatur == null);
+        //@AB getGuiItem(KILOMETERAB).setEditable(drvSignatur == null);
         if (drvSignatur != null && drvSignatur.getSignatureState() == DRVSignatur.SIG_VALID) {
             getGuiItem(ABZEICHEN).parseAndShowValue(Integer.toString(drvSignatur.getAnzAbzeichen()));
             getGuiItem(KILOMETER).parseAndShowValue(Integer.toString(drvSignatur.getGesKm()));
-            getGuiItem(ABZEICHENAB).parseAndShowValue(Integer.toString(drvSignatur.getAnzAbzeichenAB()));
-            getGuiItem(KILOMETERAB).parseAndShowValue(Integer.toString(drvSignatur.getGesKmAB()));
+            //@AB getGuiItem(ABZEICHENAB).parseAndShowValue(Integer.toString(drvSignatur.getAnzAbzeichenAB()));
+            //@AB getGuiItem(KILOMETERAB).parseAndShowValue(Integer.toString(drvSignatur.getGesKmAB()));
         }
         updateGuiItem(GUI_YEAROFBIRTH, (person != null && person.getBirthday() != null && person.getBirthday().isSet() ? 
             Integer.toString(person.getBirthday().getYear()) : ""));

@@ -477,7 +477,25 @@ public class EfaTypes extends StorageObject {
                 !key.equals(TYPE_SESSION_GROUPTRIP)
                 );
     }  
+    
+    public static boolean couldBeDRVWanderfahrt(String stype) {
+        return stype == null ||
+                (!stype.equals(TYPE_SESSION_REGATTA) &&
+                 !stype.equals(TYPE_SESSION_TRAININGCAMP) &&
+                 !stype.equals(TYPE_SESSION_LATEENTRY) &&
+                 !stype.equals(TYPE_SESSION_MOTORBOAT) &&
+                 !stype.equals(TYPE_SESSION_ERG));
+    }
 
+    public static boolean cannotBeDRVWanderfahrt(String stype) {
+        return stype != null &&
+                (stype.equals(TYPE_SESSION_REGATTA) ||
+                 stype.equals(TYPE_SESSION_TRAININGCAMP) ||
+                 stype.equals(TYPE_SESSION_LATEENTRY) ||
+                 stype.equals(TYPE_SESSION_MOTORBOAT) ||
+                 stype.equals(TYPE_SESSION_ERG));
+    }
+    
     public ArrayList<String> getDefaultCanoeBoatTypes() {
         ArrayList<String> list = new ArrayList<String>();
         if (isConfigured(CATEGORY_BOAT, TYPE_BOAT_SEAKAYAK)) {

@@ -202,10 +202,10 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
     JTextField vKennung = new JTextField();
     JLabel jLabel50 = new JLabel();
     JTextField vProgramm = new JTextField();
-    JLabel jLabel51 = new JLabel();
-    JLabel jLabel52 = new JLabel();
-    JTextField mAnzAbzeichenAB = new JTextField();
-    JTextField mGesKmAB = new JTextField();
+    //@AB JLabel jLabel51 = new JLabel();
+    //@AB JLabel jLabel52 = new JLabel();
+    //@AB JTextField mAnzAbzeichenAB = new JTextField();
+    //@AB JTextField mGesKmAB = new JTextField();
     JButton mUnblockButton = new JButton();
     JLabel mFahrtenheft = new JLabel();
     JCheckBox mWirdGewertet = new JCheckBox();
@@ -647,10 +647,10 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             vProgramm.setMinimumSize(new Dimension(150, 17));
             vProgramm.setPreferredSize(new Dimension(150, 17));
             vProgramm.setEditable(false);
-            jLabel51.setText("davon Jug A/B: ");
-            jLabel52.setText("davon Jug A/B: ");
-            mAnzAbzeichenAB.setPreferredSize(new Dimension(70, 17));
-            mGesKmAB.setPreferredSize(new Dimension(70, 17));
+            //@AB jLabel51.setText("davon Jug A/B: ");
+            //@AB jLabel52.setText("davon Jug A/B: ");
+            //@AB mAnzAbzeichenAB.setPreferredSize(new Dimension(70, 17));
+            //@AB mGesKmAB.setPreferredSize(new Dimension(70, 17));
             mUnblockButton.setText("Felder zum Bearbeiten freigeben");
             mUnblockButton.addActionListener(new java.awt.event.ActionListener() {
 
@@ -1102,10 +1102,10 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             teilnDataPanel.add(jLabel46, new GridBagConstraints(10, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             teilnDataPanel.add(jLabel47, new GridBagConstraints(11, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             teilnDataPanel.add(jLabel48, new GridBagConstraints(12, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-            teilnDataPanel.add(jLabel51, new GridBagConstraints(3, 9, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
-            teilnDataPanel.add(jLabel52, new GridBagConstraints(4, 10, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
-            teilnDataPanel.add(mAnzAbzeichenAB, new GridBagConstraints(5, 9, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-            teilnDataPanel.add(mGesKmAB, new GridBagConstraints(6, 10, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+            //@AB teilnDataPanel.add(jLabel51, new GridBagConstraints(3, 9, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
+            //@AB teilnDataPanel.add(jLabel52, new GridBagConstraints(4, 10, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
+            //@AB teilnDataPanel.add(mAnzAbzeichenAB, new GridBagConstraints(5, 9, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+            //@AB teilnDataPanel.add(mGesKmAB, new GridBagConstraints(6, 10, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             teilnDataPanel.add(mUnblockButton, new GridBagConstraints(1, 12, 13, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 0), 0, 0));
             teilnDataPanel.add(mFahrtenheft, new GridBagConstraints(2, 11, 8, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             teilnDataPanel.add(mWirdGewertet, new GridBagConstraints(0, 13, 4, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
@@ -1384,8 +1384,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                     if (ewm.drvSignatur.getSignatureState() == DRVSignatur.SIG_VALID) {
                         ewm.drv_anzAbzeichen = Integer.toString(ewm.drvSignatur.getAnzAbzeichen());
                         ewm.drv_gesKm = Integer.toString(ewm.drvSignatur.getGesKm());
-                        ewm.drv_anzAbzeichenAB = Integer.toString(ewm.drvSignatur.getAnzAbzeichenAB());
-                        ewm.drv_gesKmAB = Integer.toString(ewm.drvSignatur.getGesKmAB());
+                        //@AB ewm.drv_anzAbzeichenAB = Integer.toString(ewm.drvSignatur.getAnzAbzeichenAB());
+                        //@AB ewm.drv_gesKmAB = Integer.toString(ewm.drvSignatur.getGesKmAB());
                         ewm.drv_teilnNr = ewm.drvSignatur.getTeilnNr();
                         if (ewm.drvSignatur.getJahr() >= Main.drvConfig.aktJahr) {
                             ewm.sigError = (ewm.sigError == null ? "" : ewm.sigError + "\n")
@@ -1445,8 +1445,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             printDiff("Abzeichen", ewmOld.abzeichen, ewmCur.abzeichen);
             printDiff("AnzAbzeichen", ewmOld.drv_anzAbzeichen, ewmCur.drv_anzAbzeichen);
             printDiff("GesKm", ewmOld.drv_gesKm, ewmCur.drv_gesKm);
-            printDiff("AnzAbzeichenAB", ewmOld.drv_anzAbzeichenAB, ewmCur.drv_anzAbzeichenAB);
-            printDiff("GesKmAB", ewmOld.drv_gesKmAB, ewmCur.drv_gesKmAB);
+            //@AB printDiff("AnzAbzeichenAB", ewmOld.drv_anzAbzeichenAB, ewmCur.drv_anzAbzeichenAB);
+            //@AB printDiff("GesKmAB", ewmOld.drv_gesKmAB, ewmCur.drv_gesKmAB);
             printDiff("Fahrtenheft", ewmOld.drv_fahrtenheft, ewmCur.drv_fahrtenheft);
             printDiff("Äquatorpreis", ewmOld.drv_aequatorpreis, ewmCur.drv_aequatorpreis);
             printDiff("LfdNr", ewmOld.drvWS_LfdNr, ewmCur.drvWS_LfdNr);
@@ -1600,8 +1600,9 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             erwachsen = false;
         }
         int anzAbzeichen = EfaUtil.string2int(ewm.drv_anzAbzeichen, 0);
-        int anzAbzeichenAB = EfaUtil.string2int(ewm.drv_anzAbzeichenAB, 0);
-        String abzeichen = WettDefs.getDRVAbzeichen(erwachsen, anzAbzeichen, anzAbzeichenAB, Main.drvConfig.aktJahr);
+        //@AB int anzAbzeichenAB = EfaUtil.string2int(ewm.drv_anzAbzeichenAB, 0);
+        //@AB String abzeichen = WettDefs.getDRVAbzeichen(erwachsen, anzAbzeichen, anzAbzeichenAB, Main.drvConfig.aktJahr);
+        String abzeichen = WettDefs.getDRVAbzeichen(erwachsen, anzAbzeichen, 0, Main.drvConfig.aktJahr);
         if (abzeichen != null && ewm.abzeichen != null && !abzeichen.equals(ewm.abzeichen)) {
             if (ewm.abzeichen.length() == 2 && abzeichen.startsWith(ewm.abzeichen)) {
                 // ok (altes Format), nothing to do
@@ -1617,7 +1618,7 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
 
     String checkAndCorrectAequator(EfaWettMeldung ewm) {
         int gesKm = EfaUtil.string2int(ewm.drv_gesKm, 0);
-        int gesKmAB = EfaUtil.string2int(ewm.drv_gesKmAB, 0);
+        //@AB int gesKmAB = EfaUtil.string2int(ewm.drv_gesKmAB, 0);
         int aeqKm = gesKm; // - gesKmAB; (seit 2007 zählen auch die AB-Kilometer zum Äquatorpreis)
         int anzAeqBefore = aeqKm / WettDefs.DRV_AEQUATOR_KM;
         int anzAeqJetzt = (aeqKm + EfaUtil.string2int(ewm.kilometer, 0)) / WettDefs.DRV_AEQUATOR_KM;
@@ -1653,16 +1654,16 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             return "null";
         }
         int anzAbzeichen = EfaUtil.string2int(ewm.drv_anzAbzeichen, 0);
-        int anzAbzeichenAB = EfaUtil.string2int(ewm.drv_anzAbzeichenAB, 0);
+        //@AB int anzAbzeichenAB = EfaUtil.string2int(ewm.drv_anzAbzeichenAB, 0);
         int gesKm = EfaUtil.string2int(ewm.drv_gesKm, 0);
         int gesKmAB = EfaUtil.string2int(ewm.drv_gesKmAB, 0);
 
-        if (anzAbzeichenAB > anzAbzeichen) {
-            return "Der Teilnehmer darf nicht mehr A/B-Abzeichen als Gesamt-Abzeichen haben! Bitte überprüfen!";
-        }
-        if (gesKmAB > gesKm) {
-            return "Der Teilnehmer darf nicht mehr A/B-Kilometer als Gesamt-Kilometer haben! Bitte überprüfen!";
-        }
+        //@AB if (anzAbzeichenAB > anzAbzeichen) {
+        //@AB     return "Der Teilnehmer darf nicht mehr A/B-Abzeichen als Gesamt-Abzeichen haben! Bitte überprüfen!";
+        //@AB }
+        //@AB if (gesKmAB > gesKm) {
+        //@AB     return "Der Teilnehmer darf nicht mehr A/B-Kilometer als Gesamt-Kilometer haben! Bitte überprüfen!";
+        //@AB }
         return null;
     }
 
@@ -1862,8 +1863,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                 mAequatorpreis.setForeground((!aeq.startsWith("(") && !aeq.equals("nein") ? Color.blue : Color.black));
                 this.mAnzAbzeichen.setText(notNull(ewmCur.drv_anzAbzeichen));
                 this.mGesKm.setText(notNull(ewmCur.drv_gesKm));
-                this.mAnzAbzeichenAB.setText(notNull(ewmCur.drv_anzAbzeichenAB));
-                this.mGesKmAB.setText(notNull(ewmCur.drv_gesKmAB));
+                //@AB this.mAnzAbzeichenAB.setText(notNull(ewmCur.drv_anzAbzeichenAB));
+                //@AB this.mGesKmAB.setText(notNull(ewmCur.drv_gesKmAB));
                 this.mWirdGewertet.setSelected(ewmCur.drvint_wirdGewertet);
                 updateStatusNichtGewertetGrund();
                 this.mNichtGewertetGrund.setText((ewmCur.drvint_nichtGewertetGrund == null ? "" : ewmCur.drvint_nichtGewertetGrund));
@@ -1987,14 +1988,15 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                 ewm.drv_aequatorpreis = findValue(hAequator, mAequatorpreis.getText());
                 ewm.drv_anzAbzeichen = field2int(mAnzAbzeichen);
                 ewm.drv_gesKm = field2int(mGesKm);
-                ewm.drv_anzAbzeichenAB = field2int(mAnzAbzeichenAB);
-                ewm.drv_gesKmAB = field2int(mGesKmAB);
+                //@AB ewm.drv_anzAbzeichenAB = field2int(mAnzAbzeichenAB);
+                //@AB ewm.drv_gesKmAB = field2int(mGesKmAB);
 
                 if (ewm.drvSignatur != null && ewm.drvSignatur.getSignatureState() == DRVSignatur.SIG_VALID) {
                     if (!ewm.drv_anzAbzeichen.equals(Integer.toString(ewm.drvSignatur.getAnzAbzeichen()))
                             || !ewm.drv_gesKm.equals(Integer.toString(ewm.drvSignatur.getGesKm()))
-                            || !ewm.drv_anzAbzeichenAB.equals(Integer.toString(ewm.drvSignatur.getAnzAbzeichenAB()))
-                            || !ewm.drv_gesKmAB.equals(Integer.toString(ewm.drvSignatur.getGesKmAB()))) {
+                            //@AB || !ewm.drv_anzAbzeichenAB.equals(Integer.toString(ewm.drvSignatur.getAnzAbzeichenAB()))
+                            //@AB || !ewm.drv_gesKmAB.equals(Integer.toString(ewm.drvSignatur.getGesKmAB()))
+                            ) {
                         if (Dialog.auswahlDialog("Achtung",
                                 "Du hast die durch das elektronische Fahrtenheft nachgewiesene Anzahl an\n"
                                 + "bereits erbrachten Abzeichen und Kilometern verändert, so daß diese nicht\n"
@@ -2008,8 +2010,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                             // Änderungen verwerfen und elektr. Fahrtenheft beibehalten
                             ewm.drv_anzAbzeichen = Integer.toString(ewm.drvSignatur.getAnzAbzeichen());
                             ewm.drv_gesKm = Integer.toString(ewm.drvSignatur.getGesKm());
-                            ewm.drv_anzAbzeichenAB = Integer.toString(ewm.drvSignatur.getAnzAbzeichenAB());
-                            ewm.drv_gesKmAB = Integer.toString(ewm.drvSignatur.getGesKmAB());
+                            //@AB ewm.drv_anzAbzeichenAB = Integer.toString(ewm.drvSignatur.getAnzAbzeichenAB());
+                            //@AB ewm.drv_gesKmAB = Integer.toString(ewm.drvSignatur.getGesKmAB());
                         } else {
                             // Änderungen übernehmen und elektr. Fahrtenheft ignorieren
                             ewm.drvSignatur = null;
@@ -2196,7 +2198,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
         int km = EfaUtil.zehntelString2Int(ewm.kilometer);
 
         int wafaKm = 0;
-        int wafaAnzTage = 0;
+        int wafaAnzMehrtages = 0;
+        int wafaAnzTages = 0;
         int jumAnz = 0;
         if (ewm.fahrt != null) {
             for (int i = 0; i < ewm.fahrt.length && i < MAX_FAHRTEN; i++) {
@@ -2216,7 +2219,14 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                     TMJ von = EfaUtil.string2date(ewm.fahrt[i][1], 0, 0, 0);
                     TMJ bis = EfaUtil.string2date(ewm.fahrt[i][2], 0, 0, 0);
                     if (von.tag != 0 && von.monat != 0 && von.jahr != 0 && bis.tag != 0 && bis.monat != 0 && bis.jahr != 0) {
-                        wafaAnzTage += EfaUtil.getDateDiff(von, bis);
+                        int tage = EfaUtil.getDateDiff(von, bis);
+                        if (tage > 1) {
+                            wafaAnzMehrtages += tage;
+                        } else {
+                            if (EfaUtil.zehntelString2Int(ewm.fahrt[i][4]) >= 300) {
+                                wafaAnzTages++;
+                            }
+                        }
                     }
                 }
                 if (jum) {
@@ -2226,10 +2236,16 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
         }
         if (ewm.drvint_fahrtErfuellt) { // nicht Zusatzbedingungen prüfen, sondern als erfüllt betrachten
             wafaKm = 99999;
-            wafaAnzTage = 99999;
+            wafaAnzMehrtages = 99999;
             jumAnz = 99999;
         }
-        return Daten.wettDefs.erfuellt(WettDefs.DRV_FAHRTENABZEICHEN, Main.drvConfig.aktJahr, jahrgang, geschlecht, behind, km, wafaKm / 10, wafaAnzTage, jumAnz, 0);
+        return Daten.wettDefs.erfuellt(WettDefs.DRV_FAHRTENABZEICHEN, 
+                Main.drvConfig.aktJahr, 
+                jahrgang, geschlecht, behind, 
+                km, 
+                wafaKm / 10, 
+                wafaAnzMehrtages + 2*wafaAnzTages, 
+                jumAnz, 0);
     }
 
     void bestaetigenButton_actionPerformed(ActionEvent e) {
@@ -2339,9 +2355,9 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
 
                 // aktuelle Anzahl der Abzeichen
                 int anzAbz = EfaUtil.string2int(m.drv_anzAbzeichen, 0);
-                int anzAbzAB = EfaUtil.string2int(m.drv_anzAbzeichenAB, 0);
+                //@AB int anzAbzAB = EfaUtil.string2int(m.drv_anzAbzeichenAB, 0);
                 int gesKm = EfaUtil.string2int(m.drv_gesKm, 0);
-                int gesKmAB = EfaUtil.string2int(m.drv_gesKmAB, 0);
+                //@AB int gesKmAB = EfaUtil.string2int(m.drv_gesKmAB, 0);
 
                 // Gruppe, für die der Teilnehmer erfüllt hat
                 String gruppe = getGruppe(ew, m);
@@ -2360,19 +2376,19 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                 // Abzeichen und Kilometer hochzählen
                 anzAbz++;
                 gesKm += EfaUtil.string2int(m.kilometer, 0);
-                boolean isAB = (gruppe.startsWith("3a") || gruppe.startsWith("3b"));
-                if (isAB) {
-                    anzAbzAB++;
-                    gesKmAB += EfaUtil.string2int(m.kilometer, 0);
-                }
+                //@AB boolean isAB = (gruppe.startsWith("3a") || gruppe.startsWith("3b"));
+                //@AB if (isAB) {
+                //@AB     anzAbzAB++;
+                //@AB     gesKmAB += EfaUtil.string2int(m.kilometer, 0);
+                //@AB }
 
                 // Anzahl Abzeichen und Kilometer prüfen
-                if (anzAbz < anzAbzAB || gesKm < gesKmAB) {
-                    errors += "Teilnehmer " + (i + 1) + " (" + m.vorname + " " + m.nachname + ") wurde nicht gewertet, da er/sie ungültige Werte der Abzeichen/Kilometer (mehr AB als normal) hat.\n";
-                    nichtGewerteteTeilnehmer.add(m.vorname + " " + m.nachname + " (Grund: Unstimmige Werte der Abzeichen/Kilometer für Jugend-A/B)");
-                    m.drvint_wirdGewertet = false;
-                    continue;
-                }
+                //@AB if (anzAbz < anzAbzAB || gesKm < gesKmAB) {
+                //@AB     errors += "Teilnehmer " + (i + 1) + " (" + m.vorname + " " + m.nachname + ") wurde nicht gewertet, da er/sie ungültige Werte der Abzeichen/Kilometer (mehr AB als normal) hat.\n";
+                //@AB     nichtGewerteteTeilnehmer.add(m.vorname + " " + m.nachname + " (Grund: Unstimmige Werte der Abzeichen/Kilometer für Jugend-A/B)");
+                //@AB     m.drvint_wirdGewertet = false;
+                //@AB     continue;
+                //@AB }
 
                 if (!Main.drvConfig.readOnlyMode) {
                     // ggf. neue Teilnehmernummer generieren
@@ -2403,7 +2419,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                         }
                         DRVSignatur sig = new DRVSignatur(m.drv_teilnNr, 
                                 m.vorname, m.nachname, m.jahrgang,
-                                anzAbz, gesKm, anzAbzAB, gesKmAB, jahr, EfaUtil.string2int(m.kilometer, 0), null,
+                        //@AB         anzAbz, gesKm, anzAbzAB, gesKmAB, jahr, EfaUtil.string2int(m.kilometer, 0), null,
+                                anzAbz, gesKm, 0, 0, jahr, EfaUtil.string2int(m.kilometer, 0), null,        
                                 DRVConfig.VERSION, keynr,
                                 privKey);
                         sig.checkSignature();
@@ -2665,8 +2682,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
         this.mKilometer.setEditable(!blocked);
         this.mAnzAbzeichen.setEditable(!blocked);
         this.mGesKm.setEditable(!blocked);
-        this.mAnzAbzeichenAB.setEditable(!blocked);
-        this.mGesKmAB.setEditable(!blocked);
+        //@AB this.mAnzAbzeichenAB.setEditable(!blocked);
+        //@AB this.mGesKmAB.setEditable(!blocked);
         for (int i = 0; this.mFahrten != null && i < this.mFahrten.length; i++) {
             for (int j = 0; this.mFahrten[i] != null && j < this.mFahrten[i].length; j++) {
                 this.mFahrten[i][j].setEditable(!blocked);

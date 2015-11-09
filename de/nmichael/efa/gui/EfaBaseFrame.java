@@ -81,6 +81,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
     ItemTypeDistance distance;
     ItemTypeString comments;
     ItemTypeStringList sessiontype;
+    ItemTypeLabel sessionTypeInfo;
     ItemTypeStringAutoComplete sessiongroup;
     public static final String GUIITEM_ADDITIONALWATERS = "GUIITEM_ADDITIONALWATERS";
 
@@ -709,8 +710,13 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
         sessiontype.setBackgroundColorWhenFocused(Daten.efaConfig.getValueEfaDirekt_colorizeInputField() ? Color.yellow : null);
         sessiontype.displayOnGui(this, mainInputPanel, 0, 16);
         sessiontype.registerItemListener(this);
+        
+        // Session Type Info
+        sessionTypeInfo = new ItemTypeLabel("SESSIONTYPE_LABEL", IItemType.TYPE_PUBLIC, null, "");
+        sessionTypeInfo.setFieldGrid(5, GridBagConstraints.WEST, GridBagConstraints.NONE);
+        sessionTypeInfo.displayOnGui(this, mainInputPanel, 5, 16);
 
-        // Session Type
+        // Session Group
         sessiongroup = new ItemTypeStringAutoComplete(LogbookRecord.SESSIONGROUPID,
                 "", IItemType.TYPE_PUBLIC, null,
                 International.getStringWithMnemonic("Fahrtgruppe"), true);
@@ -1328,6 +1334,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
         currentBoatUpdateGui( (r != null && r.getBoatVariant() > 0 ? r.getBoatVariant() : -1) );
         setCrewRangeSelection(0);
         setEntryUnchanged();
+        updateSessionTypeInfo();
         entryNoForNewEntry = -1; // -1 bedeutet, daß beim nächsten neuen Datensatz die LfdNr "last+1" vorgegeben wird
         if (r == null) {
             date.requestFocus();
@@ -3300,7 +3307,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             }
             if (item == saveButton) {
                 saveEntry();
-            }
+            }            
         }
         if (id == FocusEvent.FOCUS_GAINED) {
             showHint(item.getName());
@@ -3378,6 +3385,9 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
                    efaBaseFrameFocusManager.focusNextItem(distance, distance.getComponent());
                }
             }
+            if (item == distance) {
+                updateSessionTypeInfo();
+            }
         }
         if (id == KeyEvent.KEY_PRESSED && event instanceof KeyEvent) {
             KeyEvent e = (KeyEvent)event;
@@ -3411,6 +3421,11 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
                 }
             }
         }
+        if (id == KeyEvent.KEY_RELEASED && event instanceof KeyEvent) {
+            if (item == distance) {
+                updateSessionTypeInfo();
+            }
+        }
         if (id == MouseEvent.MOUSE_CLICKED) {
             if (item instanceof ItemTypeLabelValue) {
                 selectBoatCaptain(item.getName());
@@ -3423,6 +3438,9 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             if (item == boatvariant) {
                 int variant = EfaUtil.stringFindInt(boatvariant.getValueFromField(), -1);
                 currentBoatUpdateGui(variant);
+            }
+            if (item == sessiontype) {
+                updateSessionTypeInfo();
             }
         }
         if (id == ItemTypeDate.ACTIONID_FIELD_EXPANDED && item == enddate) {
@@ -3524,6 +3542,30 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             return;
         }
         infoLabel.setText(" ");
+    }
+    
+    void updateSessionTypeInfo() {
+        if (sessiontype != null && sessiontype.isVisible()) {
+            String sess = sessiontype.getValueFromField();
+            DataTypeDistance dist = DataTypeDistance.parseDistance(distance.getValueFromField());
+            long days = 1;
+            if (enddate != null && enddate.isVisible() && date != null && date.isVisible() &&
+                date.isSet() && enddate.isSet()) {
+                days = enddate.getDate().getDifferenceDays(date.getDate()) + 1;
+            }
+            if (sess != null && sess.length() > 0 && dist != null && 
+                (dist.getValueInMeters() >= 40000 || (days == 1 && dist.getValueInMeters() >= 30000))) {
+                if (EfaTypes.couldBeDRVWanderfahrt(sess)) {
+                    sessionTypeInfo.setDescription(International.getString("zählt als DRV-Wanderfahrt"));
+                } else if (EfaTypes.cannotBeDRVWanderfahrt(sess)) {
+                    sessionTypeInfo.setDescription(International.getString("zählt NICHT als DRV-Wanderfahrt"));
+                } else {
+                    sessionTypeInfo.setDescription("");
+                }
+            } else {
+                sessionTypeInfo.setDescription("");
+            }
+        }
     }
 
     void insertLastValue(KeyEvent e, ItemTypeLabelValue item) {

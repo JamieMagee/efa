@@ -78,8 +78,6 @@ public class StatisticsData implements Comparable {
     String sDamageAvgDuration;
     String sAdditional;
     String[][] sDetailsArray;
-    String sCompAttr1;
-    String sCompAttr2;
     String sCompWarning;
     String sClubwork;
     String sClubworkTarget;

@@ -357,7 +357,6 @@ public class CompetitionLRVBerlinSommer extends Competition {
                                         sr.sIsOutputCompShort,
                                         sr.sIsOutputCompAdditionalWithRequirements,
                                         gruppen[g].zusatz);
-                                participant.sCompAttr1 = Integer.toString(countedZf);
                                 if (!erfuellt && countedZf < sd[i].destinationAreas.getAnzZielfahrten()) {
                                     participant.sCompWarning = "möglicherweise mehrere Zielfahrten am selben Tag";
                                 }

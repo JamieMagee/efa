@@ -81,13 +81,13 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
         return false;
     }
 
-    public static Hashtable<String, DRVFahrt> getWanderfahrten(StatisticsData sd, boolean gruppe3ab) {
+    public static Hashtable<String, DRVFahrt> getWanderfahrten(StatisticsData sd, boolean gruppe3abc) {
         Hashtable<String, DRVFahrt> wanderfahrten = new Hashtable<String, DRVFahrt>();
 
         for (int j = 0; sd.sessionHistory != null && j < sd.sessionHistory.size(); j++) {
             LogbookRecord r = sd.sessionHistory.get(j);
             boolean jum = r.getSessionType().equals(EfaTypes.TYPE_SESSION_JUMREGATTA);
-            if (jum && !gruppe3ab) {
+            if (jum && !gruppe3abc) {
                 continue;
             }
             SessionGroupRecord sessionGroup = r.getSessionGroup();
@@ -159,6 +159,9 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
         if (wett == null) {
             return;
         }
+        int ABC3 = (sr.sCompYear < 2015 ? 
+                            2 : // bis 2014: 3ab
+                            3); // ab 2015: 3abc
         sr.pTableColumns = null;
         WettDefGruppe[] gruppen = wett.gruppen;
         int jahrgang;
@@ -217,11 +220,11 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                         && Daten.wettDefs.inGruppe(WettDefs.DRV_FAHRTENABZEICHEN, sr.sCompYear, g, jahrgang, sd[i].gender, sd[i].disabled)) {
                     // Teilnehmer ist in der Gruppe!
                     
-                    // is Gruppe 3 a/b
-                    boolean gruppe3ab = gruppen[g].gruppe == 3 && gruppen[g].untergruppe <= 2;
+                    // is Gruppe 3 a/b/c
+                    boolean gruppe3abc = gruppen[g].gruppe == 3 && gruppen[g].untergruppe <= ABC3;
 
                     // Wanderfahrten zusammenstellen
-                    Hashtable<String,DRVFahrt> wanderfahrten = getWanderfahrten(sd[i], gruppe3ab);
+                    Hashtable<String,DRVFahrt> wanderfahrten = getWanderfahrten(sd[i], gruppe3abc);
 
                     boolean mehrFahrten = false;
                     String[][] wafa = new String[7][6]; // 7 Einträge mit jeweils LfdNr/Abfahrt/Ankunft/Ziel/Km/Bemerk
@@ -241,8 +244,9 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                     long hoechst = 0;
                     int hoechstEl = 0; // zum Ermitteln des höchsten verbleibenden Elements
                     long wafaMeters = 0; // Wafa-Meter aller auszugebenden Fahrten
-                    int wafaAnzMTour = 0; // für Gruppe 3: Anzahl der Tage durch Mehrtagestouren
-                    int jumAnz = 0;       // für Gruppe 3 a/b: Anzahl der JuM-Regatten
+                    int wafaAnzMTour = 0; // für Gruppe 3: Anzahl der Tage durch Wochenendfahrten (2 Tage ohne Km-Beschränkung)
+                    int wafaAnzTTour = 0; // für Gruppe 3: Anzahl der 30 Km Tagesfahrten
+                    int jumAnz = 0;       // für Gruppe 3 a/b/c: Anzahl der JuM-Regatten
                     DRVFahrt drvel = null, bestEl = null;
                     for (int nr = 0; nr < wafa.length + 1; nr++) { // max. für 7 auszufüllende Felder Fahrten suchen (plus 1 weitere, die aber nicht gemerkt wird)
                         hoechst = 0; // höchste verbleibende KmZahl oder Tagezahl
@@ -254,7 +258,11 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                                     drvel != null && // und die wirklich vorhanden ist, außerdem:
                                     ((gruppen[g].gruppe != 3 && drvel.ok && drvel.distanceInMeters > hoechst) || // Gruppe 1/2: Fahrt "ok", d.h. >30 bzw. >40 Km
                                     (gruppen[g].gruppe == 3 && drvel.days > hoechst && // Gruppe 3:
-                                    (drvel.days > 1 || drvel.jum && gruppen[g].untergruppe <= 2) // echte Mehrtagesfahrt oder JuM bei Gr. 3 a/b
+                                      ( // diverse Kriterien für Gruppe 3
+                                            drvel.days > 1 ||                                       // Wochenend-Fahrt
+                                            (drvel.days == 1 && drvel.distanceInMeters >= 30000) || // Tagesfahrt
+                                            (drvel.jum && gruppen[g].untergruppe <= ABC3)           // JuM-Regatta
+                                      )
                                     ))) {
                                 bestEl = drvel;
                                 if (gruppen[g].gruppe != 3) {
@@ -269,10 +277,25 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                             hoechst = 0;
                             mehrFahrten = true; // merken, daß es mehr Fahrten als die ausgegebenen gibt
                         }
+                        /** Gruppe 3:
+                         * Mindestbedingungen (eine der angegebenen)
+                         * - 1 x Dreitagesfahrt (egal wieviele Km)
+                         * oder
+                         * - 2 x 1 Wochenendfahrt (egal wieviele Km) (>= 4 Tage insg)
+                         * - 2 x 1 Tagesfahrt (mind. 30 Km)
+                         * - 2 x 1 JuM Regatten (nur Untergruppen a/b/c)
+                         * oder eine Kombination aus Wochenendfahrt, Tagesfahrt, und/oder 2 JuM Regatten
+                         * Erfüllt wenn:
+                         *     (wafaAnzMTour + 2*wafaAnzTTour) >= 3
+                         *        wafaAnzMTour == 3 wenn Dreitagesfahrt
+                         *        wafaAnzMTour == 4 wenn 2 Wochenendfahrten (oder längere Fahrten)
+                         *        wafaAnzTTour == 2 wenn 2 Tagesfahrten
+                         *        wafaAnzMTour == 2 && wafaAnzTTour == 1 wenn 1 Wochenendfahrt und 1 Tagesfahrt
+                         */
                         if (hoechst > 0 && // was gefunden?
                                 (nr < 5 || // weniger als 5 Einträge, oder ...
                                 (wafaMeters / 10 < gruppen[g].zusatz && gruppen[g].gruppe != 3) || // noch Km nötig
-                                (wafaAnzMTour < 3 && gruppen[g].gruppe == 3))) {         // noch Fahrten nötig
+                                ( (wafaAnzMTour + 2*wafaAnzTTour) < 3 && gruppen[g].gruppe == 3))) {         // noch Fahrten nötig
                             ausg[hoechstEl] = true;
                             wafa[nr][0] = bestEl.entryNo;
                             wafa[nr][1] = bestEl.dateStart.toString();
@@ -288,7 +311,11 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                             }
                             wafaMeters += bestEl.distanceInMeters;
                             if (!bestEl.jum) {
-                                wafaAnzMTour += bestEl.days;
+                                if (bestEl.days > 1) {
+                                    wafaAnzMTour += bestEl.days;
+                                } else {
+                                    wafaAnzTTour++;
+                                }
                             } else {
                                 jumAnz++;
                             }
@@ -315,7 +342,7 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                             sd[i].disabled,
                             sd[i].distance,
                             (int)(totalWafaMeters / 1000),
-                            wafaAnzMTour,
+                            (wafaAnzMTour + 2*wafaAnzTTour),
                             jumAnz,
                             0);
 
@@ -443,7 +470,6 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                                 if (gruppen[g].gruppe < 3) {
                                     if (sr.sIsOutputCompShort) {
                                         if (sr.sIsOutputCompAdditionalWithRequirements) {
-
                                             participant.sAdditional = totalWafaKm + "/" + gruppen[g].zusatz + " Wafa-Km";
                                         } else {
                                             participant.sAdditional = totalWafaKm + " Wafa-Km";
@@ -451,7 +477,6 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                                     } else {
                                         participant.sAdditional = totalWafaKm + " Wanderfahrt-Km";
                                     }
-                                    participant.sCompAttr1 = totalWafaKm;
                                 } else {
                                     if (sr.sIsOutputCompShort) {
                                         if (sr.sIsOutputCompAdditionalWithRequirements) {
@@ -462,15 +487,16 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                                     } else {
                                         participant.sAdditional = wafaAnzMTour + " Tage durch Wanderfahrten";
                                     }
-                                    participant.sCompAttr2 = Integer.toString(wafaAnzMTour);
+                                    if (wafaAnzTTour > 0 || !sr.sIsOutputCompShort) {
+                                        participant.sAdditional += ", " + wafaAnzTTour + " Tagesfahrten";
+                                    }
                                 }
-                                if (gruppen[g].gruppe == 3 && gruppen[g].untergruppe <= 2) {
+                                if (gruppen[g].gruppe == 3 && gruppen[g].untergruppe <= ABC3) {
                                     if (sr.sIsOutputCompShort) {
                                         participant.sAdditional += ", " + jumAnz + " JuM";
                                     } else {
                                         participant.sAdditional += ", " + jumAnz + " JuM-Regatten";
                                     }
-                                    participant.sCompAttr1 = Integer.toString(jumAnz);
                                 }
                             }
                             participant.compFulfilled = erfuellt;
