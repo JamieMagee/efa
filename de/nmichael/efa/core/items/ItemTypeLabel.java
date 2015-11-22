@@ -134,6 +134,9 @@ public class ItemTypeLabel extends ItemType {
 
     public void setImage(ImageIcon icon) {
         this.icon = icon;
+        if (labels != null && labels.length > 0 && labels[0] != null) {
+            labels[0].setIcon(icon);
+        }
     }
 
     public void activateMouseClickListener() {

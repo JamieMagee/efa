@@ -115,6 +115,7 @@ public class Main extends Program {
     }
 
     public static void main(String[] args) {
+        System.setProperty("java.awt.headless", "true");
         new Main(args);
     }
 

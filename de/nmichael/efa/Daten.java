@@ -13,6 +13,13 @@ import de.nmichael.efa.data.efawett.WettDefs;
 import de.nmichael.efa.core.config.*;
 import de.nmichael.efa.core.items.*;
 import de.nmichael.efa.core.*;
+import static de.nmichael.efa.core.config.EfaTypes.CATEGORY_SESSION;
+import static de.nmichael.efa.core.config.EfaTypes.TYPE_SESSION_INSTRUCTION;
+import static de.nmichael.efa.core.config.EfaTypes.TYPE_SESSION_JUMREGATTA;
+import static de.nmichael.efa.core.config.EfaTypes.TYPE_SESSION_NORMAL;
+import static de.nmichael.efa.core.config.EfaTypes.TYPE_SESSION_REGATTA;
+import static de.nmichael.efa.core.config.EfaTypes.TYPE_SESSION_TOUR;
+import static de.nmichael.efa.core.config.EfaTypes.TYPE_SESSION_TRAINING;
 import de.nmichael.efa.data.*;
 import de.nmichael.efa.data.storage.DataFile;
 import de.nmichael.efa.data.storage.RemoteEfaServer;
@@ -32,12 +39,12 @@ import javax.swing.plaf.ColorUIResource;
 // @i18n complete
 public class Daten {
 
-    public final static String VERSION            = "2.2.1"; // Version für die Ausgabe (z.B. 2.1.0, kann aber auch Zusätze wie "alpha" o.ä. enthalten)
-    public final static String VERSIONID          = "2.2.1_20";   // VersionsID: Format: "X.Y.Z_MM"; final-Version z.B. 1.4.0_00; beta-Version z.B. 1.4.0_#1
-    public final static String VERSIONRELEASEDATE = "06.10.2015";  // Release Date: TT.MM.JJJJ
+    public final static String VERSION            = "2.2.2beta"; // Version für die Ausgabe (z.B. 2.1.0, kann aber auch Zusätze wie "alpha" o.ä. enthalten)
+    public final static String VERSIONID          = "2.2.2_#1";   // VersionsID: Format: "X.Y.Z_MM"; final-Version z.B. 1.4.0_00; beta-Version z.B. 1.4.0_#1
+    public final static String VERSIONRELEASEDATE = "22.11.2015";  // Release Date: TT.MM.JJJJ
     public final static String MAJORVERSION       = "2";
-    public final static String PROGRAMMID         = "EFA.221"; // Versions-ID für Wettbewerbsmeldungen
-    public final static String PROGRAMMID_DRV     = "EFADRV.221"; // Versions-ID für Wettbewerbsmeldungen
+    public final static String PROGRAMMID         = "EFA.222"; // Versions-ID für Wettbewerbsmeldungen
+    public final static String PROGRAMMID_DRV     = "EFADRV.222"; // Versions-ID für Wettbewerbsmeldungen
     public final static String COPYRIGHTYEAR      = "15";   // aktuelles Jahr (Copyright (c) 2001-COPYRIGHTYEAR)
 
     // enable/disable development functions for next version
@@ -129,6 +136,7 @@ public class Daten {
     public static String efaTmpDirectory = null;     // Efa-Tempverzeichnis,   immer mit "/" am Ende   ("./tmp/")
     //public static String efaStyleDirectory = null;   // Efa-Stylesheetverzeichnis,   mit "/" am Ende   ("./fmt/layout/")
     public static String fileSep = "/"; // Verzeichnis-Separator (wird in ini() ermittelt)
+    public static String efaPreviousVersionID = null; // content of previous VERSIONID when efa was started
 
     public static String javaVersion = "";
     public static String jvmVersion = "";
@@ -806,6 +814,10 @@ public class Daten {
             efaConfig = new EfaConfig(custSettings);
             try {
                 efaConfig.open(false);
+                efaPreviousVersionID = efaConfig.getValueVersion();
+                if (!VERSIONID.equals(efaPreviousVersionID)) {
+                    efaConfig.setValueVersion(VERSIONID);
+                }
             } catch (Exception eopen) {
                 try {
                     efaConfig.open(true);
@@ -850,6 +862,40 @@ public class Daten {
                     Dialog.error(msg);
                 }
                 haltProgram(HALT_EFATYPES);
+            }
+        }
+        if (Daten.VERSIONID.compareTo(efaPreviousVersionID) > 0 &&
+            "2.2.2".compareTo(efaPreviousVersionID) > 0) {
+            StringBuilder changes = new StringBuilder();
+            if (efaTypes.isConfigured(CATEGORY_SESSION, TYPE_SESSION_TRAINING)) {
+                changes.append( (changes.length() > 0 ? ", " : "") +
+                        TYPE_SESSION_TRAINING + 
+                        "(" + efaTypes.getValue(CATEGORY_SESSION, TYPE_SESSION_TRAINING) + ")");
+                efaTypes.removeValue(CATEGORY_SESSION, TYPE_SESSION_TRAINING);
+            }
+            if (efaTypes.isConfigured(CATEGORY_SESSION, TYPE_SESSION_JUMREGATTA)) {
+                changes.append( (changes.length() > 0 ? ", " : "") +
+                        TYPE_SESSION_JUMREGATTA + 
+                        "(" + efaTypes.getValue(CATEGORY_SESSION, TYPE_SESSION_JUMREGATTA) + ")");
+                efaTypes.removeValue(CATEGORY_SESSION, TYPE_SESSION_JUMREGATTA);
+            }
+            if (efaTypes.isConfigured(CATEGORY_SESSION, TYPE_SESSION_INSTRUCTION)) {
+                changes.append( (changes.length() > 0 ? ", " : "") +
+                        TYPE_SESSION_INSTRUCTION + 
+                        "(" + efaTypes.getValue(CATEGORY_SESSION, TYPE_SESSION_INSTRUCTION) + ")");
+                efaTypes.removeValue(CATEGORY_SESSION, TYPE_SESSION_INSTRUCTION);
+            }
+            if (efaTypes.isConfigured(CATEGORY_SESSION, TYPE_SESSION_TOUR)) {
+                changes.append( (changes.length() > 0 ? ", " : "") +
+                        TYPE_SESSION_TOUR + 
+                        "(" + efaTypes.getValue(CATEGORY_SESSION, TYPE_SESSION_TOUR) + ")");
+                efaTypes.removeValue(CATEGORY_SESSION, TYPE_SESSION_TOUR);
+            }
+            if (changes.length() > 0) {
+                Logger.log(Logger.INFO, Logger.MSG_CORE_EFATYPESUPDATED, 
+                        International.getMessage("Es wird empfohlen, die Fahrtarten {types} nicht mehr " +
+                                "zu verwenden. Diese Fahrtarten wurden daher von efa soeben entfernt. Bei Bedarf " +
+                                "können sie manuell wieder hinzugefügt werden. Weitere Hinweise auf http://efa.nmichael.de/help/fahrtarten.html", changes.toString()), true);
             }
         }
         Daten.efaConfig.buildTypes();
@@ -1396,4 +1442,5 @@ public class Daten {
             return;
         }
     }
+    
 }

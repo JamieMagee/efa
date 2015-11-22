@@ -84,6 +84,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
     ItemTypeLabel sessionTypeInfo;
     ItemTypeStringAutoComplete sessiongroup;
     public static final String GUIITEM_ADDITIONALWATERS = "GUIITEM_ADDITIONALWATERS";
+    String sessionTypeInfoText = null;
 
     // Supplementary Elements
     ItemTypeButton remainingCrewUpButton;
@@ -710,10 +711,13 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
         sessiontype.setBackgroundColorWhenFocused(Daten.efaConfig.getValueEfaDirekt_colorizeInputField() ? Color.yellow : null);
         sessiontype.displayOnGui(this, mainInputPanel, 0, 16);
         sessiontype.registerItemListener(this);
+        sessiontype.setReplaceValues(Daten.efaTypes.getSessionTypeReplaceValues());
         
         // Session Type Info
         sessionTypeInfo = new ItemTypeLabel("SESSIONTYPE_LABEL", IItemType.TYPE_PUBLIC, null, "");
         sessionTypeInfo.setFieldGrid(5, GridBagConstraints.WEST, GridBagConstraints.NONE);
+        sessionTypeInfo.registerItemListener(this);
+        sessionTypeInfo.activateMouseClickListener();
         sessionTypeInfo.displayOnGui(this, mainInputPanel, 5, 16);
 
         // Session Group
@@ -1339,6 +1343,10 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
         if (r == null) {
             date.requestFocus();
             date.setSelection(0, Integer.MAX_VALUE);
+            if (Daten.efaConfig.getValueDefaultValueComments() != null && 
+                Daten.efaConfig.getValueDefaultValueComments().trim().length() > 0) {
+                comments.parseAndShowValue(Daten.efaConfig.getValueDefaultValueComments().trim());
+            }
         }
         updateTimeInfoFields();
     }
@@ -3343,6 +3351,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             }
             if (item == enddate) {
                 updateTimeInfoFields();
+                updateSessionTypeInfo();
             }
             if (item == boat || item == boatvariant) {
                 currentBoatUpdateGui();
@@ -3429,6 +3438,9 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
         if (id == MouseEvent.MOUSE_CLICKED) {
             if (item instanceof ItemTypeLabelValue) {
                 selectBoatCaptain(item.getName());
+            }
+            if (item == sessionTypeInfo && sessionTypeInfoText != null) {
+                Dialog.infoDialog(sessionTypeInfoText);
             }
         }
         if (id == ItemEvent.ITEM_STATE_CHANGED) {
@@ -3545,7 +3557,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
     }
     
     void updateSessionTypeInfo() {
-        if (sessiontype != null && sessiontype.isVisible()) {
+        if (sessiontype != null && sessiontype.isVisible() && Daten.efaConfig.getValueUseFunctionalityRowingGermany()) {
             String sess = sessiontype.getValueFromField();
             DataTypeDistance dist = DataTypeDistance.parseDistance(distance.getValueFromField());
             long days = 1;
@@ -3556,14 +3568,18 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             if (sess != null && sess.length() > 0 && dist != null && 
                 (dist.getValueInMeters() >= 40000 || (days == 1 && dist.getValueInMeters() >= 30000))) {
                 if (EfaTypes.couldBeDRVWanderfahrt(sess)) {
-                    sessionTypeInfo.setDescription(International.getString("zählt als DRV-Wanderfahrt"));
+                    sessionTypeInfo.setImage(getScaledImage("session_drv_wanderfahrt_ok"));
+                    sessionTypeInfoText = "Diese Fahrt zählt als Wanderfahrt im Sinne des DRV.";
                 } else if (EfaTypes.cannotBeDRVWanderfahrt(sess)) {
-                    sessionTypeInfo.setDescription(International.getString("zählt NICHT als DRV-Wanderfahrt"));
+                    sessionTypeInfo.setImage(getScaledImage("session_drv_wanderfahrt_nok"));
+                    sessionTypeInfoText = "Fahrten mit Fahrtart '" + Daten.efaTypes.getValue(EfaTypes.CATEGORY_SESSION, sess) + "' zählen nicht als Wanderfahrt im Sinne des DRV.";
                 } else {
-                    sessionTypeInfo.setDescription("");
+                    sessionTypeInfo.setImage(null);
+                    sessionTypeInfoText = null;
                 }
             } else {
-                sessionTypeInfo.setDescription("");
+                sessionTypeInfo.setImage(null);
+                sessionTypeInfoText = null;
             }
         }
     }

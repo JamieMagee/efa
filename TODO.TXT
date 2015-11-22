@@ -1,22 +1,7 @@
 Item
 ============================================================================================================
 
-TYPE_SESSION_NORMAL         ok
-TYPE_SESSION_TRAINING       entfällt (-> NORMAL)
-TYPE_SESSION_REGATTA        ok
-TYPE_SESSION_JUMREGATTA     entfällt (-> REGATTA)
-TYPE_SESSION_TRAININGCAMP   ok
-TYPE_SESSION_INSTRUCTION    entfällt (-> NORMAL)
-TYPE_SESSION_LATEENTRY      ok
-TYPE_SESSION_MOTORBOAT      ok
-TYPE_SESSION_ERG            ok
-TYPE_SESSION_TOUR           entfällt (-> NORMAL)
-TYPE_SESSION_CLUBTRIP       ok
-TYPE_SESSION_GROUPTRIP      ok
-
-
 Restart von efa mit REboot von efaLive
-runefa.sh mit support für Leerzeichen in Installationspfad
 Fahrtgruppen bei Eingabe von Wanderfahrten durch Mitglieder auswählen lassen - https://kenai.com/bugzilla/show_bug.cgi?id=2231
 
 Synchronisation korrekt protokollieren (z.B. Kanu-eFB: unveränderte Fahrten übertragen, falls nachträglich der Person eine eFB-ID zugeordnet wurde)

@@ -115,6 +115,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     private ItemTypeInteger printTopMargin;
     private ItemTypeInteger printPageOverlap;
     private ItemTypeHashtable<String> keys;
+    private ItemTypeString defaultValueComments;
     private ItemTypeInteger countEfaStarts;
     private ItemTypeString registeredProgramID;
     private ItemTypeInteger registrationChecks;
@@ -427,7 +428,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     private void iniParameters(CustSettings custSettings) {
         synchronized (configValues) {
             // ============================= INTERNAL =============================
-            addParameter(version = new ItemTypeString("EfaVersion", "100",
+            addParameter(version = new ItemTypeString("EfaVersion", Daten.VERSIONID,
                     IItemType.TYPE_INTERNAL,BaseTabbedDialog.makeCategory(CATEGORY_INTERNAL),
                     "efa version"));
             addParameter(efaVersionLastCheck = new ItemTypeLong("EfaVersionLastCheck", 0, 0, Long.MAX_VALUE,
@@ -556,6 +557,9 @@ public class EfaConfig extends StorageObject implements IItemFactory {
             addParameter(keys = new ItemTypeHashtable<String>("InputCommentsHotkeys", "", false,
                     IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_COMMON, CATEGORY_INPUT),
                     International.getString("Tastenbelegungen für Bemerkungs-Feld")));
+            addParameter(defaultValueComments = new ItemTypeString("DefaultValueComments", "",
+                    IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_COMMON, CATEGORY_INPUT),
+                    International.getString("Vorbelegung Bemerkungs-Feld")));
             addParameter(efaDirekt_colorizeInputField = new ItemTypeBoolean("InputColorizeFields", true,
                     IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_COMMON, CATEGORY_INPUT),
                     International.getString("aktuelles Eingabefeld farblich hervorheben")));
@@ -1272,6 +1276,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     public boolean getValueTouchScreenSupport() {
         return touchscreenSupport.getValue();
     }
+    
+    public String getValueDefaultValueComments() {
+        return defaultValueComments.getValue();
+    }
 
     public String getValueAliasFormat() {
         return aliasFormat.getValue();
@@ -1472,6 +1480,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
 
     public String getValueVersion() {
         return version.getValue();
+    }
+    
+    public void setValueVersion(String versionID) {
+        setValue(version, versionID);
     }
 
     public boolean getValueEfaDirekt_zielBeiFahrtbeginnPflicht() {

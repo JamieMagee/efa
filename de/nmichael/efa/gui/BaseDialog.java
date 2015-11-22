@@ -362,6 +362,25 @@ public abstract class BaseDialog extends JDialog implements ActionListener {
         }
     }
 
+    public static ImageIcon getScaledImage(String name) {
+        try {
+            if (name.indexOf("/") < 0) {
+                name = Daten.IMAGEPATH + name;
+            }
+                name = name + "_12.png";
+            if (Logger.isTraceOn(Logger.TT_GUI, 9)) {
+                Logger.log(Logger.DEBUG, Logger.MSG_DEBUG_GUI_ICONS, "getIcon("+name+")");
+            }
+            return new ImageIcon(BaseDialog.class.getResource(name));
+        } catch(Exception e) {
+            if (Logger.isTraceOn(Logger.TT_GUI, 9)) {
+                Logger.log(Logger.DEBUG, Logger.MSG_DEBUG_GUI_ICONS, "getIcon("+name+"): no icon found!");
+            }
+            Logger.logdebug(e);
+            return null;
+        }
+    }
+
     protected void setIcon(AbstractButton button, ImageIcon icon) {
         if (icon != null) {
             button.setIcon(icon);

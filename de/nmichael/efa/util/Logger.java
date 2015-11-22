@@ -81,6 +81,7 @@ public class Logger {
     public static final String MSG_CORE_MAILFAILED = "COR037";
     public static final String MSG_CORE_PROJECTIDGENERATED = "COR038";
     public static final String MSG_CORE_ADMINTASK = "COR039";
+    public static final String MSG_CORE_EFATYPESUPDATED = "COR040";
 
     // Activities performed in Admin Mode
     public static final String MSG_ADMIN_LOGIN = "ADM001";

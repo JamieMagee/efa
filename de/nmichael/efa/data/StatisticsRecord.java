@@ -118,6 +118,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public static final String OPTIONTRUNCATEDIST        = "OptionTruncateDistance";
     public static final String OPTIONLISTALLNULLENTRIES  = "OptionListAllNullEntries";
     public static final String OPTIONIGNORENULLVALUES    = "OptionIgnoreNullValues";
+    public static final String OPTIONONLYMEMBERSWITHINSUFFICIENTCLUBWORK = "OptionOnlyMembersWithInsufficientClubwork";
     public static final String OPTIONSUMGUESTSANDOTHERS  = "OptionSumGuestsAndOthers";
     public static final String OPTIONSUMGUESTSBYCLUB     = "OptionSumGuestsByClub";
     public static final String OPTIONSHOWVALIDLASTTRIP   = "OptionShowValidLastTrip";
@@ -517,6 +518,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public double sClubworkTargetHoursForStatistic;
     public double sTransferableClubworkHours;
     public double sFineForTooLittleClubwork;
+    public boolean sOnlyMembersWithInsufficientClubwork;
 
     // filled during statistics creation in StatistikTask
     public int cNumberOfEntries = 0;
@@ -638,6 +640,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         f.add(OPTIONTRUNCATEDIST);                t.add(IDataAccess.DATA_BOOLEAN);
         f.add(OPTIONLISTALLNULLENTRIES);          t.add(IDataAccess.DATA_BOOLEAN);
         f.add(OPTIONIGNORENULLVALUES);            t.add(IDataAccess.DATA_BOOLEAN);
+        f.add(OPTIONONLYMEMBERSWITHINSUFFICIENTCLUBWORK); t.add(IDataAccess.DATA_BOOLEAN);
         f.add(OPTIONSUMGUESTSANDOTHERS);          t.add(IDataAccess.DATA_BOOLEAN);
         f.add(OPTIONSUMGUESTSBYCLUB);             t.add(IDataAccess.DATA_BOOLEAN);
         f.add(OPTIONSHOWVALIDLASTTRIP);           t.add(IDataAccess.DATA_STRING);
@@ -1817,7 +1820,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         }
         if (sFilterMinSessionDistance != null && sFilterMinSessionDistance.isSet()) {
             filter = (filter == null ? "" : filter + "\n") +
-                    International.getString("Mindestentfernung") + ": " +
+                    International.getString("Mindestentfernung der Fahrt") + ": " +
                     sFilterMinSessionDistance.getAsFormattedString();
         }
         if (sFilterAlsoOpenSessions) {
@@ -2499,6 +2502,14 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         setString(OPTIONSHOWVALIDLASTTRIP, validLastTrip ? SHOWDATAVALID_LASTTRIPTIME : StatisticsRecord.SHOWDATAVALID_STATENDTIME);
     }
 
+    public boolean getOptionOnlyMembersWithInsufficientClubwork() {
+        return getBool(OPTIONONLYMEMBERSWITHINSUFFICIENTCLUBWORK);
+    }
+
+    public void setOptionOnlyMembersWithInsufficientClubwork(boolean ignore) {
+        setBool(OPTIONONLYMEMBERSWITHINSUFFICIENTCLUBWORK, ignore);
+    }
+
     public int getLogbookFieldCount() {
         DataTypeList l = getShowLogbookFields();
         return (l != null ? l.length() : 0);
@@ -2896,6 +2907,9 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
                 IItemType.TYPE_PUBLIC, CAT_OPTIONS,
                 International.getStringWithMnemonic("Gültigkeitszeitpunkt für Anzeige von Daten")
         ));
+        v.add(item = new ItemTypeBoolean(StatisticsRecord.OPTIONONLYMEMBERSWITHINSUFFICIENTCLUBWORK, getOptionOnlyMembersWithInsufficientClubwork(),
+                IItemType.TYPE_PUBLIC, CAT_OPTIONS,
+                International.getString("Für Vereinsarbeit nur Mitglieder ausgeben, die Sollstunden noch nicht erfüllt haben")));
 
         setVisibleItems(getOutputTypeEnum());
         return v;
@@ -3543,6 +3557,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         sSumGuestsAndOthers = getOptionSumGuestsAndOthers();
         sSumGuestsByClub = getOptionSumGuestsByClub();
         sShowValidLastTrip = getOptionShowValidLastTrip();
+        sOnlyMembersWithInsufficientClubwork = getOptionOnlyMembersWithInsufficientClubwork();
 
         resetStatisticValues();
         return true;

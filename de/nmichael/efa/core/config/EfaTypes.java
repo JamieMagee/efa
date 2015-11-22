@@ -153,7 +153,6 @@ public class EfaTypes extends StorageObject {
     public static final int ARRAY_STRINGLIST_DISPLAY = 2;
 
     private Vector<String> categories;
-    //private Hashtable<String,Vector<EfaTypeRecord>> values;
     private CustSettings custSettings;
 
     // Default Construktor
@@ -598,12 +597,20 @@ public class EfaTypes extends StorageObject {
     public int setToLanguage_Sessions(ResourceBundle bundle, boolean createNew) {
         int count = 0;
         count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_NORMAL, International.getString("normale Fahrt"),"normale Fahrt",bundle,createNew);
-        count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_TOUR, International.getString("Wanderfahrt"),"Wanderfahrt",bundle,createNew);
-        count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_TRAINING, International.getString("Training"),"Training",bundle,createNew);
+        if (!createNew) {
+            count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_TOUR, International.getString("Wanderfahrt"),"Wanderfahrt",bundle,createNew);
+        }
+        if (!createNew) {
+            count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_TRAINING, International.getString("Training"),"Training",bundle,createNew);
+        }
         count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_TRAININGCAMP, International.getString("Trainingslager"),"Trainingslager",bundle,createNew);
-        count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_INSTRUCTION, International.getString("Ausbildung"),"Ausbildung",bundle,createNew);
+        if (!createNew) {
+            count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_INSTRUCTION, International.getString("Ausbildung"),"Ausbildung",bundle,createNew);
+        }
         count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_REGATTA, International.getString("Regatta"),"Regatta",bundle,createNew);
-        count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_JUMREGATTA, International.getString("JuM-Regatta"),"JuM-Regatta",bundle,createNew);
+        if (!createNew) {
+            count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_JUMREGATTA, International.getString("JuM-Regatta"),"JuM-Regatta",bundle,createNew);
+        }
         count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_LATEENTRY, International.getString("Kilometernachtrag"),"Kilometernachtrag",bundle,createNew);
         if (Daten.efaConfig.getValueUseFunctionalityCanoeingGermany()) {
             count += setToLanguage(CATEGORY_SESSION, TYPE_SESSION_CLUBTRIP, International.onlyFor("Vereinsfahrt", "de"),"Vereinsfahrt",bundle,createNew);
@@ -798,6 +805,23 @@ public class EfaTypes extends StorageObject {
             assertUnique(record, new String[] { EfaTypeRecord.CATEGORY, EfaTypeRecord.TYPE } );
             assertUnique(record, new String[] { EfaTypeRecord.CATEGORY, EfaTypeRecord.VALUE } );
         }
+    }
+    
+    public Hashtable<String,String> getSessionTypeReplaceValues() {
+        Hashtable<String,String> h = new Hashtable<String,String>();
+        if (!isConfigured(CATEGORY_SESSION, TYPE_SESSION_TRAINING)) {
+            h.put(TYPE_SESSION_TRAINING, TYPE_SESSION_NORMAL);
+        }
+        if (!isConfigured(CATEGORY_SESSION, TYPE_SESSION_JUMREGATTA)) {
+            h.put(TYPE_SESSION_JUMREGATTA, TYPE_SESSION_REGATTA);
+        }
+        if (!isConfigured(CATEGORY_SESSION, TYPE_SESSION_INSTRUCTION)) {
+            h.put(TYPE_SESSION_INSTRUCTION, TYPE_SESSION_NORMAL);
+        }
+        if (!isConfigured(CATEGORY_SESSION, TYPE_SESSION_TOUR)) {
+            h.put(TYPE_SESSION_TOUR, TYPE_SESSION_NORMAL);
+        }
+        return h;
     }
 
 }

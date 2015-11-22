@@ -80,6 +80,15 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
         }
         return false;
     }
+    
+    public static boolean maybeJuMRegatta(LogbookRecord r) {
+        String sessionType = r.getSessionType();
+        if (sessionType == null) {
+            return false;
+        }
+        return sessionType.equals(EfaTypes.TYPE_SESSION_JUMREGATTA) ||
+               sessionType.equals(EfaTypes.TYPE_SESSION_REGATTA);
+    }
 
     public static Hashtable<String, DRVFahrt> getWanderfahrten(StatisticsData sd, boolean gruppe3abc) {
         Hashtable<String, DRVFahrt> wanderfahrten = new Hashtable<String, DRVFahrt>();
@@ -87,6 +96,9 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
         for (int j = 0; sd.sessionHistory != null && j < sd.sessionHistory.size(); j++) {
             LogbookRecord r = sd.sessionHistory.get(j);
             boolean jum = r.getSessionType().equals(EfaTypes.TYPE_SESSION_JUMREGATTA);
+            if (gruppe3abc && r.getSessionType().equals(EfaTypes.TYPE_SESSION_REGATTA)) {
+                jum = true;
+            }
             if (jum && !gruppe3abc) {
                 continue;
             }

@@ -10,10 +10,9 @@
 
 package de.nmichael.efa.core.items;
 
-import de.nmichael.efa.util.*;
-import de.nmichael.efa.util.Dialog;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Hashtable;
 import javax.swing.*;
 
 // @i18n complete
@@ -24,6 +23,7 @@ public class ItemTypeStringList extends ItemTypeLabelValue {
     private String[] valueList;
     private String[] displayList;
     private volatile boolean ignoreItemStateChanges = false;
+    private Hashtable<String,String> replaceValues;
 
     public ItemTypeStringList(String name, String value,
             String[] valueList, String[] displayList,
@@ -85,6 +85,9 @@ public class ItemTypeStringList extends ItemTypeLabelValue {
     public void parseValue(String value) {
         if (value != null) {
             value = value.trim();
+            if (replaceValues != null && replaceValues.get(value) != null) {
+                value = replaceValues.get(value);
+            }
         }
         for (int i=0; valueList != null && i<valueList.length; i++) {
             if (valueList[i].equals(value)) {
@@ -144,6 +147,10 @@ public class ItemTypeStringList extends ItemTypeLabelValue {
 
     public String[] getDisplayList() {
         return displayList;
+    }
+    
+    public void setReplaceValues(Hashtable<String,String> replaceValues) {
+        this.replaceValues = replaceValues;
     }
 
 }

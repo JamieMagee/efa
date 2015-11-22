@@ -236,7 +236,7 @@ public class StatisticTask extends ProgressTask {
                 && entryDestinationAreas != null && entryDestinationAreas.getAnzZielfahrten() > 0) ||
                 (sr.sIsAggrWanderfahrten
                         && (CompetitionDRVFahrtenabzeichen.mayBeWafa(r)
-                        || entrySessionType.equals(EfaTypes.TYPE_SESSION_JUMREGATTA))) ||
+                        || CompetitionDRVFahrtenabzeichen.maybeJuMRegatta(r))) ||
                 (sr.sIsAggrWinterfahrten
                         && (CompetitionLRVBerlinWinter.mayBeWinterfahrt(r)
                         && entryPersonRecord != null)) ||
@@ -379,7 +379,7 @@ public class StatisticTask extends ProgressTask {
                     && entryDestinationAreas != null && entryDestinationAreas.getAnzZielfahrten() > 0)
                     || (sr.sIsAggrWanderfahrten
                     && (CompetitionDRVFahrtenabzeichen.mayBeWafa(r)
-                    || entrySessionType.equals(EfaTypes.TYPE_SESSION_JUMREGATTA)))
+                    || CompetitionDRVFahrtenabzeichen.maybeJuMRegatta(r)))
                     || (sr.sIsAggrWinterfahrten
                     && (CompetitionLRVBerlinWinter.mayBeWinterfahrt(r)
                     && entryPersonRecord != null))
