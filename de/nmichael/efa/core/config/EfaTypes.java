@@ -154,6 +154,7 @@ public class EfaTypes extends StorageObject {
 
     private Vector<String> categories;
     private CustSettings custSettings;
+    private Hashtable<String,String> sessionTypeReplacements;
 
     // Default Construktor
     public EfaTypes(CustSettings custSettings) {
@@ -822,6 +823,18 @@ public class EfaTypes extends StorageObject {
             h.put(TYPE_SESSION_TOUR, TYPE_SESSION_NORMAL);
         }
         return h;
+    }
+    
+    public String getSessionType(String sessionType) {
+        if (sessionTypeReplacements == null) {
+            synchronized(this) {
+                if (sessionTypeReplacements == null) {
+                    sessionTypeReplacements = getSessionTypeReplaceValues();
+                }
+            }
+        }
+        String repl = (sessionType != null ? sessionTypeReplacements.get(sessionType) : null);
+        return (repl != null ? repl : sessionType);
     }
 
 }

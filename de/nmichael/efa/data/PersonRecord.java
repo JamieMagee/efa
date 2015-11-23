@@ -249,24 +249,25 @@ public class PersonRecord extends DataRecord implements IItemFactory {
         return getUUID(STATUSID);
     }
 
-    public String getStatusName() {
+    public StatusRecord getStatusRecord() {
         UUID id = getStatusId();
         if (id != null) {
-            StatusRecord r = getPersistence().getProject().getStatus(false).getStatus(id);
-            if (r != null) {
-                return r.getStatusName();
-            }
+            return getPersistence().getProject().getStatus(false).getStatus(id);
+        }
+        return null;
+    }
+
+    public String getStatusName() {
+        StatusRecord r = getStatusRecord();
+        if (r != null) {
+            return r.getStatusName();
         }
         return null;
     }
 
     public boolean isStatusMember() {
-        UUID id = getStatusId();
-        if (id != null) {
-            StatusRecord r = getPersistence().getProject().getStatus(false).getStatus(id);
-            return (r != null && r.isMember());
-        }
-        return false;
+        StatusRecord r = getStatusRecord();
+        return (r != null && r.isMember());
     }
 
     public void setAddressStreet(String street) {

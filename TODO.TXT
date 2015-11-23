@@ -30,10 +30,8 @@ Zusätzliche Import-Option: alle *nicht* importierten (versionierten) Daten als 
 Touchscreen-Support: http://forum.nmichael.de/viewtopic.php?f=9&t=206&p=2275#p2275, https://kenai.com/bugzilla/show_bug.cgi?id=4739
 external API to create "efa messages" - https://kenai.com/bugzilla/show_bug.cgi?id=1640
 Berechtigung für Admins, bestimmte Konfigurations-Parameter zu editieren, ohne auf die gesamte Konfiguration zugreifen zu können. Z.B. nur News-Text (und ein paar andere). http://forum.nmichael.de/viewtopic.php?f=9&t=622&p=2484#p2484
-Höhe der Liste "Boote nicht verfügbar" konfigurierbar machen: http://forum.nmichael.de/viewtopic.php?f=9&t=626&p=2517#p2516
 
 efaRemote - Progress/Status Indicator
-DRV: Melden von GEsamtkilometern bei DRV-Wanderruderstatistik
 Mehrere Vereine: Boote/Personen/Statistiken: http://forum.nmichael.de/viewtopic.php?f=9&t=494, https://kenai.com/bugzilla/show_bug.cgi?id=4496
 Namensformat für Statistikausgabe unabh. von Namensformat im Projekt einstellen können
 Prüfen ob Vor- und Nachname eingegeben wurden: http://forum.nmichael.de/viewtopic.php?f=9&t=563

@@ -446,7 +446,7 @@ public class LogbookRecord extends DataRecord {
         setString(SESSIONTYPE, type);
     }
     public String getSessionType() {
-        return getString(SESSIONTYPE);
+        return Daten.efaTypes.getSessionType(getString(SESSIONTYPE));
     }
 
     public void setSessionGroupId(UUID id) {

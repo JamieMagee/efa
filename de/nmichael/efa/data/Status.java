@@ -10,6 +10,7 @@
 
 package de.nmichael.efa.data;
 
+import de.nmichael.efa.core.items.ItemTypeInteger;
 import de.nmichael.efa.ex.*;
 import de.nmichael.efa.util.*;
 import de.nmichael.efa.data.storage.*;
@@ -119,6 +120,23 @@ public class Status extends StorageObject {
         return null;
     }
 
+    public StatusRecord getStatusForAge(int age, boolean member) {
+        try {
+            DataKeyIterator it = data().getStaticIterator();
+            for (DataKey k = it.getFirst(); k != null; k = it.getNext()) {
+                StatusRecord sr = (StatusRecord)data().get(k);
+                if (sr != null && sr.getAutoSetOnAge() && sr.isMember() == member &&
+                    ( (sr.getMinAge() == ItemTypeInteger.UNSET || age >= sr.getMinAge()) &&
+                      (sr.getMaxAge() == ItemTypeInteger.UNSET || age <= sr.getMaxAge())) ) {
+                    return sr;
+                }
+            }
+        } catch(Exception e) {
+            Logger.logdebug(e);
+        }
+        return null;
+    }
+
     private UUID addStatus(UUID id, String name, String type) {
         try {
             if (findStatusByName(name) != null) {
@@ -215,13 +233,27 @@ public class Status extends StorageObject {
     public UUID[] makeStatusArrayUUID() {
         return makeStatusArrayUUID(true);
     }
+    
+    private void updateStatusAge(UUID id, int minAge, int maxAge) throws EfaException {
+        if (id != null) {
+            StatusRecord r = getStatus(id);
+            if (r != null) {
+                r.setAutoSetOnAge(true);
+                r.setMinAge(minAge);
+                r.setMaxAge(maxAge);
+                dataAccess.update(r);
+            }
+        }
+    }
 
     public void open(boolean createNewIfNotExists) throws EfaException {
         super.open(createNewIfNotExists);
         if (isOpen() && data().getStorageType() != IDataAccess.TYPE_EFA_REMOTE) {
             if (data().getNumberOfRecords() == 0) {
-                addStatus(International.getString("Junior(in)"), StatusRecord.TYPE_USER);
-                addStatus(International.getString("Senior(in)"), StatusRecord.TYPE_USER);
+                UUID junior = addStatus(International.getString("Junior(in)"), StatusRecord.TYPE_USER);
+                UUID senior = addStatus(International.getString("Senior(in)"), StatusRecord.TYPE_USER);
+                updateStatusAge(junior, ItemTypeInteger.UNSET, 18);
+                updateStatusAge(senior, 19, ItemTypeInteger.UNSET);
             }
 
             // make sure GUEST and OTHER status types are always present

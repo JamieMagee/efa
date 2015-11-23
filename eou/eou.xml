@@ -8,10 +8,12 @@
         <DownloadSize></DownloadSize>
 
         <Changes lang="de">
-            <ChangeItem>Neu: Konfigurierbare Vorbelegung für Text im Bemerkungs-Feld</ChangeItem>
-            <ChangeItem>Neu: Fahrtarten "Training", "Wanderfahrt", "Ausbildung", "JuM-Regatta" abgeschafft</ChangeItem>
             <ChangeItem>Neu: Auswertung der DRV-Wettbewerbe an neue Bestimmungen angepaßt</ChangeItem>
+            <ChangeItem>Neu: Fahrtarten "Training", "Wanderfahrt", "Ausbildung", "JuM-Regatta" abgeschafft</ChangeItem>
             <ChangeItem>Neu: efa überprüft jetzt bei der Eingabe, ob eine Fahrt aufgrund ihrer Fahrtart als Wanderfahrt gewertet werden kann oder nicht</ChangeItem>
+            <ChangeItem>Neu: Status von Personen kann jetzt von efa altersabhängig automatisch gesetzt werden</ChangeItem>
+            <ChangeItem>Neu: Konfigurierbare Vorbelegung für Text im Bemerkungs-Feld</ChangeItem>
+            <ChangeItem>Neu: Darstellungsgröße im HTML-Widget kann beliebig skaliert werden</ChangeItem>
             <ChangeItem>Bugfix: efaCLI kann jetzt unter Linux/Unix auch ohne graphische Umgebung (headless) gestartet werden</ChangeItem>
         </Changes>
         <Changes lang="en">

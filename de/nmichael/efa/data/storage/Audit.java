@@ -11,7 +11,9 @@ package de.nmichael.efa.data.storage;
 
 import de.nmichael.efa.Daten;
 import de.nmichael.efa.core.config.EfaTypes;
+import de.nmichael.efa.core.items.ItemTypeInteger;
 import de.nmichael.efa.data.*;
+import de.nmichael.efa.data.types.DataTypeDate;
 import de.nmichael.efa.data.types.DataTypeIntString;
 import de.nmichael.efa.data.types.DataTypeList;
 import de.nmichael.efa.util.EfaUtil;
@@ -19,6 +21,8 @@ import de.nmichael.efa.util.International;
 import de.nmichael.efa.util.LogString;
 import de.nmichael.efa.util.Logger;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.UUID;
 
@@ -640,7 +644,7 @@ public class Audit extends Thread {
         } catch (Exception e) {
             Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
-                    "runAuditBoats() Caught Exception: " + e.toString());
+                    "runAuditGroups() Caught Exception: " + e.toString());
             return ++groupErr;
         }
     }
@@ -760,6 +764,55 @@ public class Audit extends Thread {
         }
     }
 
+    private int runAuditStatus() {
+        int statusErr = 0;
+        try {
+            Status status = project.getStatus(false);
+            Calendar cal = new GregorianCalendar();
+            cal.set(2015, 11, 1, 0, 0, 0); // 2015-12-01 00:00:00 (around efa 2.2.2 release time)
+            DataKeyIterator it = status.data().getStaticIterator();
+            DataKey k = it.getFirst();
+            while (k != null) {
+                StatusRecord r = (StatusRecord)status.data().get(k);
+                boolean updated = false;
+                if (r != null && r.getLastModified() < cal.getTimeInMillis()) {
+                    String name = r.getStatusName();
+                    if (name != null && 
+                        (name.equals(International.getString("Junior(in)")) || 
+                         name.equals(International.getString("Senior(in)")))) {
+                        // this is a default status record that was last modified before the efa v2.2.2 release
+                        if (!r.getAutoSetOnAge()) {
+                            r.setAutoSetOnAge(true);
+                            if (name.equals(International.getString("Junior(in)"))) {
+                                r.setMaxAge(18);
+                            } else {
+                                r.setMinAge(19);
+                            }
+                            updated = true;
+                            auditWarning(Logger.MSG_DATA_AUDIT_STATUSUPDATED,
+                                    "runAuditStatus(): "
+                                    + International.getString("Status") + " " + name + ": "
+                                    + International.getString("Automatische Status-Anpassung anhand des Jahrgangs für diesen Status aktiviert."));
+                        }
+                    }
+                }
+                if (updated) {
+                    if (correctErrors) {
+                        status.dataAccess.update(r);
+                    }
+                }
+                k = it.getNext();
+            }
+
+            return statusErr;
+        } catch (Exception e) {
+            Logger.logdebug(e);
+            auditError(Logger.MSG_DATA_AUDIT,
+                    "runAuditStatus() Caught Exception: " + e.toString());
+            return ++statusErr;
+        }
+    }
+
     private int runAuditPersons() {
         int personErr = 0;
         try {
@@ -770,6 +823,13 @@ public class Audit extends Thread {
                 status.dataAccess.getNumberOfRecords() == 0) {
                 return personErr; // don't run check agains empty list (could be due to error opening list)
             }
+
+            Calendar cal = new GregorianCalendar();
+            int year = cal.get(Calendar.YEAR);
+            cal.set(year, 0, 1, 0, 0, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            long now = System.currentTimeMillis();
+            
             DataKeyIterator it = persons.data().getStaticIterator();
             DataKey k = it.getFirst();
             while (k != null) {
@@ -784,6 +844,47 @@ public class Audit extends Thread {
                             + International.getMessage("Ungültige Referenz für {item} durch '{name}' ersetzt.",
                             International.getString("Status"),
                             status.getStatusOther().getQualifiedName()));
+                } else {
+                    if (person.isValidAt(now)) {
+                        StatusRecord sr = person.getStatusRecord();
+                        if (sr != null && sr.getAutoSetOnAge()) {
+                            DataTypeDate birthday = person.getBirthday();
+                            if (birthday != null && birthday.isSet()) {
+                                int minAge = sr.getMinAge();
+                                int maxAge = sr.getMaxAge();
+                                int age = year - birthday.getYear();
+                                if ((minAge != ItemTypeInteger.UNSET && age < minAge)
+                                        || (maxAge != ItemTypeInteger.UNSET && age > maxAge)) {
+                                    StatusRecord newsr = status.getStatusForAge(age, sr.isMember());
+                                    if (newsr != null) {
+                                        person.setStatusId(newsr.getId());
+                                        if (person.getValidFrom() >= cal.getTimeInMillis()) {
+                                            updated = true;
+                                        } else {
+                                            if (correctErrors) {
+                                                persons.dataAccess.addValidAt(person, cal.getTimeInMillis());
+                                                updated = false; // we've added the new version here; no need to update later
+                                            }
+                                        }
+                                        auditWarning(Logger.MSG_DATA_AUDIT_STATUSUPDATED,
+                                                "runAuditPersons(): "
+                                                + International.getString("Person") + " " + person.getQualifiedName() + ": "
+                                                + International.getMessage("Status aufgrund Erreichens des Alters {age} im laufenden Jahr von '{status}' nach '{status}' geändert.",
+                                                        Integer.toString(age),
+                                                        sr.getStatusName(),
+                                                        newsr.getStatusName()));
+                                    } else {
+                                        auditWarning(Logger.MSG_DATA_AUDIT_STATUSUPDATED,
+                                                "runAuditPersons(): "
+                                                + International.getString("Person") + " " + person.getQualifiedName() + ": "
+                                                + International.getMessage("Status '{status}' ungültig für das Alter {age}, aber kein geeigneter Status gefunden. Bitte korrigiere den Status manuell.",
+                                                        sr.getStatusName(),
+                                                        Integer.toString(age)));
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 if (isReferenceInvalid(person.getDefaultBoatId(), boats, -1)) {
                     person.setDefaultBoatId(null);
@@ -807,7 +908,7 @@ public class Audit extends Thread {
         } catch (Exception e) {
             Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
-                    "runAuditBoats() Caught Exception: " + e.toString());
+                    "runAuditPersons() Caught Exception: " + e.toString());
             return ++personErr;
         }
     }
@@ -840,7 +941,7 @@ public class Audit extends Thread {
         } catch (Exception e) {
             Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
-                    "runAuditBoats() Caught Exception: " + e.toString());
+                    "runAuditFahrtenabzeichen() Caught Exception: " + e.toString());
             return ++faErr;
         }
     }
@@ -1353,18 +1454,19 @@ public class Audit extends Thread {
                 runAuditPersistence(project.getWaters(false), Waters.DATATYPE);
                 runAuditPersistence(project.getMessages(false), Messages.DATATYPE);
 
-                runAuditBoats();
-                runAuditCrews();
-                runAuditGroups();
-                runAuditDestinations();
-                runAuditWaters();
-                runAuditPersons();
-                runAuditFahrtenabzeichen();
-                runAuditMessages();
-                runAuditStatistics();
+                errors += runAuditBoats();
+                errors += runAuditCrews();
+                errors += runAuditGroups();
+                errors += runAuditDestinations();
+                errors += runAuditWaters();
+                errors += runAuditStatus();
+                errors += runAuditPersons();
+                errors += runAuditFahrtenabzeichen();
+                errors += runAuditMessages();
+                errors += runAuditStatistics();
                 String[] logbookNames = project.getAllLogbookNames();
                 for (int i = 0; logbookNames != null && i < logbookNames.length; i++) {
-                    runAuditLogbook(logbookNames[i]);
+                    errors += runAuditLogbook(logbookNames[i]);
                 }
                 if (errors == 0) {
                     runAuditPurgeDeletedRecords(project.getBoats(false),
@@ -1376,7 +1478,7 @@ public class Audit extends Thread {
                     runAuditPurgeDeletedRecords(project.getGroups(false),
                             International.getString("Gruppe"));
                 }
-                runAuditClubworks();
+                errors += runAuditClubworks();
             } catch (Exception e) {
                 Logger.logdebug(e);
                 auditError(Logger.MSG_DATA_AUDIT,

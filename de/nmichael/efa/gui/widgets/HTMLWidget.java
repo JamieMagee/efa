@@ -14,6 +14,7 @@ import de.nmichael.efa.util.*;
 import de.nmichael.efa.core.items.*;
 import de.nmichael.efa.data.LogbookRecord;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import javax.swing.*;
 import javax.swing.text.html.*;
 import java.io.*;
@@ -23,10 +24,11 @@ public class HTMLWidget extends Widget {
 
     public static final String PARAM_WIDTH          = "Width";
     public static final String PARAM_HEIGHT         = "Height";
+    public static final String PARAM_SCALE          = "Scale";
     public static final String PARAM_URL            = "Url";
 
     private JScrollPane scrollPane = new JScrollPane();
-    private JEditorPane htmlPane = new JEditorPane();
+    private JEditorPane htmlPane;
     private HTMLUpdater htmlUpdater;
 
     public HTMLWidget() {
@@ -40,6 +42,10 @@ public class HTMLWidget extends Widget {
                 IItemType.TYPE_PUBLIC, "",
                 International.getString("Höhe")));
 
+        addParameterInternal(new ItemTypeDouble(PARAM_SCALE, 1, 0.1, 10, false,
+                IItemType.TYPE_PUBLIC, "",
+                International.getString("Skalierung")));
+
         addParameterInternal(new ItemTypeFile(PARAM_URL, "",
                 International.getString("HTML-Seite"),
                 International.getString("HTML-Seite"),
@@ -49,6 +55,17 @@ public class HTMLWidget extends Widget {
     }
 
     void construct() {
+        IItemType iscale = getParameterInternal(PARAM_SCALE);
+        final double scale = (iscale != null ? ((ItemTypeDouble)iscale).getValue() : 1.0);
+        htmlPane = new JEditorPane() {
+            public void paint(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                AffineTransform old = g2d.getTransform();
+                g2d.scale(scale, scale);
+                super.paint(g2d);
+                g2d.setTransform(old);
+            }
+        };
         htmlPane.setContentType("text/html");
         htmlPane.setEditable(false);
         // following hyperlinks is automatically "disabled" (if no HyperlinkListener is taking care of it)

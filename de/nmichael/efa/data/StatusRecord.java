@@ -15,11 +15,12 @@ import de.nmichael.efa.data.storage.*;
 import de.nmichael.efa.core.items.*;
 import de.nmichael.efa.gui.util.*;
 import de.nmichael.efa.util.*;
+import java.awt.AWTEvent;
 import java.util.*;
 
 // @i18n complete
 
-public class StatusRecord extends DataRecord {
+public class StatusRecord extends DataRecord implements IItemListener {
 
     // =========================================================================
     // Field Names
@@ -33,12 +34,19 @@ public class StatusRecord extends DataRecord {
     public static final String NAME                = "Name";
     public static final String TYPE                = "Type";
     public static final String MEMBERSHIP          = "Membership";
+    public static final String AUTOSETONAGE        = "AutoSetOnAge";
+    public static final String MINAGE              = "MinAge";
+    public static final String MAXAGE              = "MaxAge";
 
     public static final String[] IDX_NAME = new String[] { NAME };
 
     public static final int MEMBERSHIP_NOMEMBER = 0;
     public static final int MEMBERSHIP_MEMBER = 1;
     private static final String GUIITEM_MEMBERSHIP = "GUIITEM_MEMBERSHIP";
+    
+    private ItemTypeBoolean autoSetOnAge;
+    private ItemTypeInteger minAge;
+    private ItemTypeInteger maxAge;
 
     public static void initialize() {
         Vector<String> f = new Vector<String>();
@@ -48,6 +56,9 @@ public class StatusRecord extends DataRecord {
         f.add(NAME);                              t.add(IDataAccess.DATA_STRING);
         f.add(TYPE);                              t.add(IDataAccess.DATA_STRING);
         f.add(MEMBERSHIP);                        t.add(IDataAccess.DATA_INTEGER);
+        f.add(AUTOSETONAGE);                      t.add(IDataAccess.DATA_BOOLEAN);
+        f.add(MINAGE);                            t.add(IDataAccess.DATA_INTEGER);
+        f.add(MAXAGE);                            t.add(IDataAccess.DATA_INTEGER);
         MetaData metaData = constructMetaData(Status.DATATYPE, f, t, false);
         metaData.setKey(new String[] { ID });
         metaData.addIndex(IDX_NAME);
@@ -155,6 +166,27 @@ public class StatusRecord extends DataRecord {
         return m < 0 || m == MEMBERSHIP_MEMBER;
     }
 
+    public void setAutoSetOnAge(boolean auto) {
+        setBool(AUTOSETONAGE, auto);
+    }
+    public boolean getAutoSetOnAge() {
+        return getBool(AUTOSETONAGE);
+    }
+
+    public void setMinAge(int age) {
+        setInt(MINAGE, age);
+    }
+    public int getMinAge() {
+        return getInt(MINAGE);
+    }
+
+    public void setMaxAge(int age) {
+        setInt(MAXAGE, age);
+    }
+    public int getMaxAge() {
+        return getInt(MAXAGE);
+    }
+
     public String[] getQualifiedNameFields() {
         return IDX_NAME;
     }
@@ -198,6 +230,18 @@ public class StatusRecord extends DataRecord {
             v.add(item = new ItemTypeBoolean(StatusRecord.GUIITEM_MEMBERSHIP, isMember(),
                     IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.getString("Mitglied")));
         }
+        v.add(item = new ItemTypeBoolean(StatusRecord.AUTOSETONAGE, getAutoSetOnAge(),
+                IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.getString("Status altersabhängig automatisch setzen")));
+        autoSetOnAge = (ItemTypeBoolean)item;
+        item.registerItemListener(this);
+        v.add(item = new ItemTypeInteger(StatusRecord.MINAGE, getMinAge(), 0, 100, true,
+                IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.getString("Mindestalter")));
+        minAge = (ItemTypeInteger)item;
+        item.setEditable(getAutoSetOnAge());
+        v.add(item = new ItemTypeInteger(StatusRecord.MAXAGE, getMaxAge(), 0, 100, true,
+                IItemType.TYPE_PUBLIC, CAT_BASEDATA, International.getString("Höchstalter")));
+        maxAge = (ItemTypeInteger)item;
+        item.setEditable(getAutoSetOnAge());
         return v;
     }
 
@@ -228,4 +272,23 @@ public class StatusRecord extends DataRecord {
         super.saveGuiItems(items);
     }
 
+    public void itemListenerAction(IItemType itemType, AWTEvent event) {
+        if (autoSetOnAge != null) {
+            autoSetOnAge.getValueFromGui();
+            boolean autoAge = autoSetOnAge.getValue();
+            if (minAge != null) {
+                minAge.setEditable(autoAge);
+                if (!autoAge) {
+                    minAge.parseAndShowValue("");
+                }
+            }
+            if (maxAge != null) {
+                maxAge.setEditable(autoAge);
+                if (!autoAge) {
+                    maxAge.parseAndShowValue("");
+                }
+            }
+        }
+    }
+    
 }

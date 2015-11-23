@@ -98,8 +98,10 @@ public class AdminTask extends Thread {
                                 International.getMessage("Möchtest Du den Übertrag für das Vereinsarbeitsbuch '{record}' wirklich berechnen?",
                                         clubwork.getName()),
                                 International.getString("ja"),
-                                International.getString("nein, nie"),
-                                International.getString("nein, nicht jetzt")
+                                International.getString("nein") + 
+                                        " (" + International.getString("nie") + ")",
+                                International.getString("nein") + 
+                                        " (" + International.getString("nicht jetzt") + ")"
                         );
                         if (res == 0 /* yes */ || res == 1 /* no */) {
                             clubwork.getProjectRecord().setClubworkCarryOverDone(true);

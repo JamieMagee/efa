@@ -620,7 +620,7 @@ public class BoatRecord extends DataRecord implements IItemFactory, IItemListene
         setString(DEFAULTSESSIONTYPE, type);
     }
     public String getDefaultSessionType() {
-        return getString(DEFAULTSESSIONTYPE);
+        return Daten.efaTypes.getSessionType(getString(DEFAULTSESSIONTYPE));
     }
 
     public void setDefaultDestinationId(UUID id) {
