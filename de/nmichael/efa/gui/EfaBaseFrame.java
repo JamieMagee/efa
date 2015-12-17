@@ -26,6 +26,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class EfaBaseFrame extends BaseDialog implements IItemListener {
 
@@ -1540,6 +1541,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             !checkAllDataEntered() ||
             !checkNamesValid() ||
             !checkUnknownNames() ||
+            !checkProperUnknownNames() ||
             !checkAllowedPersons()) {
             return false;
         }
@@ -2718,6 +2720,73 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
                     Dialog.error(LogString.itemIsUnknown(wlists[1].toString(), International.getString("Gewässer")));
                     waters.requestFocus();
                     return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    private boolean checkProperUnknownNames() {
+        // check whether all names of unkown persons are proper and allowed names
+        if (isModeBoathouse()) {
+            String slist = Daten.efaConfig.getValueBoathouseNonAllowedUnknownPersonNames();
+            String[] list = null;
+            if (slist != null && slist.length() > 0) {
+                list = slist.split(";");
+                for (int i=0; list != null && i<list.length; i++) {
+                    list[i] = list[i] != null ? list[i].trim().toLowerCase() : null;
+                }
+            }
+            Pattern pname = Daten.efaConfig.getValueNameFormatIsFirstNameFirst() ?
+                    Pattern.compile("[X ]+ [X ]+") : Pattern.compile("[X ]+, [X ]+");
+            Pattern pnameclub = Daten.efaConfig.getValueNameFormatIsFirstNameFirst() ?
+                    Pattern.compile("[X ]+ [X ]+ \\([X 0-9]+\\)") : Pattern.compile("[X ]+, [X ]+ \\([X 0-9]+\\)");
+            for (int i = 0; i <= LogbookRecord.CREW_MAX; i++) {
+                String name = (i == 0 ? cox : crew[i - 1]).getValueFromField();
+                if (name != null && name.length() > 0 && findPerson(i, getValidAtTimestamp(null)) == null) {
+                    if (Daten.efaConfig.getValueBoathouseStrictUnknownPersons()) {
+                        String _name = name;
+                        name = EfaUtil.replace(name, ",", ", ", true);
+                        name = EfaUtil.replace(name, " ,", ",", true);
+                        name = EfaUtil.replace(name, "(", " (", true);
+                        name = EfaUtil.replace(name, "( ", "(", true);
+                        name = EfaUtil.replace(name, ")", ") ", true);
+                        name = EfaUtil.replace(name, " )", ")", true);
+                        name = EfaUtil.replace(name, "  ", " ", true);
+                        name = name.trim();
+                        if (!name.equals(_name)) {
+                            (i == 0 ? cox : crew[i - 1]).parseAndShowValue(name);
+                        }
+                        String xname = EfaUtil.transformNameParts(name);
+                        if (!pname.matcher(xname).matches() &&
+                            !pnameclub.matcher(xname).matches() &&
+                            !name.equalsIgnoreCase(International.getString("Gast"))) {
+                            String nameformat = Daten.efaConfig.getValueNameFormatIsFirstNameFirst()
+                                    ? International.getString("Vorname") + " "
+                                    + International.getString("Nachname")
+                                    : International.getString("Nachname") + ", "
+                                    + International.getString("Vorname");
+                            Dialog.error(International.getString("Ungültiger Name") + ": " + name + "\n"
+                                    + International.getString("Personennamen müssen eines der folgenden Formate haben:") + "\n\n"
+                                    + nameformat + "\n"
+                                    + nameformat + " (" + International.getString("Verein") + ")\n"
+                                    + International.getString("Gast"));
+                            (i == 0 ? cox : crew[i - 1]).requestFocus();
+                            return false;
+                        }
+                    }
+                    if (list != null) {
+                        for (int j=0; j<list.length; j++) {
+                            if (list[j] != null && list[j].trim().length() > 0 &&
+                                name.toLowerCase().indexOf(list[j].trim().toLowerCase()) >= 0) {
+                                Dialog.error(International.getString("Ungültiger Name") + ": " + name + "\n"
+                                        + International.getMessage("'{string}' ist nicht erlaubt in Personennamen.",
+                                                list[j].trim().toUpperCase()));
+                                (i == 0 ? cox : crew[i - 1]).requestFocus();
+                                return false;
+                            }
+                        }
+                    }
                 }
             }
         }

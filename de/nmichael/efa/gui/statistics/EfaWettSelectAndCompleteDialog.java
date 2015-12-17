@@ -37,6 +37,7 @@ public class EfaWettSelectAndCompleteDialog extends BaseDialog implements Action
 
     private String resultMeldegeld;
     private Vector resultPapierFahrtenhefte;
+    private static final String LFDNR_UA = ", ...";
 
     int anzahl;
     EfaWett efaWett = null;
@@ -384,6 +385,10 @@ public class EfaWettSelectAndCompleteDialog extends BaseDialog implements Action
     private void linkMouseClicked(MouseEvent e) {
         JLabel label = (JLabel) e.getSource();
         String entryNo = label.getText();
+        int pos;
+        if ( (pos = entryNo.indexOf(LFDNR_UA)) > 0) {
+            entryNo = entryNo.substring(0, pos);
+        }
         EfaBaseFrame dlg = new EfaBaseFrame(this, EfaBaseFrame.MODE_ADMIN, admin,
                 Daten.project.getCurrentLogbook(), entryNo);
         dlg.showDialog();
@@ -522,11 +527,16 @@ public class EfaWettSelectAndCompleteDialog extends BaseDialog implements Action
 
             // LfdNr (Label)
             if (displayLfdNr) {
-                if (m.drvWS_LfdNr != null && m.drvWS_LfdNr.length() > 0 &&
+                String lfdnr = m.drvWS_LfdNr;
+                int pos;
+                if (lfdnr != null && (pos = lfdnr.indexOf(", ")) > 0) {
+                    lfdnr = lfdnr.substring(0, pos) + LFDNR_UA;
+                }
+                if (lfdnr != null && lfdnr.length() > 0 &&
                     admin != null && admin.isAllowedEditLogbook()) {
-                    addLink(m, 0, T_LABEL, m.drvWS_LfdNr, x++, y, 0, 0, GridBagConstraints.EAST, false);
+                    addLink(m, 0, T_LABEL, lfdnr, x++, y, 0, 0, GridBagConstraints.EAST, false);
                 } else {
-                    addField(m, 0, T_LABEL, (m.drvWS_LfdNr != null ? m.drvWS_LfdNr : ""), x++, y, 0, 0, GridBagConstraints.EAST, Color.black, false);
+                    addField(m, 0, T_LABEL, (lfdnr != null ? lfdnr : ""), x++, y, 0, 0, GridBagConstraints.EAST, Color.black, false);
                 }
             }
 

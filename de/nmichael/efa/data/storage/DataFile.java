@@ -204,6 +204,7 @@ public abstract class DataFile extends DataAccess {
 
     public synchronized void openStorageObject() throws EfaException {
         String tryfilename = filename;
+        boolean logex = true;
         try {
             boolean recovered = false;
             fileWriter = null;
@@ -215,6 +216,7 @@ public abstract class DataFile extends DataAccess {
                     // no backup files found, so we don't have to even try to recover.
                     // instead, we throw an exception.
                     // our callee may then react by creating a new storage object instead, if he likes
+                    logex = false;
                     throw e1;
                 }
                 try {
@@ -239,7 +241,9 @@ public abstract class DataFile extends DataAccess {
                 saveStorageObject();
             }
         } catch(Exception e) {
-            Logger.log(e);
+            if (logex) {
+                Logger.log(e);
+            }
             throw new EfaException(Logger.MSG_DATA_OPENFAILED, LogString.fileOpenFailed(tryfilename, storageLocation, e.toString()), Thread.currentThread().getStackTrace());
         }
     }

@@ -28,6 +28,7 @@ public class ItemTypeString extends ItemTypeLabelTextfield {
     protected String charactersToSearch;
     protected String charactersToReplace;
     protected Pattern pattern;
+    protected Pattern patternWithWarning;
     protected boolean toLowerCase = false;
     protected boolean toUpperCase = false;
     protected int minChar = 0;
@@ -122,6 +123,14 @@ public class ItemTypeString extends ItemTypeLabelTextfield {
         }
     }
 
+    public void setAllowedRegexWarnIfWrong(Pattern regex) {
+        if (regex != null) {
+            patternWithWarning = regex;
+        } else {
+            patternWithWarning = null;
+        }
+    }
+
     public void setToLowerCase(boolean toLowerCase) {
         this.toLowerCase = toLowerCase;
     }
@@ -154,6 +163,10 @@ public class ItemTypeString extends ItemTypeLabelTextfield {
         }
         if (minChar > 0 && (value == null || value.length() < minChar)) {
             lastInvalidErrorText = International.getMessage("Eingabe muß mindestens {n} Zeichen lang sein", minChar);
+            return false;
+        }
+        if (patternWithWarning != null && value != null && !patternWithWarning.matcher(value).matches()) {
+            lastInvalidErrorText = value;
             return false;
         }
         return true;

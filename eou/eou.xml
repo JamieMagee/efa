@@ -3,20 +3,33 @@
 
     <Version>
         <VersionID>2.2.2_00</VersionID>
-        <ReleaseDate>xx.xx.2015</ReleaseDate>
+        <ReleaseDate>16.12.2015</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa222.zip</DownloadUrl>
-        <DownloadSize></DownloadSize>
+        <DownloadSize>3809677</DownloadSize>
 
         <Changes lang="de">
-            <ChangeItem>Neu: Auswertung der DRV-Wettbewerbe an neue Bestimmungen angepaßt</ChangeItem>
+            <ChangeItem>Neu: Auswertung der DRV-Wettbewerbe an neue Bestimmungen für 2015 angepaßt</ChangeItem>
             <ChangeItem>Neu: Fahrtarten "Training", "Wanderfahrt", "Ausbildung", "JuM-Regatta" abgeschafft</ChangeItem>
             <ChangeItem>Neu: efa überprüft jetzt bei der Eingabe, ob eine Fahrt aufgrund ihrer Fahrtart als Wanderfahrt gewertet werden kann oder nicht</ChangeItem>
             <ChangeItem>Neu: Status von Personen kann jetzt von efa altersabhängig automatisch gesetzt werden</ChangeItem>
             <ChangeItem>Neu: Konfigurierbare Vorbelegung für Text im Bemerkungs-Feld</ChangeItem>
             <ChangeItem>Neu: Darstellungsgröße im HTML-Widget kann beliebig skaliert werden</ChangeItem>
+            <ChangeItem>Neu: In Auswertungen der Vereinsarbeit können Mitglieder, die die Sollstunden noch nicht erfüllt haben, nun unterdrückt werden</ChangeItem>
+            <ChangeItem>Neu: Unbekannte Personennamen können bei Eingabe von Fahrten im Bootshaus jetzt nach strengen Regeln auf gültiges Namensformat hin geprüft werden</ChangeItem>
+            <ChangeItem>Neu: efa überprüft jetzt die email-Adressen in den Projekt-Einstellungen sowie beim Melden von Wettbewerben auf syntaktische Korrektheit</ChangeItem>
+            <ChangeItem>Neu: Bei der Auswertung der DRV-Wanderruderstatistik werden nun für jeden Eintrag die LfdNr aller berücksichtigten Fahrten ausgegeben</ChangeItem>
             <ChangeItem>Bugfix: efaCLI kann jetzt unter Linux/Unix auch ohne graphische Umgebung (headless) gestartet werden</ChangeItem>
+            <ChangeItem>Bugfix: Fehlermeldungen beim Anlegen eines neuen Fahrtenbuchs über efaRemote behoben</ChangeItem>
         </Changes>
         <Changes lang="en">
+            <ChangeItem>New: Status of persons can now automatically be updated by efa based on year of birth</ChangeItem>
+            <ChangeItem>New: Configurable preset value for comments field</ChangeItem>
+            <ChangeItem>New: Scaling of HTML Widget can now be freely configured</ChangeItem>
+            <ChangeItem>New: Statistics evaluations of clubwork can now suppress members that have not yet fulfilled their clubwork hours</ChangeItem>
+            <ChangeItem>New: Strict checks of unknown person names in logbook entries can now be enforced when sessions are entered</ChangeItem>
+            <ChangeItem>New: efa now validates email addresses in project settings</ChangeItem>
+            <ChangeItem>Bugfix: efaCLI now run on Linux/Unix also in environments without display (headless)</ChangeItem>
+            <ChangeItem>Bugfix: Error messagesn during creation of a new logbook through efaRemote fixed</ChangeItem>
         </Changes>
     </Version>
 

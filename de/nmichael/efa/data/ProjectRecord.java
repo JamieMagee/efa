@@ -22,14 +22,18 @@ import de.nmichael.efa.gui.BaseDialog;
 import de.nmichael.efa.gui.BaseTabbedDialog;
 import de.nmichael.efa.gui.util.TableItem;
 import de.nmichael.efa.gui.util.TableItemHeader;
+import de.nmichael.efa.util.EfaUtil;
 import de.nmichael.efa.util.International;
 import de.nmichael.efa.util.Logger;
+import de.nmichael.efa.util.Dialog;
 import java.awt.*;
+import java.awt.event.FocusEvent;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 // @i18n complete
-public class ProjectRecord extends DataRecord {
+public class ProjectRecord extends DataRecord  {
 
     public static final String TYPE_PROJECT = "Project";
     public static final String TYPE_CLUB = "Club";
@@ -846,11 +850,16 @@ public class ProjectRecord extends DataRecord {
                     if (getAdminName() == null || getAdminName().length() == 0) {
                         item.setChanged(); // enforcing the check
                     }
-                    v.add(item = new ItemTypeString(ProjectRecord.ADMINEMAIL, getAdminEmail(),
+                    String email = getAdminEmail();
+                    if (email != null && email.length() > 0 && !EfaUtil.isValidEmail(email)) {
+                        email = null;
+                    }
+                    v.add(item = new ItemTypeString(ProjectRecord.ADMINEMAIL, email,
                             IItemType.TYPE_PUBLIC, category,
                             International.getString("Deine email-Adresse")));
                     item.setNotNull(true);
-                    if (getAdminEmail() == null || getAdminEmail().length() == 0) {
+                    ((ItemTypeString)item).setAllowedRegexWarnIfWrong(Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE));
+                    if (email == null || email.length() == 0) {
                         item.setChanged(); // enforcing the check
                     }
                 }
@@ -1091,4 +1100,5 @@ public class ProjectRecord extends DataRecord {
                 International.getString("SQL-Datenbank")
         };
     }
+
 }

@@ -315,10 +315,11 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                             wafa[nr][3] = bestEl.destination;
                             wafa[nr][4] = DataTypeDistance.getDistanceFromMeters(bestEl.distanceInMeters).getStringValueInKilometers(false, 0, 1);
                             wafa[nr][5] = bestEl.comments;
-                            if (sr.getOutputTypeEnum() == StatisticsRecord.OutputTypes.efawett && bestEl.jum) {
-                                wafa[nr][5] = EfaWettMeldung.JUM;
+                            if (bestEl.jum) {
+                                wafa[nr][5] = (wafa[nr][5] == null || wafa[nr][5].length() == 0 ? EfaWettMeldung.JUM :
+                                               wafa[nr][5] + " (" + EfaWettMeldung.JUM + ")");
                             }
-                            if (sr.getOutputTypeEnum() == StatisticsRecord.OutputTypes.efawett && !bestEl.jum && wafa[nr][5].equals(EfaWettMeldung.JUM)) {
+                            if (!bestEl.jum && wafa[nr][5] != null && wafa[nr][5].indexOf(EfaWettMeldung.JUM) > 0) {
                                 wafa[nr][5] = "";
                             }
                             wafaMeters += bestEl.distanceInMeters;

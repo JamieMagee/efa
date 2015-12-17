@@ -15,6 +15,7 @@ import de.nmichael.efa.util.*;
 public class DataTypeIntString implements Cloneable, Comparable<DataTypeIntString> {
 
     private String value;
+    private String appendedString;
 
     // Default Constructor
     public DataTypeIntString() {
@@ -87,6 +88,17 @@ public class DataTypeIntString implements Cloneable, Comparable<DataTypeIntStrin
 
     public int hashCode() {
         return (value != null ? value.hashCode() : -1);
+    }
+    
+    public String toAppendedString() {
+        if (value != null) {
+            return value + (appendedString != null ? appendedString : "");
+        }
+        return "";
+    }
+
+    public void append(String s) {
+        appendedString = (appendedString != null ? appendedString : "") + s;
     }
 
 }

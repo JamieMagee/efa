@@ -175,6 +175,18 @@ public class CompetitionDRVWanderruderstatistik extends Competition {
                 r.getDestinationAndVariantName(sr.sValidAt)).toLowerCase();
         if (sd.entryNo == null) {
             sd.entryNo = r.getEntryId();
+        } else if (!sd.entryNo.equals(r.getEntryId())) {
+            // append new entry number, of not yet in string
+            String[] entryNrs = sd.entryNo.toAppendedString().split(", ");
+            boolean found = false;
+            for (int i=0; entryNrs != null && i<entryNrs.length; i++) {
+                if (entryNrs[i] != null && entryNrs[i].equals(r.getEntryId().toString())) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                sd.entryNo.append(", " + r.getEntryId().toString());
+            }
         }
         sd.sName = fahrtName;
         sd.sAdditional = fahrtDetails;
@@ -358,7 +370,7 @@ public class CompetitionDRVWanderruderstatistik extends Competition {
                 continue; // Wafa gelöscht, da sie die Kriterien nicht erfüllte!
             }
             long tmp;
-            sr.pAdditionalTable1[pos][ 0] = (sd[i].entryNo != null ? sd[i].entryNo.toString() : "");
+            sr.pAdditionalTable1[pos][ 0] = (sd[i].entryNo != null ? sd[i].entryNo.toAppendedString() : "");
             sr.pAdditionalTable1[pos][ 1] = sd[i].sName;
             sr.pAdditionalTable1[pos][ 2] = (sd[i].sAdditional != null ? sd[i].sAdditional : "");
 

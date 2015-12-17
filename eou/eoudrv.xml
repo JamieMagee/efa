@@ -2,6 +2,19 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.2_00</VersionID>
+        <ReleaseDate>16.12.2015</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>3975732</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Neu: Geänderte Wettbewerbsbestimmungen für DRV</ChangeItem>
+            <ChangeItem>Neu: Erweiterungen in Meldestatistik für DRV-Fahrtenabzeichen</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.1_13</VersionID>
         <ReleaseDate>27.06.2015</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>

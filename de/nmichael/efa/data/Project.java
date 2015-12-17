@@ -32,6 +32,7 @@ import de.nmichael.efa.data.types.DataTypeDate;
 import de.nmichael.efa.ex.EfaException;
 import de.nmichael.efa.ex.EfaModifyException;
 import de.nmichael.efa.util.Dialog;
+import de.nmichael.efa.util.EfaUtil;
 import de.nmichael.efa.util.International;
 import de.nmichael.efa.util.LogString;
 import de.nmichael.efa.util.Logger;
@@ -2162,6 +2163,16 @@ public class Project extends StorageObject {
                     || ((ProjectRecord) record).getType().equals(ProjectRecord.TYPE_CLUBWORK)
                     || ((ProjectRecord) record).getType().equals(ProjectRecord.TYPE_BOATHOUSE)) {
                 assertFieldNotEmpty(record, ProjectRecord.NAME);
+            }
+            if (((ProjectRecord) record).getType().equals(ProjectRecord.TYPE_PROJECT)) {
+                ProjectRecord r = (ProjectRecord) record;
+                String email = r.getAdminEmail();
+                if (email != null && email.trim().length() > 0 && !EfaUtil.isValidEmail(email)) {
+                    throw new EfaModifyException(Logger.MSG_DATA_MODIFYEXCEPTION,
+                            International.getMessage("Ungültige email Adresse '{email}' in Feld '{field}'.",
+                                    email, ProjectRecord.ADMINEMAIL),
+                            Thread.currentThread().getStackTrace());
+                }
             }
             if (((ProjectRecord) record).getType().equals(ProjectRecord.TYPE_BOATHOUSE)) {
                 ProjectRecord r = (ProjectRecord) record;

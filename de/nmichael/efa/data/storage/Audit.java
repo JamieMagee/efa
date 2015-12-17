@@ -158,6 +158,26 @@ public class Audit extends Thread {
         }
     }
 
+    private int runAuditProject() {
+        int prjErr = 0;
+        try {
+            String email = project.getAdminEmail();
+            if (email != null && email.trim().length() > 0 && !EfaUtil.isValidEmail(email)) {
+                auditError(Logger.MSG_DATA_AUDIT_INVALIDREC,
+                        International.getMessage("Ungültige email Adresse '{email}' in Feld '{field}'.",
+                                    email, 
+                                    International.getString("Projekt") + ":" + ProjectRecord.ADMINEMAIL) + " " +
+                        International.getString("Bitte korrigiere die email-Adresse in den Projekt-Einstellungen."));
+            }
+            return prjErr;
+        } catch (Exception e) {
+            Logger.logdebug(e);
+            auditError(Logger.MSG_DATA_AUDIT,
+                    "runAuditProject() Caught Exception: " + e.toString());
+            return ++prjErr;
+        }
+    }
+    
     private int runAuditBoats() {
         int boatErr = 0;
         try {
@@ -1454,6 +1474,7 @@ public class Audit extends Thread {
                 runAuditPersistence(project.getWaters(false), Waters.DATATYPE);
                 runAuditPersistence(project.getMessages(false), Messages.DATATYPE);
 
+                errors += runAuditProject();
                 errors += runAuditBoats();
                 errors += runAuditCrews();
                 errors += runAuditGroups();

@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.net.NetworkInterface;
 import javax.swing.JComponent;
 import java.security.*;
+import javax.mail.internet.InternetAddress;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -1976,10 +1977,37 @@ public class EfaUtil {
         }
         return s.toString();
     }
+    
+    public static boolean isValidEmail(String email) {
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+            String domain = email.substring(email.indexOf("@")+1);
+            if (domain.indexOf(".") < 0) {
+                return false;
+            }
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }        
+    }
+    
+    public static String transformNameParts(String s) {
+        StringBuilder x = new StringBuilder();
+        for (int i=0; i<s.length(); i++) {
+            char c = s.charAt(i);
+            if (Character.isLetter(c) || c == '.' || c == '-') {
+                x.append("X"); // regular letter or name component character
+            } else x.append(c);
+        }
+        return x.toString();
+    }
 
     public static void main(String args[]) {
         String text = "abc & def";
         System.out.println(text + " -> EfaUtil.escapeXml() = " + EfaUtil.escapeXml(text));
         System.out.println(replaceListByList("xÄxÖxÜxäxöxüxßx","äöüÄÖÜß","aouAOUs"));
+        System.out.println("test@domain: " + isValidEmail("test@domain"));
+        System.out.println("test@domain.com: " + isValidEmail("test@domain.com"));
     }
 }

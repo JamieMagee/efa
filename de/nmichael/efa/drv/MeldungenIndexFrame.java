@@ -1424,7 +1424,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             createMeldestatistikFA();
         }
         if (MELDTYP == MELD_WANDERRUDERSTATISTIK) {
-            updateMeldestatistikWS();
+            updateMeldestatistikWS(Main.drvConfig.meldungenIndex, true);
             createMeldestatistikWS();
         }
     }
@@ -1524,7 +1524,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             }
         }
         Main.drvConfig.meldestatistik.writeFile();
-        Dialog.infoDialog("Meldestatistik für " + countClubs + " Meldungen (" +
+        Dialog.infoDialog("Fahrtenabzeichen-Meldestatistik für " + countClubs + " Meldungen (" +
                 countPersons + " Personen) aktualisiert." +
                 (countUnbearbeitet + countInvalid > 0 ? 
                     "\n" + countUnbearbeitet + " unbearbeitete und " + countInvalid + " gelöschte oder zurückgewiesene Meldungen wurden ignoriert."
@@ -1541,7 +1541,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
         
     }
     
-    void updateMeldestatistikWS() {
+    void updateMeldestatistikWS(MeldungenIndex idx, boolean showConfirmation) {
         int countClubs = 0;
         int countSessions = 0;
         int countUnbearbeitet = 0;
@@ -1550,7 +1550,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
         ArrayList<String> conflicts = new ArrayList<String>();
         
         Main.drvConfig.meldestatistik = new Meldestatistik(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + DRVConfig.MELDESTATISTIK_WS_FILE);
-        for (DatenFelder list = Main.drvConfig.meldungenIndex.getCompleteFirst(); list != null; list = Main.drvConfig.meldungenIndex.getCompleteNext()) {
+        for (DatenFelder list = idx.getCompleteFirst(); list != null; list = idx.getCompleteNext()) {
             String mitglnr = list.get(MeldungenIndex.MITGLNR);
             String qnr = list.get(MeldungenIndex.QNR);
             if (qnr == null || qnr.length() == 0) {
@@ -1654,15 +1654,17 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             }
         }
         Main.drvConfig.meldestatistik.writeFile();
-        Dialog.infoDialog("Meldestatistik für " + countClubs + " bearbeitete Meldungen (" +
-                countSessions + " Fahrten) aktualisiert." +
-                (countUnbearbeitet + countInvalid > 0 ? 
-                    "\n" + countUnbearbeitet + " unbearbeitete und " + countInvalid + " gelöschte oder zurückgewiesene Meldungen wurden ignoriert."
-                : "") +
-                (conflicts.size() > 0 ? 
-                    "\nFolgende Meldungen wurden aufgrund ungültiger Mitgliedsnummern ignoriert:\n" +
-                    EfaUtil.vector2string(conflicts, "\n")
-                : ""));
+        if (showConfirmation) {
+            Dialog.infoDialog("Wanderruder-Meldestatistik für " + countClubs + " bearbeitete Meldungen ("
+                    + countSessions + " Fahrten) aktualisiert."
+                    + (countUnbearbeitet + countInvalid > 0
+                            ? "\n" + countUnbearbeitet + " unbearbeitete und " + countInvalid + " gelöschte oder zurückgewiesene Meldungen wurden ignoriert."
+                            : "")
+                    + (conflicts.size() > 0
+                            ? "\nFolgende Meldungen wurden aufgrund ungültiger Mitgliedsnummern ignoriert:\n"
+                            + EfaUtil.vector2string(conflicts, "\n")
+                            : ""));
+        }
     }
     
     void createMeldestatistikFA() {
@@ -1738,14 +1740,14 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             // Tabelle 3: 75 Jahre und älter
             SortedStatistic sStat = new SortedStatistic();
             f.write("Statistik 3: Jahrgang " + (Main.drvConfig.aktJahr - 75) + " und älter (75 Jahre und älter)\n");
-            f.write("Jahrgang;Name, Verein;Km\n");
+            f.write("Jahrgang;Name;Verein;Km\n");
             for (DatenFelder d = Main.drvConfig.meldestatistik.getCompleteFirst(); d != null; d = Main.drvConfig.meldestatistik.getCompleteNext()) {
                 int jahrgang = EfaUtil.string2int(d.get(Meldestatistik.JAHRGANG), 9999);
                 if (jahrgang <= Main.drvConfig.aktJahr - 75) {
                     int key = jahrgang * 100000 + (999999 - EfaUtil.string2int(d.get(Meldestatistik.KILOMETER), 0));
                     sStat.add(key, null,
                             d.get(Meldestatistik.JAHRGANG),
-                            d.get(Meldestatistik.NACHNAME) + " " + d.get(Meldestatistik.VORNAME) + ", " + d.get(Meldestatistik.VEREIN),
+                            d.get(Meldestatistik.NACHNAME) + " " + d.get(Meldestatistik.VORNAME) + ";" + d.get(Meldestatistik.VEREIN),
                             d.get(Meldestatistik.KILOMETER));
                 }
             }
@@ -1832,6 +1834,61 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             }
             f.write("\n\n\n");
 
+            // Tabelle 7: Über 4000 Km
+            sStat = new SortedStatistic();
+            f.write("Statistik 7: Fahrtenabzeichen pro Verein:\n");
+            f.write("Vereins-Nr;Verein;Anzahl\n");
+            Hashtable<String,Integer> vereinsAbz = new Hashtable<String,Integer>();
+            for (DatenFelder d = Main.drvConfig.meldestatistik.getCompleteFirst(); d != null; d = Main.drvConfig.meldestatistik.getCompleteNext()) {
+                String verein = d.get(Meldestatistik.VEREINSMITGLNR) + ";" +
+                                d.get(Meldestatistik.VEREIN);
+                Integer anz = vereinsAbz.get(verein);
+                if (anz == null) {
+                    vereinsAbz.put(verein, 1);
+                } else {
+                    vereinsAbz.put(verein, anz + 1);
+                }
+            }
+            for (String verein : vereinsAbz.keySet()) {
+                sStat.add(vereinsAbz.get(verein), null,
+                        verein,
+                        Integer.toString(vereinsAbz.get(verein)),
+                        null);
+            }
+            sStat.sort(false);
+            for (int i = 0; i < sStat.sortedSize(); i++) {
+                String[] sdata = sStat.getSorted(i);
+                f.write(sdata[0] + ";" + sdata[1] + "\n");
+            }
+            f.write("\n\n\n");
+
+            // Tabelle 8: FA+WS Statistik zusammen
+            MeldungenIndex idxWS = new MeldungenIndex(Daten.efaDataDirectory+Main.drvConfig.aktJahr+Daten.fileSep+DRVConfig.MELDUNGEN_WS_FILE);
+            if (idxWS.readFile()) {
+                updateMeldestatistikWS(idxWS, true);
+                sStat = new SortedStatistic();
+                f.write("Statistik 8: Wanderruderstatistik und Fahrtenabzeichen:\n");
+                f.write("Vereins-Nr;Verein;Aktive;Mannschaftskilometer;Fahrtenabzeichen\n");
+
+                for (DatenFelder d = Main.drvConfig.meldestatistik.getCompleteFirst(); d != null; d = Main.drvConfig.meldestatistik.getCompleteNext()) {
+                    String verein = d.get(Meldestatistik.VEREINSMITGLNR) + ";"
+                            + d.get(Meldestatistik.VEREIN);
+                    int aktive = EfaUtil.string2int(d.get(Meldestatistik.WS_AKT18M), 0)
+                            + EfaUtil.string2int(d.get(Meldestatistik.WS_AKT19M), 0)
+                            + EfaUtil.string2int(d.get(Meldestatistik.WS_AKT18W), 0)
+                            + EfaUtil.string2int(d.get(Meldestatistik.WS_AKT19W), 0);
+                    String mannschKm = d.get(Meldestatistik.WS_MANNSCHKM);
+                    int abzeichen = vereinsAbz.get(verein) != null ? vereinsAbz.get(verein) : 0;
+                    String vdata = verein + ";" + aktive + ";" + mannschKm + ";" + abzeichen;
+                    sStat.add(-1, verein, vdata, null, null);
+                }
+                sStat.sort(false);
+                for (int i = 0; i < sStat.sortedSize(); i++) {
+                    String[] sdata = sStat.getSorted(i);
+                    f.write(sdata[0] + "\n");
+                }
+                f.write("\n\n\n");
+            }
 
             f.close();
             Dialog.infoDialog("Statistiken exportiert",

@@ -166,6 +166,8 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     private ItemTypeBoolean efaBoathouseOnlyEnterKnownPersons;
     private ItemTypeBoolean efaBoathouseOnlyEnterKnownDestinations;
     private ItemTypeBoolean efaBoathouseOnlyEnterKnownWaters;
+    private ItemTypeBoolean efaBoathouseStrictUnknownPersons;
+    private ItemTypeString efaBoathouseNonAllowedUnknownPersonNames;
     private ItemTypeBoolean efaDirekt_eintragHideUnnecessaryInputFields;
     private ItemTypeInteger efaDirekt_plusMinutenAbfahrt;
     private ItemTypeInteger efaDirekt_minusMinutenAnkunft;
@@ -718,6 +720,12 @@ public class EfaConfig extends StorageObject implements IItemFactory {
                     IItemType.TYPE_PUBLIC,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_INPUT),
                     International.getMessage("Beim Eintrag von Fahrten nur bekannte Namen erlauben für {type}",
                     International.getString("Gewässer"))));
+            addParameter(efaBoathouseStrictUnknownPersons = new ItemTypeBoolean("InputStrictUnknownPersons", false,
+                    IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_INPUT),
+                    International.getString("Strenge Prüfung des Namensformats beim Eintrag von unbekannten Personen")));
+            addParameter(efaBoathouseNonAllowedUnknownPersonNames = new ItemTypeString("InputNonAllowedPersonNames", "",
+                    IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_INPUT),
+                    International.getString("Nicht erlaubte Namen beim Eintrag von unbekannten Personen (durch ; getrennt)")));
             addParameter(efaDirekt_checkAllowedGroupsForBoat = new ItemTypeBoolean("InputCheckAllowedPersonsInBoat", true,
                     IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_INPUT),
                     International.getString("Bei Bootsbenutzung von nicht erlaubten Personen warnen")));
@@ -1538,6 +1546,13 @@ public class EfaConfig extends StorageObject implements IItemFactory {
         return efaBoathouseOnlyEnterKnownWaters.getValue();
     }
 
+    public boolean getValueBoathouseStrictUnknownPersons() {
+        return efaBoathouseStrictUnknownPersons.getValue();
+    }
+
+    public String getValueBoathouseNonAllowedUnknownPersonNames() {
+        return efaBoathouseNonAllowedUnknownPersonNames.getValue();
+    }
 
     public boolean getValueEfaDirekt_eintragHideUnnecessaryInputFields() {
         return efaDirekt_eintragHideUnnecessaryInputFields.getValue();
