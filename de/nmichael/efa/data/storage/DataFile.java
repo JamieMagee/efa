@@ -473,8 +473,9 @@ public abstract class DataFile extends DataAccess {
         indices.add(new DataIndex(idxFields));
     }
 
-    private void modifyRecord(DataRecord record, long lockID, boolean add, boolean update, boolean delete) throws EfaException {
+    private DataRecord modifyRecord(DataRecord record, long lockID, boolean add, boolean update, boolean delete) throws EfaException {
         long myLock = -1;
+        DataRecord newRecord = null;
         if (record == null) {
             throw new EfaException(Logger.MSG_DATA_RECORDNOTFOUND, getUID() + ": Data Record is 'null' for " +
                     (add ? "add" : (update ? "update" : (delete ? "delete" : "noop"))),
@@ -536,9 +537,9 @@ public abstract class DataFile extends DataAccess {
                         record.updateChangeCount();
                     }
                     if (add || update) {
-                        DataRecord myRecord = record.cloneRecord();
+                        newRecord = record.cloneRecord();
                         if (inOpeningStorageObject || journal.log(scn+1, (add ? Journal.Operation.add : Journal.Operation.update), record)) {
-                            data.put(key, myRecord);
+                            data.put(key, newRecord);
                             if (!inOpeningStorageObject) {
                                 scn++;
                             }
@@ -552,7 +553,7 @@ public abstract class DataFile extends DataAccess {
                             if (update) {
                                 idx.delete(currentRecord);
                             }
-                            idx.add(myRecord);
+                            idx.add(newRecord);
                         }
                     } else {
                         if (delete) {
@@ -584,6 +585,7 @@ public abstract class DataFile extends DataAccess {
         } else {
             throw new EfaException(Logger.MSG_DATA_MODIFICATIONFAILED, getUID() + ": Data Record Operation failed: No Write Access", Thread.currentThread().getStackTrace());
         }
+        return newRecord;
     }
 
     private void modifyVersionizedKeys(DataKey key, boolean add, boolean update, boolean delete) {
@@ -752,12 +754,12 @@ public abstract class DataFile extends DataAccess {
         }
     }
 
-    public void update(DataRecord record) throws EfaException {
-        modifyRecord(record, 0, false, true, false);
+    public DataRecord update(DataRecord record) throws EfaException {
+        return modifyRecord(record, 0, false, true, false);
     }
 
-    public void update(DataRecord record, long lockID) throws EfaException {
-        modifyRecord(record, lockID, false, true, false);
+    public DataRecord update(DataRecord record, long lockID) throws EfaException {
+        return modifyRecord(record, lockID, false, true, false);
     }
 
     public void delete(DataKey key) throws EfaException {

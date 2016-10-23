@@ -533,7 +533,7 @@ public abstract class DataRecord implements Cloneable, Comparable {
         setLong(CHANGECOUNT, l+1);
     }
 
-    protected long getChangeCount() {
+    public long getChangeCount() {
         long l = getLong(CHANGECOUNT);
         if (l < 0) {
             return 0;

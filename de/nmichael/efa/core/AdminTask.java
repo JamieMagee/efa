@@ -11,6 +11,7 @@ package de.nmichael.efa.core;
 import de.nmichael.efa.Daten;
 import de.nmichael.efa.core.config.AdminRecord;
 import de.nmichael.efa.data.Clubwork;
+import de.nmichael.efa.data.ProjectRecord;
 import de.nmichael.efa.data.types.DataTypeDate;
 import de.nmichael.efa.gui.AdminDialog;
 import de.nmichael.efa.util.Dialog;
@@ -104,7 +105,13 @@ public class AdminTask extends Thread {
                                         " (" + International.getString("nicht jetzt") + ")"
                         );
                         if (res == 0 /* yes */ || res == 1 /* no */) {
-                            clubwork.getProjectRecord().setClubworkCarryOverDone(true);
+                            ProjectRecord rec = clubwork.getProjectRecord();
+                            rec.setClubworkCarryOverDone(true);
+                            try {
+                                Daten.project.data().update(rec);
+                            } catch(Exception e) {
+                                Dialog.error(e.toString());
+                            }
                         }
                         if (res == 0 /* yes */) {
                             clubwork.doCarryOver(1, parent);
@@ -116,8 +123,11 @@ public class AdminTask extends Thread {
                             + International.getMessage("Berechnen des {verb}s nicht möglich.", International.getString("Übertrag")));
                 }
             } else {
+                /*
+                // already done, no error message needed?!
                 Dialog.error(International.getString("Kein Vereinsarbeitsbuch geöffnet.")
                         + International.getMessage("Berechnen des {verb}s nicht möglich.", International.getString("Übertrag")));
+                */
             }
         }
     }

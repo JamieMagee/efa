@@ -1,6 +1,10 @@
 Item
 ============================================================================================================
 
+efa zu langsam für RaspberryPi: http://forum.nmichael.de/viewtopic.php?f=9&t=970
+* Statistikerstellung Kilometerliste (3-4 Sekunden Berechnung, 7 Sekunden Aufbau HTML Seite)
+* Tippfehlerkorrektur (30 Sekunden)
+
 Restart von efa mit REboot von efaLive
 Fahrtgruppen bei Eingabe von Wanderfahrten durch Mitglieder auswählen lassen - https://kenai.com/bugzilla/show_bug.cgi?id=2231
 
@@ -8,6 +12,8 @@ Synchronisation korrekt protokollieren (z.B. Kanu-eFB: unveränderte Fahrten üb
 
 Wenn beim beginnen oder beenden einer Fahrt 2 Warnungen/Hinweise angezeigt werden sollen, diese beide zeitgleich nebeneinander anzeigen und nicht nacheinander
 Statistikauswertung auf Zeitraum (Uhrzeit) einschränken - http://forum.nmichael.de/viewtopic.php?f=9&t=871&p=3653#p3653
+Jahr des Statistikzeitraums in Statistikeinstellungen leer lassen, damit nicht jedes Jahr angepaßt werden muß - http://forum.nmichael.de/viewtopic.php?f=9&t=941&p=3896#p3896
+Keine oder nur eingeschränkt Einträge für die Zukunft erlauben - http://forum.nmichael.de/viewtopic.php?f=15&t=940
 
 Statistikauswertung: Filter nach Personen, die insgesamt mindestens x km gerudert sind (um solche, die nur sehr wenig im Jahr rudern auszublenden) - http://forum.nmichael.de/viewtopic.php?f=9&t=795&p=3312#p3312
 Option für Änderungswünsche im Fahrtenbuch deaktivierbar machen (http://forum.nmichael.de/viewtopic.php?f=9&p=2565#p2565)

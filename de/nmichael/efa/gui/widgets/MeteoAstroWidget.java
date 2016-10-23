@@ -23,8 +23,11 @@ import javax.swing.text.html.*;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import javax.net.ssl.HttpsURLConnection;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
+import oauth.signpost.OAuthConsumer;  
+import oauth.signpost.basic.DefaultOAuthConsumer;  
 
 public class MeteoAstroWidget extends Widget {
 
@@ -75,7 +78,12 @@ public class MeteoAstroWidget extends Widget {
     static final String GOOGLE_URL = "http://www.google.com";
 
     /* Documentation: http://developer.yahoo.com/weather/ */
-    static final String YAHOO_API = "http://weather.yahooapis.com/forecastrss";
+    /* should limit rate to 2,000 requests per day */
+    //static final String YAHOO_API = "http://weather.yahooapis.com/forecastrss";
+    static final String YAHOO_API = "https://weather.yahooapis.com/forecastrss";
+    
+    private static WeatherXmlResponse cachedResponse;
+    private static long lastResponseTime = 0;
 
     private JEditorPane htmlPane = new JEditorPane();
     private HTMLUpdater htmlUpdater;
@@ -320,8 +328,13 @@ public class MeteoAstroWidget extends Widget {
             }
         });
 
-        htmlUpdater = new HTMLUpdater(getUpdateInterval());
-        htmlUpdater.start();
+        try {
+            htmlUpdater = new HTMLUpdater(getUpdateInterval());
+            htmlUpdater.start();
+        } catch(NoClassDefFoundError e) {
+            Logger.log(Logger.WARNING, Logger.MSG_WARN_WEATHERUPDATEFAILED, 
+                    International.getString("Wetterinformationen können erst nach Neustart angezeigt werden."));
+        }
     }
 
     public JComponent getComponent() {
@@ -400,32 +413,43 @@ public class MeteoAstroWidget extends Widget {
                     XMLReader parser = null;
                     try {
                         WeatherXmlResponse response = null;
-                        switch(weatherApi) {
-                            case google:
-                                url = GOOGLE_API + "?weather=" + getWeatherLocation() + "&hl=" + International.getLanguageID() + "&ie=utf-8&oe=utf-8";
-                                conn = new URL(url).openConnection();
-                                conn.connect();
-                                in = conn.getInputStream();
-                                availBytes = in.available();
-                                in.mark(1024 * 1024);
-                                parser = EfaUtil.getXMLReader();
-                                response = new GoogleXmlResponse();
-                                parser.setContentHandler(response);
-                                parser.parse(new InputSource(in));
-                                break;
-                            case yahoo:
-                                url = YAHOO_API + "?w=" + getWeatherLocation() + "&u=" +
-                                        (getTemperatureScale().equals(TEMP_CELSIUS) ? "c" : "f");
-                                conn = new URL(url).openConnection();
-                                conn.connect();
-                                in = conn.getInputStream();
-                                availBytes = in.available();
-                                in.mark(1024 * 1024);
-                                parser = EfaUtil.getXMLReader();
-                                response = new YahooXmlResponse();
-                                parser.setContentHandler(response);
-                                parser.parse(new InputSource(in));
-                                break;
+                        if (cachedResponse != null &&
+                            (System.currentTimeMillis() - lastResponseTime < 3600*1000 ||
+                             EfaUtil.getCurrentHour() >= 20 || EfaUtil.getCurrentHour() <= 5)) {
+                            // use cached response for at least one hour, and always during night
+                            response = cachedResponse;
+                        } else {
+                            switch (weatherApi) {
+                                case google:
+                                    url = GOOGLE_API + "?weather=" + getWeatherLocation() + "&hl=" + International.getLanguageID() + "&ie=utf-8&oe=utf-8";
+                                    conn = new URL(url).openConnection();
+                                    conn.connect();
+                                    in = conn.getInputStream();
+                                    availBytes = in.available();
+                                    in.mark(1024 * 1024);
+                                    parser = EfaUtil.getXMLReader();
+                                    response = new GoogleXmlResponse();
+                                    parser.setContentHandler(response);
+                                    parser.parse(new InputSource(in));
+                                    break;
+                                case yahoo:
+                                    url = YAHOO_API + "?w=" + getWeatherLocation() + "&u="
+                                            + (getTemperatureScale().equals(TEMP_CELSIUS) ? "c" : "f");
+                                    OAuthConsumer consumer = new DefaultOAuthConsumer("dj0yJmk9TDh2Q05KY0dIZUxmJmQ9WVdrOVZVRnZNbVpRTkRnbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1iNA--", "07b26654a24b6ada504616a50b27bff74a08975e");
+                                    conn = new URL(url).openConnection();
+                                    consumer.sign((HttpsURLConnection) conn);
+                                    conn.connect();
+                                    in = conn.getInputStream();
+                                    availBytes = in.available();
+                                    in.mark(1024 * 1024);
+                                    parser = EfaUtil.getXMLReader();
+                                    response = new YahooXmlResponse();
+                                    parser.setContentHandler(response);
+                                    parser.parse(new InputSource(in));
+                                    break;
+                            }
+                            cachedResponse = response;
+                            lastResponseTime = System.currentTimeMillis();
                         }
 
                         if (getLayout().equals(LAYOUT_HORIZONTAL)) {
@@ -561,6 +585,14 @@ public class MeteoAstroWidget extends Widget {
                                 International.getString("Wetterdaten konnten nicht geladen werden") + ": " + errMsg);
                         Logger.logdebug(e);
                         weatherError = true;
+                    } catch (NoClassDefFoundError e) {
+                        if (!weatherError) {
+                            Logger.log(Logger.WARNING, Logger.MSG_CORE_MISSINGPLUGIN,
+                                    International.getString("Fehlendes Plugin") + ": " + Plugins.PLUGIN_WEATHER + " - "
+                                    + International.getString("Die Wetterdaten können nicht angezeigt werden.") + " "
+                                    + International.getMessage("Bitte lade das fehlende Plugin unter der Adresse {url} herunter.", Daten.pluginWebpage));
+                        }
+                        weatherError = true;
                     }
                 }
 
@@ -642,7 +674,7 @@ public class MeteoAstroWidget extends Widget {
                 }
 
                 try {
-                    Thread.sleep(updateIntervalInSeconds * 1000);
+                    Thread.sleep(Math.max(updateIntervalInSeconds, 3600) * 1000);
                 } catch(Exception e) {
                     Logger.logdebug(e);
                 }

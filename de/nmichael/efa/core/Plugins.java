@@ -33,6 +33,7 @@ public class Plugins {
     public static final String PLUGIN_JSUNTIMES = "jsuntimes";
     public static final String PLUGIN_MAIL = "mail";
     public static final String PLUGIN_PDF = "pdf";
+    public static final String PLUGIN_WEATHER = "weather";
 
     private Hashtable<String,PluginInfo> pluginInfos;
 
@@ -95,6 +96,15 @@ public class Plugins {
         if (pluginName.equals(PLUGIN_PDF)) {
             try {
                 PDFWriter tmp = new PDFWriter(null, null);
+                return true;
+            } catch (NoClassDefFoundError e) {
+                return false;
+            }
+        }
+
+        if (pluginName.equals(PLUGIN_WEATHER)) {
+            try {
+                oauth.signpost.basic.DefaultOAuthConsumer tmp = new oauth.signpost.basic.DefaultOAuthConsumer("foo", "bar");
                 return true;
             } catch (NoClassDefFoundError e) {
                 return false;

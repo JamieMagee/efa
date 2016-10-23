@@ -30,7 +30,9 @@ public class DataCache {
     }
 
     public synchronized void updateCache(DataRecord record, long scn, long totalNumberOfRecords) {
-        updateScn(scn, totalNumberOfRecords);
+        if (scn != -1 && totalNumberOfRecords != -1) {
+            updateScn(scn, totalNumberOfRecords);
+        }
         cache.put(record.getKey(), record);
     }
 

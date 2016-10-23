@@ -202,7 +202,7 @@ public class StatisticTask extends ProgressTask {
         }
     }
 
-    private int calculateAggregations(LogbookRecord r, Object key, long distance, boolean cox) {
+    private int calculateAggregations(LogbookRecord r, Object key, long distance, long days, boolean cox) {
         if (key == null) {
             return 0;
         }
@@ -222,7 +222,7 @@ public class StatisticTask extends ProgressTask {
             sd.coxdistance += (cox ? distance : 0);
         }
         if (sr.sIsAggrSessions || sr.sIsAggrAvgDistance || sr.sIsAggrSpeed) {
-            sd.count += entryNumberOfDays;
+            sd.count += days;
         }
         if (sr.sIsAggrDuration || sr.sIsAggrSpeed) {
             long myDuration = r.getEntryElapsedTimeInMinutes();
@@ -287,7 +287,7 @@ public class StatisticTask extends ProgressTask {
             if (i + 1 == size) {
                 myDistance = entryDistanceInDefaultUnit - distance;
             }
-            cnt += calculateAggregations(r, key, myDistance, cox);
+            cnt += calculateAggregations(r, key, myDistance, entryNumberOfDays, cox);
             distance += myDistance;
         }
 
@@ -297,18 +297,21 @@ public class StatisticTask extends ProgressTask {
     private int calculateAggregationsForHash(LogbookRecord r, Hashtable hash, boolean cox) {
         int cnt = 0;
         Object[] keys = hash.keySet().toArray();
-        for (Object k : keys) {
+        long daysPerKey = (keys.length > 0 ? entryNumberOfDays / keys.length : entryNumberOfDays);
+        for (int i=0; i<keys.length; i++) {
+            Object k = keys[i];
             long dist = (Long) hash.get(k);
-            cnt += calculateAggregations(r, k, dist, cox);
+            long days = (i==0 || i+1<keys.length ? daysPerKey : entryNumberOfDays - ((keys.length-1) * daysPerKey));
+            cnt += calculateAggregations(r, k, dist, days, cox);
         }
-        return cnt;
+        return cnt > 0 ? 1 : 0; // if something counted, only count as a single logbook entry
     }
 
     private int calculateAggregationsForMatrix(LogbookRecord r, Object key, long distance, int seat) {
         if (key == null) {
             return 0;
         }
-        calculateAggregations(r, key, distance, seat == 0);
+        calculateAggregations(r, key, distance, entryNumberOfDays, seat == 0);
         StatisticsData sd = data.get(key);
         if (sd == null) {
             sd = new StatisticsData(sr, key);
@@ -610,11 +613,17 @@ public class StatisticTask extends ProgressTask {
                     return getAggregationKey_month(entryDate);
                 }
                 DataTypeDate date = new DataTypeDate(entryDate);
-                long distPerDay = entryDistanceInDefaultUnit / entryEndDate.getDifferenceDays(entryDate);
+                long days = (entryEndDate.getDifferenceDays(entryDate) + 1);
+                long distPerDay = entryDistanceInDefaultUnit / days;
                 Hashtable<Object,Long> distancePerMonth = new Hashtable<Object,Long>();
                 while(date.isBeforeOrEqual(entryEndDate)) {
                     Object k = getAggregationKey_month(date);
                     Long dist = distancePerMonth.get(k);
+                    if (date.equals(entryEndDate)) {
+                        // last day, avoid rounding errors
+                        long diff = (entryDistanceInDefaultUnit - (days * distPerDay));
+                        dist = (dist != null ? dist + diff : diff);
+                    }
                     distancePerMonth.put(k, (dist == null ? distPerDay : dist + distPerDay));
                     date.addDays(1);
                 }
@@ -626,11 +635,17 @@ public class StatisticTask extends ProgressTask {
                     return getAggregationKey_weekday(entryDate);
                 }
                 date = new DataTypeDate(entryDate);
-                distPerDay = entryDistanceInDefaultUnit / entryEndDate.getDifferenceDays(entryDate);
+                days = (entryEndDate.getDifferenceDays(entryDate) + 1);
+                distPerDay = entryDistanceInDefaultUnit / days;
                 Hashtable<Object,Long> distancePerWeekday = new Hashtable<Object,Long>();
                 while(date.isBeforeOrEqual(entryEndDate)) {
                     Object k = getAggregationKey_weekday(date);
                     Long dist = distancePerWeekday.get(k);
+                    if (date.equals(entryEndDate)) {
+                        // last day, avoid rounding errors
+                        long diff = (entryDistanceInDefaultUnit - (days * distPerDay));
+                        dist = (dist != null ? dist + diff : diff);
+                    }
                     distancePerWeekday.put(k, (dist == null ? distPerDay : dist + distPerDay));
                     date.addDays(1);
                 }
@@ -743,12 +758,13 @@ public class StatisticTask extends ProgressTask {
                     if (aggregationKey != null) {
                         if (!(aggregationKey instanceof Hashtable)) {
                             if (sr.sStatistikKey != StatisticsRecord.StatisticKey.waters) {
-                                cnt += calculateAggregations(r, aggregationKey, entryDistanceInDefaultUnit, i == 0);
+                                cnt += calculateAggregations(r, aggregationKey, 
+                                        entryDistanceInDefaultUnit, entryNumberOfDays, i == 0);
                             } else {
                                 cnt += calculateAggregationsForList(r, (DataTypeList) aggregationKey, i == 0);
                             }
                         } else {
-                            calculateAggregationsForHash(r, (Hashtable)aggregationKey, i == 0);
+                            cnt += calculateAggregationsForHash(r, (Hashtable)aggregationKey, i == 0);
                         }
                     }
                 }
@@ -759,7 +775,8 @@ public class StatisticTask extends ProgressTask {
                 Object aggregationKey = getAggregationKeyForList(r);
                 if (aggregationKey != null) {
                     if (sr.sStatistikKey != StatisticsRecord.StatisticKey.waters) {
-                        cnt += calculateAggregations(r, aggregationKey, entryDistanceInDefaultUnit, false);
+                        cnt += calculateAggregations(r, aggregationKey, 
+                                entryDistanceInDefaultUnit, entryNumberOfDays, false);
                     } else {
                         cnt += calculateAggregationsForList(r, (DataTypeList) aggregationKey, false);
                     }
@@ -930,7 +947,8 @@ public class StatisticTask extends ProgressTask {
                 Object aggregationKey = getAggregationKeyForCompetition(r);
                 if (aggregationKey != null) {
                     if (!sr.sStatisticType.equals(WettDefs.STR_DRV_WANDERRUDERSTATISTIK)) {
-                        cnt += calculateAggregations(r, aggregationKey, entryDistanceInDefaultUnit, i == 0);
+                        cnt += calculateAggregations(r, aggregationKey, 
+                                entryDistanceInDefaultUnit, entryNumberOfDays, i == 0);
                     } else {
                         if (sr.cCompetition != null) {
                             cnt += ((CompetitionDRVWanderruderstatistik) sr.cCompetition).calculateAggregation(data,
@@ -1453,6 +1471,10 @@ public class StatisticTask extends ProgressTask {
             if (sr.sFilterByPersonText != null && !sr.sFilterByPersonText.equals(p.getQualifiedName())) {
                 return false;
             }
+            if (sr.sFilterNameContains != null && p.getQualifiedName() != null &&
+                p.getQualifiedName().toLowerCase().indexOf(sr.sFilterNameContains) < 0) {
+                return false;
+            }
             if (sr.sPublicStatistic && excludeFromPublic &&
                     (sr.sStatisticCategory == StatisticsRecord.StatisticCategory.competition ||
                             (sr.sStatisticCategory == StatisticsRecord.StatisticCategory.list &&
@@ -1479,6 +1501,10 @@ public class StatisticTask extends ProgressTask {
                 return false;
             }
             if (sr.sFilterByPersonText != null && !sr.sFilterByPersonText.equals(entryPersonName)) {
+                return false;
+            }
+            if (sr.sFilterNameContains != null && entryPersonName != null &&
+                entryPersonName.toLowerCase().indexOf(sr.sFilterNameContains) < 0) {
                 return false;
             }
             return true;

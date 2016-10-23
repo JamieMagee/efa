@@ -35,6 +35,7 @@ public class Logger {
     public static final String DEBUG = "DEBUG";
     public static final String INPUT = "INPUT";
     public static final String OUTPUT = "OUTPUT";
+    public static final String RAW = "RAW";
     // Message Keys
     public static final String MSG_GENERIC = "GEN001";
     public static final String MSG_GENERIC_ERROR = "GEN002";
@@ -688,6 +689,11 @@ public class Logger {
                 }
                 EfaErrorPrintStream.ignoreExceptions = true; // Damit Exception-Ausschriften nicht versehentlich als echte Exceptions gemeldet werden
                 System.err.println(EfaUtil.replace(t, "\n", " ", true));
+                EfaErrorPrintStream.ignoreExceptions = false;
+            }
+            if (type != null && type.equals(RAW))  {
+                EfaErrorPrintStream.ignoreExceptions = true; // Damit Exception-Ausschriften nicht versehentlich als echte Exceptions gemeldet werden
+                System.err.println(t);
                 EfaErrorPrintStream.ignoreExceptions = false;
             }
 

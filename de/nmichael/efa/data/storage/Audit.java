@@ -171,9 +171,9 @@ public class Audit extends Thread {
             }
             return prjErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditProject() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++prjErr;
         }
     }
@@ -403,7 +403,7 @@ public class Audit extends Thread {
                                     status.getStatusDescription(status.getBaseStatus()))
                                 + " (Logbook or EntryNo not set)");
                     }
-                    if (!logbookName.equals(project.getCurrentLogbookEfaBoathouse())) {
+                    if (logbookName != null && !logbookName.equals(project.getCurrentLogbookEfaBoathouse())) {
                         auditError(Logger.MSG_DATA_AUDIT_INVALIDREFFOUND,
                                 "runAuditBoats(): "
                                 + International.getString("Bootsstatus") + " " + status.getBoatText() + ": "
@@ -412,8 +412,8 @@ public class Audit extends Thread {
                                 + International.getString("Bitte korrigiere den Status des Bootes im Admin-Modus."));
                         boatErr++;
                     } else {
-                        Logbook logbook = project.getLogbook(logbookName, false);
-                        if (logbook == null ||
+                        Logbook logbook = (logbookName != null ? project.getLogbook(logbookName, false) : null);
+                        if (logbook == null || logbook.dataAccess == null ||
                                 logbook.dataAccess.getNumberOfRecords() == 0) {
                             status.setCurrentStatus(status.getBaseStatus());
                             status.setLogbook(null);
@@ -582,9 +582,9 @@ public class Audit extends Thread {
 
             return boatErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditBoats() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++boatErr;
         }
     }
@@ -618,9 +618,9 @@ public class Audit extends Thread {
 
             return crewErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditBoats() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++crewErr;
         }
     }
@@ -662,9 +662,9 @@ public class Audit extends Thread {
 
             return groupErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditGroups() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++groupErr;
         }
     }
@@ -732,9 +732,9 @@ public class Audit extends Thread {
 
             return destinationErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditDestinations() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++destinationErr;
         }
     }
@@ -777,9 +777,9 @@ public class Audit extends Thread {
 
             return watersErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditWaters() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++watersErr;
         }
     }
@@ -826,9 +826,9 @@ public class Audit extends Thread {
 
             return statusErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditStatus() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++statusErr;
         }
     }
@@ -926,9 +926,9 @@ public class Audit extends Thread {
 
             return personErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditPersons() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++personErr;
         }
     }
@@ -959,9 +959,9 @@ public class Audit extends Thread {
 
             return faErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditFahrtenabzeichen() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++faErr;
         }
     }
@@ -1042,9 +1042,9 @@ public class Audit extends Thread {
             }
             return messageErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditMessages() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++messageErr;
         }
     }
@@ -1087,17 +1087,17 @@ public class Audit extends Thread {
                         statistics.dataAccess.add(r);
                     }
                 } catch(Exception e) {
-                    Logger.logdebug(e);
                     auditError(Logger.MSG_DATA_AUDIT,
                             "runAuditStatistics() Caught Exception: " + e.toString());
+                    Logger.log(e);
                     statsErr++;
                 }
             }
             return statsErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditStatistics() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++statsErr;
         }
     }
@@ -1373,9 +1373,9 @@ public class Audit extends Thread {
 
             return logbookErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditLogbook("+logbookName+") Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++logbookErr;
         }
     }
@@ -1398,9 +1398,9 @@ public class Audit extends Thread {
                         }
                     }
                 } catch (Exception e) {
-                    Logger.logdebug(e);
                     auditError(Logger.MSG_DATA_AUDIT,
                             "runAuditClubworks(" + s + ") Caught Exception: " + e.toString());
+                    Logger.log(e);
                     return ++clubworkErr;
                 }
             }
@@ -1434,9 +1434,9 @@ public class Audit extends Thread {
             }
             return purgeErr;
         } catch (Exception e) {
-            Logger.logdebug(e);
             auditError(Logger.MSG_DATA_AUDIT,
                     "runAuditPurgeDeletedRecords() Caught Exception: " + e.toString());
+            Logger.log(e);
             return ++purgeErr;
         }
     }
@@ -1501,9 +1501,9 @@ public class Audit extends Thread {
                 }
                 errors += runAuditClubworks();
             } catch (Exception e) {
-                Logger.logdebug(e);
                 auditError(Logger.MSG_DATA_AUDIT,
                         "runAudit() Caught Exception: " + e.toString());
+                Logger.log(e);
             }
             boolean logEnd = (errors > 0 || warnings > 0 || infos > 0);
             String s = Logger.log((errors == 0 ? (logEnd ? Logger.INFO : Logger.DEBUG) : Logger.ERROR),

@@ -1177,7 +1177,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                 edituuid = UUID.randomUUID().toString();
             }
             try {
-
+                int teilcnt = 0;
                 if (MELDTYP == MELD_FAHRTENABZEICHEN) {
                     ESigFahrtenhefte esfh = new ESigFahrtenhefte(filename);
                     if (!esfh.readFile()) {
@@ -1188,6 +1188,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     verein = esfh.verein_user;
                     vereinsname = esfh.verein_name;
                     qnr = esfh.quittungsnr;
+                    teilcnt = esfh.getFahrtenhefte().size();
                 }
 
                 if (MELDTYP == MELD_WANDERRUDERSTATISTIK) {
@@ -1216,6 +1217,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     while ((z = f.readLine()) != null) {
                         z = EfaUtil.replace(z, "\"", "**2**", true); // " als **2** maskieren
                         z = EfaUtil.replace(z, "=", "**0**", true);  // = als **0** maskieren
+                        z = EfaUtil.replace(z, "&", "**6**", true);  // & als **6** maskieren
                         data += z + "**#**"; // Zeilenumbrüche als **#** maskieren
                     }
                     f.close();
@@ -1235,6 +1237,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     while ((z = f.readLine()) != null) {
                         z = EfaUtil.replace(z, "\"", "**2**", true); // " als **2** maskieren
                         z = EfaUtil.replace(z, "=", "**0**", true);  // = als **0** maskieren
+                        z = EfaUtil.replace(z, "&", "**6**", true);  // & als **6** maskieren
                         changeddata += z + "**#**"; // Zeilenumbrüche als **#** maskieren
                     }
                     f.close();
@@ -1271,20 +1274,44 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                 conn.disconnect();
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 boolean ok = true;
+                int okcnt = 0;
                 String z;
                 while ((z = in.readLine()) != null) {
-                    if (!z.equals("OK")) {
+                    if (z.startsWith("OK:")) {
+                        okcnt = EfaUtil.stringFindInt(z, 0);
+                    } else {
                         Logger.log(Logger.ERROR, "Fehler beim Bestätigen von Meldung " + qnr + ": " + z);
                         errors += "Fehler beim Bestätigen von Meldung " + qnr + ": " + z + "\n";
                         ok = false;
                     }
+                }
+                String entry = (MELDTYP == MELD_FAHRTENABZEICHEN ? "Teilnehmer" : "Fahrten");
+                if (MELDTYP == MELD_FAHRTENABZEICHEN && teilcnt != okcnt) {
+                    Logger.log(Logger.ERROR, "Fehler beim Bestätigen von Meldung " + qnr + ": " + 
+                            teilcnt + " " + entry + " gesendet, aber nur " + okcnt + " " + entry + " empfangen.");
+                    Logger.log(Logger.ERROR, "request: " + request);
+                    Logger.log(Logger.ERROR, "url: " + url);
+                    Logger.log(Logger.ERROR, "content: " + content);
+                    if (EfaUtil.canOpenFile(meldfile)) {
+                        BufferedReader f = new BufferedReader(new InputStreamReader(new FileInputStream(meldfile), Daten.ENCODING_ISO));
+                        StringBuilder zz = new StringBuilder();
+                        while ((z = f.readLine()) != null) {
+                            zz.append(z + "\n");
+                        }
+                        f.close();
+                        Logger.log(Logger.RAW, meldfile + ":\n" + zz.toString());
+                    }
+                    errors += "Fehler beim Bestätigen von Meldung " + qnr + ": " + 
+                            teilcnt + " " + entry + " gesendet, aber nur " + okcnt + " " + entry + " empfangen\n";
+                    ok = false;
                 }
                 if (ok) {
                     d.set(MeldungenIndex.BESTAETIGUNGSDATEI, "");
                     d.set(MeldungenIndex.EDITUUID, edituuid);
                     Main.drvConfig.meldungenIndex.delete(qnr);
                     Main.drvConfig.meldungenIndex.add(d);
-                    Logger.log(Logger.INFO, "Meldung " + qnr + " von Verein " + verein + " wurde erfolgreich bestätigt!ÿ");
+                    Logger.log(Logger.INFO, "Meldung " + qnr + " von Verein " + verein + " wurde erfolgreich bestätigt (" + 
+                            teilcnt + " " + entry + " gesendet, " + okcnt + " " + entry + " empfangen).");
                     cok++;
                 }
             } catch (Exception ee) {
@@ -1500,7 +1527,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                             d.set(Meldestatistik.ANZABZEICHEN, Integer.toString(anzAbz));
                             d.set(Meldestatistik.ANZABZEICHENAB, Integer.toString(anzAbzAB));
                             d.set(Meldestatistik.GESKM, Integer.toString(gesKm));
-                            if (m.drv_aequatorpreis != null && (m.drv_aequatorpreis.equals("1") || m.drv_aequatorpreis.equals("3"))) {
+                            if (m.drv_aequatorpreis != null && EfaUtil.string2int(m.drv_aequatorpreis, 0) > 0) { // old:  && (m.drv_aequatorpreis.equals("1") || m.drv_aequatorpreis.equals("3"))
                                 d.set(Meldestatistik.AEQUATOR, m.drv_aequatorpreis);
                             }
                             Main.drvConfig.meldestatistik.add(d);
@@ -1672,12 +1699,21 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             String stat_complete = Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + "meldestatistik_komplett.csv";
             BufferedWriter f;
             f = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stat_complete), Daten.ENCODING_ISO));
-            f.write("Verein;Vorname;Nachname;Jahrgang;Geschlecht;Kilometer;Gruppe;AnzAbzeichen(ges);AnzAbzeichen(AB);Äquator\n");
+            f.write("Verein;Vereinsnummer;Vorname;Nachname;Jahrgang;Geschlecht;Kilometer;Gruppe;AnzAbzeichen(ges);AnzAbzeichen(AB);Äquator;Gesamt-Km\n");
             for (DatenFelder d = Main.drvConfig.meldestatistik.getCompleteFirst(); d != null; d = Main.drvConfig.meldestatistik.getCompleteNext()) {
-                f.write(d.get(Meldestatistik.VEREIN) + ";" + d.get(Meldestatistik.VORNAME) + ";" + d.get(Meldestatistik.NACHNAME) + ";"
-                        + d.get(Meldestatistik.JAHRGANG) + ";" + d.get(Meldestatistik.GESCHLECHT) + ";" + d.get(Meldestatistik.KILOMETER) + ";"
-                        + d.get(Meldestatistik.GRUPPE) + ";" + d.get(Meldestatistik.ANZABZEICHEN) + ";" + d.get(Meldestatistik.ANZABZEICHENAB) + ";"
-                        + d.get(Meldestatistik.AEQUATOR) + "\n");
+                f.write(d.get(Meldestatistik.VEREIN) + ";" + 
+                        d.get(Meldestatistik.VEREINSMITGLNR) + ";" + 
+                        d.get(Meldestatistik.VORNAME) + ";" + 
+                        d.get(Meldestatistik.NACHNAME) + ";" +
+                        d.get(Meldestatistik.JAHRGANG) + ";" + 
+                        d.get(Meldestatistik.GESCHLECHT).toLowerCase() + ";" + 
+                        d.get(Meldestatistik.KILOMETER) + ";" +
+                        d.get(Meldestatistik.GRUPPE) + ";" + 
+                        d.get(Meldestatistik.ANZABZEICHEN) + ";" + 
+                        d.get(Meldestatistik.ANZABZEICHENAB) + ";" +
+                        d.get(Meldestatistik.AEQUATOR) + ";" +
+                        d.get(Meldestatistik.GESKM) +
+                        "\n");
             }
             f.close();
 

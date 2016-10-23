@@ -366,6 +366,13 @@ public class Fahrtenabzeichen extends StorageObject {
                                 International.onlyFor("Person nicht gefunden", "de"), item)) {
                             UUID id = (UUID)item.getId(item.getValueFromField());
                             if (id != null) {
+                                if (fa == null) {
+                                    // first check whether this person might already have a fahrtenabzeichen record
+                                    fa = getFahrtenabzeichen(id);
+                                    if (fa != null) {
+                                        newRecord = false;
+                                    }
+                                }
                                 if (fa != null) {
                                     fa.setPersonId(id);
                                 } else {

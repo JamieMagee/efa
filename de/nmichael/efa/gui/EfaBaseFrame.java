@@ -263,6 +263,7 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
         if (isModeBase()) {
             Daten.iniSplashScreen(false);
         }
+        AdminTask.startAdminTask(admin, this);
     }
 
     public void setAdmin(AdminRecord admin) {
@@ -285,7 +286,6 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             if (p != null && p.length() > 0) {
                 Daten.efaConfig.setValueLastProjectEfaBase(p);
             }
-            AdminTask.startAdminTask(admin, this);
         }
         Daten.checkRegister();
     }
@@ -1600,7 +1600,10 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             if (isNewRecord || changeEntryNo) {
                 logbook.data().add(currentRecord, lock);
             } else {
-                logbook.data().update(currentRecord, lock);
+                DataRecord newRecord = logbook.data().update(currentRecord, lock);
+                if (newRecord != null && newRecord instanceof LogbookRecord) {
+                    currentRecord = (LogbookRecord)newRecord;
+                }
             }
             isNewRecord = false;
         } catch (Exception e) {
@@ -2350,6 +2353,9 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             dest = dest.toLowerCase();
             if (dest.indexOf(International.getString("Regatta").toLowerCase()) >= 0) {
                 newSessType = EfaTypes.TYPE_SESSION_REGATTA;
+                if (sessType.equals(EfaTypes.TYPE_SESSION_JUMREGATTA)) {
+                    newSessType = EfaTypes.TYPE_SESSION_JUMREGATTA; // treat as same
+                }
             }
             if (dest.indexOf(International.getString("Trainingslager").toLowerCase()) >= 0) {
                 newSessType = EfaTypes.TYPE_SESSION_TRAININGCAMP;
@@ -2739,8 +2745,12 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
             }
             Pattern pname = Daten.efaConfig.getValueNameFormatIsFirstNameFirst() ?
                     Pattern.compile("[X ]+ [X ]+") : Pattern.compile("[X ]+, [X ]+");
-            Pattern pnameclub = Daten.efaConfig.getValueNameFormatIsFirstNameFirst() ?
+            Pattern pnameadd = Daten.efaConfig.getValueNameFormatIsFirstNameFirst() ?
                     Pattern.compile("[X ]+ [X ]+ \\([X 0-9]+\\)") : Pattern.compile("[X ]+, [X ]+ \\([X 0-9]+\\)");
+            Pattern pnameclub = Daten.efaConfig.getValueNameFormatIsFirstNameFirst() ?
+                    Pattern.compile("[X ]+ [X ]+ \\[[X 0-9]+\\]") : Pattern.compile("[X ]+, [X ]+ \\[[X 0-9]+\\]");
+            Pattern pnameaddclub = Daten.efaConfig.getValueNameFormatIsFirstNameFirst() ?
+                    Pattern.compile("[X ]+ [X ]+ \\([X 0-9]+\\) \\[[X 0-9]+\\]") : Pattern.compile("[X ]+, [X ]+ \\([X 0-9]+\\) \\[[X 0-9]+\\]");
             for (int i = 0; i <= LogbookRecord.CREW_MAX; i++) {
                 String name = (i == 0 ? cox : crew[i - 1]).getValueFromField();
                 if (name != null && name.length() > 0 && findPerson(i, getValidAtTimestamp(null)) == null) {
@@ -2759,8 +2769,10 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
                         }
                         String xname = EfaUtil.transformNameParts(name);
                         if (!pname.matcher(xname).matches() &&
+                            !pnameadd.matcher(xname).matches() &&
                             !pnameclub.matcher(xname).matches() &&
-                            !name.equalsIgnoreCase(International.getString("Gast"))) {
+                            !pnameaddclub.matcher(xname).matches()
+                            ) {
                             String nameformat = Daten.efaConfig.getValueNameFormatIsFirstNameFirst()
                                     ? International.getString("Vorname") + " "
                                     + International.getString("Nachname")
@@ -2769,8 +2781,10 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
                             Dialog.error(International.getString("Ungültiger Name") + ": " + name + "\n"
                                     + International.getString("Personennamen müssen eines der folgenden Formate haben:") + "\n\n"
                                     + nameformat + "\n"
-                                    + nameformat + " (" + International.getString("Verein") + ")\n"
-                                    + International.getString("Gast"));
+                                    + nameformat + " (" + International.getString("Namenszusatz") + ")\n"
+                                    + nameformat + " [" + International.getString("Verein") + "]\n"
+                                    + nameformat + " (" + International.getString("Namenszusatz") + ")" +
+                                                   " [" + International.getString("Verein") + "]");
                             (i == 0 ? cox : crew[i - 1]).requestFocus();
                             return false;
                         }

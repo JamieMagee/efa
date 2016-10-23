@@ -61,4 +61,16 @@
         </Files>
     </Plugin>
 
+    <Plugin name="signpost">
+        <FullName>Signpost OAuth Plugin</FullName>
+        <Version>1.2.1</Version>
+        <Copyright>Copyright (c) 2010 Matthias Käppler, licensed under the Apache License, Version 2.0</Copyright>
+        <Description lang="de">Plugin für Zugriff auf Wetter-Daten</Description>
+        <Description lang="en">Plugin for access of weather data</Description>
+        <Files baseurl="http://efa.nmichael.de/plugins/weather/">
+            <File size="44558">signpost-core.jar</File>
+            <File size="284184">commons-codec.jar</File>
+        </Files>
+    </Plugin>
+
 </Plugins>

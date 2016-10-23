@@ -1181,6 +1181,11 @@ public class EfaUtil {
         return s;
     }
 
+    public static int getCurrentHour() {
+        Calendar cal = new GregorianCalendar();
+        return cal.get(Calendar.HOUR_OF_DAY);
+    }
+
     public static String getCurrentTimeStamp() {
         Calendar cal = new GregorianCalendar();
         return makeTimeString(cal.get(Calendar.DAY_OF_MONTH), 2) + "."

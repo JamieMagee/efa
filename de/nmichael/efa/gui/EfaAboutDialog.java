@@ -222,6 +222,7 @@ public class EfaAboutDialog extends BaseDialog {
                 + "* Jonathan Stott (JSunrise Plugin)\n"
                 + "* KDE-Team (Icons)\n"
                 + "* Landesruderverband Berlin (Fahrtenwettbewerbe)\n"
+                + "* Matthias Käppler (Signpost OAuth)\n"
                 + "* Open Icon Library (Icons)\n"
                 + "* Ralf Ludwig (efa Evangelist)\n"
                 + "* Robert Harder (Base64 Implementation)\n"

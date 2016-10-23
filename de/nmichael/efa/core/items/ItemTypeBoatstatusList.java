@@ -26,6 +26,7 @@ import java.util.UUID;
 public class ItemTypeBoatstatusList extends ItemTypeList {
 
     public static final int SEATS_OTHER = 99;
+    public static final String TYPE_OTHER = "";
 
     EfaBoathouseFrame efaBoathouseFrame;
 
@@ -156,6 +157,13 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
                 bs.name = (sr.getCurrentStatus().equals(BoatStatusRecord.STATUS_ONTHEWATER) || r == null ? sr.getBoatText() : r.getQualifiedName());
 
                 bs.sortBySeats = (Daten.efaConfig.getValueEfaDirekt_sortByAnzahl());
+                bs.sortByType = (Daten.efaConfig.getValueEfaDirekt_sortByType());
+                if (!bs.sortBySeats) {
+                    bs.seats = SEATS_OTHER;
+                }
+                if (!bs.sortByType) {
+                    bs.type = TYPE_OTHER;
+                }
 
                 // Colors for Groups
                 ArrayList<Color> aColors = new ArrayList<Color>();
@@ -210,8 +218,10 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
         int anz = -1;
         String lastSep = null;
         for (int i = 0; i < a.length; i++) {
-            if (a[i].seats != anz || a[i].seats == SEATS_OTHER) {
-                String s = null;
+            String s = null;
+
+            // sort by seats?
+            if (Daten.efaConfig.getValueEfaDirekt_sortByAnzahl()) {
                 switch (a[i].seats) {
                     case 1:
                         s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_NUMSEATS, EfaTypes.TYPE_NUMSEATS_1);
@@ -235,21 +245,30 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
                         s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_NUMSEATS, EfaTypes.TYPE_NUMSEATS_8);
                         break;
                 }
-                if (s == null || s.equals(EfaTypes.getStringUnknown())) {
-                    /* @todo (P5) Doppeleinträge currently not supported in efa2
-                    DatenFelder d = Daten.fahrtenbuch.getDaten().boote.getExactComplete(removeDoppeleintragFromBootsname(a[i].name));
-                    if (d != null) {
-                        s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_NUMSEATS, d.get(Boote.ANZAHL));
-                    } else {
-                    */
-                    s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_NUMSEATS, EfaTypes.TYPE_NUMSEATS_OTHER);
-                    if (Daten.efaConfig.getValueEfaDirekt_boatListIndividualOthers() && a[i].type != null) {
-                        s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_BOAT, a[i].type);
-                    }
+            }
 
-                    //}
+            // sort by type?
+            if (Daten.efaConfig.getValueEfaDirekt_sortByType() && a[i].type != null) {
+                s = (s == null ? "" : s + " ") + Daten.efaTypes.getValue(EfaTypes.CATEGORY_BOAT, a[i].type);
+            }
+
+            if (s == null || s.equals(EfaTypes.getStringUnknown())) {
+                /* @todo (P5) Doppeleinträge currently not supported in efa2
+                 DatenFelder d = Daten.fahrtenbuch.getDaten().boote.getExactComplete(removeDoppeleintragFromBootsname(a[i].name));
+                 if (d != null) {
+                 s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_NUMSEATS, d.get(Boote.ANZAHL));
+                 } else {
+                 */
+                s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_NUMSEATS, EfaTypes.TYPE_NUMSEATS_OTHER);
+                if (Daten.efaConfig.getValueEfaDirekt_boatListIndividualOthers() && a[i].type != null) {
+                    s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_BOAT, a[i].type);
                 }
-                anz = a[i].seats;
+
+                //}
+            }
+            anz = a[i].seats;
+            if (Daten.efaConfig.getValueEfaDirekt_sortByAnzahl()
+                    || Daten.efaConfig.getValueEfaDirekt_sortByType()) {
                 String newSep = "---------- " + s + " ----------";
                 if (!newSep.equals(lastSep)) {
                     vv.add(new ItemTypeListData(newSep, null, true, anz));
@@ -339,6 +358,7 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
         public String name;
         public int seats;
         public boolean sortBySeats;
+        public boolean sortByType;
         public Object record;
         public int variant;
         public Color[] colors;
@@ -445,10 +465,10 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
         public int compareTo(Object o) {
             BoatString other = (BoatString) o;
             String sThis = (sortBySeats ? (seats < 10 ? "0" : "") + seats : "") + 
-                    (seats == SEATS_OTHER ? type + "#" : "") +
+                    (seats == SEATS_OTHER || sortByType ? type + "#" : "") +
                     normalizeString(name);
             String sOther = (sortBySeats ? (other.seats < 10 ? "0" : "") + other.seats : "") + 
-                    (other.seats == SEATS_OTHER ? other.type + "#" : "") +
+                    (other.seats == SEATS_OTHER || sortByType ? other.type + "#" : "") +
                     normalizeString(other.name);
             return sThis.compareTo(sOther);
         }

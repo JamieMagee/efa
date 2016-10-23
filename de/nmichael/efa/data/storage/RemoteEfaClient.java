@@ -374,7 +374,7 @@ public class RemoteEfaClient extends DataAccess {
             }
             if (responses.size() > 1) {
                 Logger.log(Logger.ERROR, Logger.MSG_REFA_UNEXPECTEDRESPONSE, getErrorLogstring(request,
-                           "unexpected number of responses for simple request: " + responses.size(), -1));
+                           "unexpected number of responses for data request: " + responses.size(), -1));
                 return null;
             }
             return responses.get(0);
@@ -772,11 +772,11 @@ public class RemoteEfaClient extends DataAccess {
         return response.getResultCode() == RemoteEfaMessage.RESULT_OK;
     }
 
-    public void update(DataRecord record) throws EfaException {
-        update(record, -1);
+    public DataRecord update(DataRecord record) throws EfaException {
+        return update(record, -1);
     }
 
-    public void update(DataRecord record, long lockID) throws EfaException {
+    public DataRecord update(DataRecord record, long lockID) throws EfaException {
         RemoteEfaMessage request = RemoteEfaMessage.createRequestData(1, getStorageObjectType(), getStorageObjectName(),
                 RemoteEfaMessage.OPERATION_UPDATE);
         request.addRecord(record);
@@ -790,7 +790,13 @@ public class RemoteEfaClient extends DataAccess {
                     (response != null ? response.getResultText() : "unknown"),
                     (response != null ? response.getResultCode() : -1)),
                     Thread.currentThread().getStackTrace());
+        } else {
+            if (response.getNumberOfRecords() == 1 && response.getRecord(0) != null) {
+                cache.updateCache(response.getRecord(0), -1, -1);
+                return response.getRecord(0);
+            }
         }
+        return null;
     }
 
     public void changeValidity(DataRecord record, long validFrom, long invalidFrom) throws EfaException {

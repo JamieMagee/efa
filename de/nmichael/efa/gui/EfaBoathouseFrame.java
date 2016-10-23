@@ -305,9 +305,8 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
         mainPanel.add(southPanel, BorderLayout.SOUTH);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
     }
-
-    private void iniApplication() {
-        openProject((AdminRecord)null);
+    
+    private void openProjectLogbookClubwork() {
         if (Daten.project == null) {
             Logger.log(Logger.ERROR, Logger.MSG_ERR_NOPROJECTOPENED, International.getString("Kein Projekt geöffnet."));
         } else {
@@ -317,6 +316,11 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
             }
             openClubwork((AdminRecord) null);
         }
+    }
+
+    private void iniApplication() {
+        openProject((AdminRecord)null);
+        openProjectLogbookClubwork();
 
         updateBoatLists(true);
 
@@ -1100,30 +1104,17 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
             titleLabel.setText(Daten.EFA_LONGNAME);
         } else {
             titleLabel.setText(Daten.EFA_LONGNAME + " [" + Daten.project.getProjectName() +
-                    (logbook != null && logbook.isOpen() ? ": " + logbook.getName() : "") + "]");
+                    (logbook != null && logbook.isOpen() ? ": " + logbook.getName() : "") + 
+                    (Daten.project.getMyBoathouseName() != null ? " - " + Daten.project.getMyBoathouseName() : "") +
+                    "]");
         }
     }
 
-    public Project openProject(AdminRecord admin) {
+    public Project openProject(String projectName) {
         try {
-            // project to open
-            String projectName = null;
-            if (admin == null && Daten.efaConfig.getValueLastProjectEfaBoathouse().length() > 0) {
-                projectName = Daten.efaConfig.getValueLastProjectEfaBoathouse();
-            }
-
-            if (projectName == null || projectName.length() == 0) {
-                if (admin != null && admin.isAllowedAdministerProjectLogbook()) {
-                    OpenProjectOrLogbookDialog dlg = new OpenProjectOrLogbookDialog(this, OpenProjectOrLogbookDialog.Type.project, admin);
-                    projectName = dlg.openDialog();
-                }
-            }
-
             if (projectName == null || projectName.length() == 0) {
                 return null;
             }
-
-
 
             // close open project now
             if (Daten.project != null) {
@@ -1163,6 +1154,23 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
         } finally {
             updateProjectLogbookInfo();
         }
+    }
+    
+    public Project openProject(AdminRecord admin) {
+        // project to open
+        String projectName = null;
+        if (admin == null && Daten.efaConfig.getValueLastProjectEfaBoathouse().length() > 0) {
+            projectName = Daten.efaConfig.getValueLastProjectEfaBoathouse();
+        }
+
+        if (projectName == null || projectName.length() == 0) {
+            if (admin != null && admin.isAllowedAdministerProjectLogbook()) {
+                OpenProjectOrLogbookDialog dlg = new OpenProjectOrLogbookDialog(this, OpenProjectOrLogbookDialog.Type.project, admin);
+                projectName = dlg.openDialog();
+            }
+        }
+
+        return openProject(projectName);
     }
 
     public Logbook openLogbook(AdminRecord admin) {
@@ -2294,6 +2302,12 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
             try {
                 if (cmd.toLowerCase().startsWith("browser:")) {
                     BrowserDialog.openInternalBrowser(_parent, cmd.substring(8));
+                } else if (cmd.toLowerCase().startsWith("toggle-logbook:")) {
+                    toggleLogbook(cmd.substring(15).trim());
+                } else if (cmd.toLowerCase().startsWith("toggle-project:")) {
+                    toggleProject(cmd.substring(15).trim());
+                } else if (cmd.toLowerCase().startsWith("toggle-boathouse:")) {
+                    toggleBoathouse(cmd.substring(17).trim());
                 } else {
                     Runtime.getRuntime().exec(cmd);
                 }
@@ -2302,6 +2316,63 @@ public class EfaBoathouseFrame extends BaseFrame implements IItemListener {
             }
         } else {
             Dialog.error(International.getString("Kein Kommando für diesen Button konfiguriert!"));
+        }
+    }
+    
+    void toggleLogbook(String logbookString) {
+        if (Daten.project == null || !Daten.project.isOpen() ||
+            logbook == null || !logbook.isOpen()) {
+            return;
+        }
+        String[] logbooks = logbookString.split(",");
+        for (int i=0; logbooks != null && i<logbooks.length; i++) {
+            if (logbooks[i] != null && logbooks[i].equals(logbook.getName())) {
+                String newLog = logbooks[(i+1) % logbooks.length];
+                if (newLog != null && Daten.project.getLogbooks().get(newLog) != null) {
+                    openLogbook(newLog);
+                    updateBoatLists(true);
+                    updateGuiElements();
+                }
+                return;
+            }
+        }
+    }
+
+    void toggleProject(String projectString) {
+        if (Daten.project == null || !Daten.project.isOpen()) {
+            return;
+        }
+        String[] projects = projectString.split(",");
+        for (int i=0; projects != null && i<projects.length; i++) {
+            if (projects[i] != null && projects[i].equals(Daten.project.getName())) {
+                String newProject = projects[(i+1) % projects.length];
+                if (newProject != null) {
+                    openProject(newProject);
+                    openProjectLogbookClubwork();
+                    updateBoatLists(true);
+                    updateGuiElements();
+                }
+                return;
+            }
+        }
+    }
+
+    void toggleBoathouse(String boathouseString) {
+        if (Daten.project == null || !Daten.project.isOpen()) {
+            return;
+        }
+        String[] boathouses = boathouseString.split(",");
+        for (int i=0; boathouses != null && i<boathouses.length; i++) {
+            if (boathouses[i] != null && boathouses[i].equals(Daten.project.getMyBoathouseName())) {
+                String newBoathouse = boathouses[(i+1) % boathouses.length];
+                if (newBoathouse != null) {
+                    Daten.project.setMyBoathouseName(newBoathouse);
+                    openProjectLogbookClubwork();
+                    updateBoatLists(true);
+                    updateGuiElements();
+                }
+                return;
+            }
         }
     }
 

@@ -841,7 +841,9 @@ public class RemoteEfaServer {
     private RemoteEfaMessage requestUpdate(RemoteEfaMessage request, AdminRecord admin, StorageObject p) {
         try {
             p.data().update(request.getRecord(0), request.getLockId());
-            return RemoteEfaMessage.createResponseResult(request.getMsgId(), RemoteEfaMessage.RESULT_OK, null);
+            RemoteEfaMessage resp = RemoteEfaMessage.createResponseResult(request.getMsgId(), RemoteEfaMessage.RESULT_OK, null);
+            resp.addRecord(p.data().get(request.getRecord(0).getKey())); // return the updated record with the new change_count
+            return resp;
         } catch(Exception e) {
             return RemoteEfaMessage.createResponseResult(request.getMsgId(), RemoteEfaMessage.ERROR_UNKNOWN, e.toString());
         }

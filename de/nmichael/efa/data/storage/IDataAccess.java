@@ -390,17 +390,19 @@ public interface IDataAccess {
     /**
      * Updates an existing one in this storage object.
      * @param record the data record to update
+     * @return the updated record
      * @throws Exception if the data record is locked or the operation fails for another reason
      */
-    public void update(DataRecord record) throws EfaException;
+    public DataRecord update(DataRecord record) throws EfaException;
 
     /**
      * Updates an existing one in this storage object with a previously acquired local or global lock.
      * @param record the data record to update
      * @param lockID an ID of a previously acquired local or global lock
+     * @return the updated record
      * @throws Exception if the data record is locked or the operation fails for another reason
      */
-    public void update(DataRecord record, long lockID) throws EfaException;
+    public DataRecord update(DataRecord record, long lockID) throws EfaException;
 
     /**
      * Deletes an existing data record from this storage object.

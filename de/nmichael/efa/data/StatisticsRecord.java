@@ -82,6 +82,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public static final String FILTERPROMPTBOAT          = "FilterPromptBoat";
     public static final String FILTERPROMPTGROUP         = "FilterPromptGroup";
     public static final String FILTERFROMTOBOATHOUSE     = "FilterFromToBoathouse";
+    public static final String FILTERNAMECONTAINS        = "FilterNameContains";
     public static final String FILTERCOMMENTSINCLUDE     = "FilterCommentsInclude";
     public static final String FILTERCOMMENTSEXCLUDE     = "FilterCommentsExclude";
     public static final String FILTERMINSESSIONDISTANCE  = "FilterMinSessionDistance";
@@ -409,6 +410,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
     public String sFilterByBoatText;
     public UUID sFilterByGroupId;
     public boolean sFilterFromToBoathouse;
+    public String sFilterNameContains;
     public String sFilterCommentsInclude;
     public String sFilterCommentsExclude;
     public DataTypeDistance sFilterMinSessionDistance;
@@ -604,6 +606,7 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         f.add(FILTERPROMPTBOAT);                  t.add(IDataAccess.DATA_BOOLEAN);
         f.add(FILTERPROMPTGROUP);                 t.add(IDataAccess.DATA_BOOLEAN);
         f.add(FILTERFROMTOBOATHOUSE);             t.add(IDataAccess.DATA_BOOLEAN);
+        f.add(FILTERNAMECONTAINS);                t.add(IDataAccess.DATA_STRING);
         f.add(FILTERCOMMENTSINCLUDE);             t.add(IDataAccess.DATA_STRING);
         f.add(FILTERCOMMENTSEXCLUDE);             t.add(IDataAccess.DATA_STRING);
         f.add(FILTERMINSESSIONDISTANCE);          t.add(IDataAccess.DATA_DISTANCE);
@@ -1696,6 +1699,13 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         return getBool(FILTERFROMTOBOATHOUSE);
     }
 
+    public void setFilterNameContains(String namepart) {
+        setString(FILTERNAMECONTAINS, namepart);
+    }
+    public String getFilterNameContains() {
+        return getString(FILTERNAMECONTAINS);
+    }
+
     public void setFilterCommentsInclude(String comments) {
         setString(FILTERCOMMENTSINCLUDE, comments);
     }
@@ -1807,6 +1817,11 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
             filter = (filter == null ? "" : filter + "\n") +
                     International.getString("nur Fahrten") + ": " +
                     International.getString("Start und Ziel ist Bootshaus");
+        }
+        if (sFilterNameContains != null) {
+            filter = (filter == null ? "" : filter + "\n") +
+                    International.getString("Name enthält") + ": " +
+                    sFilterNameContains;
         }
         if (sFilterCommentsInclude != null) {
             filter = (filter == null ? "" : filter + "\n") +
@@ -2720,6 +2735,9 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         v.add(item = new ItemTypeBoolean(StatisticsRecord.FILTERFROMTOBOATHOUSE, getFilterFromToBoathouse(),
                 IItemType.TYPE_PUBLIC, BaseTabbedDialog.makeCategory(CAT_FILTER,CAT_FILTERVARIOUS),
                 International.getString("Start und Ziel ist Bootshaus")));
+        v.add(item = new ItemTypeString(StatisticsRecord.FILTERNAMECONTAINS, getFilterNameContains(),
+                IItemType.TYPE_PUBLIC, BaseTabbedDialog.makeCategory(CAT_FILTER,CAT_FILTERVARIOUS),
+                International.getString("Name enthält")));
         v.add(item = new ItemTypeString(StatisticsRecord.FILTERCOMMENTSINCLUDE, getFilterCommentsInclude(),
                 IItemType.TYPE_PUBLIC, BaseTabbedDialog.makeCategory(CAT_FILTER,CAT_FILTERVARIOUS),
                 International.getString("Bemerkungsfeld enthält")));
@@ -3182,6 +3200,13 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
         sFilterByBoatText = (sFilterByBoatId != null ? null : getFilterByBoatText());
         sFilterByGroupId = getFilterByGroupId();
         sFilterFromToBoathouse = getFilterFromToBoathouse();
+        sFilterNameContains = getFilterNameContains();
+        if (sFilterNameContains != null) {
+            sFilterNameContains = sFilterNameContains.trim().toLowerCase();
+            if (sFilterNameContains.length() == 0) {
+                sFilterNameContains = null;
+            }
+        }
         sFilterCommentsInclude = getFilterCommentsInclude();
         if (sFilterCommentsInclude != null) {
             sFilterCommentsInclude = sFilterCommentsInclude.trim();
@@ -3229,6 +3254,10 @@ public class StatisticsRecord extends DataRecord implements IItemListener {
             }
             if (sFilterFromToBoathouse) {
                 sFilterFromToBoathouse = false;
+                filtersChanged = true;
+            }
+            if (sFilterNameContains != null) {
+                sFilterNameContains = null;
                 filtersChanged = true;
             }
             if (sFilterCommentsInclude != null) {

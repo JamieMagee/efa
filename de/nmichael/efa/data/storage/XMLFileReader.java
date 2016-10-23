@@ -21,6 +21,8 @@ import org.xml.sax.helpers.*;
 
 public class XMLFileReader extends XmlHandler {
 
+    private static final int MAX_VALUE_LENGTH = 1024*1024;
+    
     private XMLFile data;
     private long globalLock;
 
@@ -75,7 +77,15 @@ public class XMLFileReader extends XmlHandler {
         if (inDataSection) {
             try {
                 fieldName = data.getPersistence().transformFieldName(fieldName);
-                dataRecord.set(fieldName, getFieldValue(), false);
+                String value = getFieldValue();
+                if (value.length() > MAX_VALUE_LENGTH) {
+                    Logger.log(Logger.ERROR,Logger.MSG_FILE_PARSEERROR,
+                            getLocation() + "Value in field "+fieldName+" seems corrupted: It has length of " +
+                                    value.length() + " bytes. Value will be truncated. Value (first 100 bytes: " +
+                                    value.substring(0, 100) + ")");
+                    value = value.substring(0, MAX_VALUE_LENGTH);
+                }
+                dataRecord.set(fieldName, value, false);
             } catch(Exception e) {
                 Logger.log(Logger.ERROR,Logger.MSG_FILE_PARSEERROR,
                         getLocation() + "Parse Error for Field "+fieldName+" = "+getFieldValue()+": "+e.toString());

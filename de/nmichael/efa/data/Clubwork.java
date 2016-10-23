@@ -226,12 +226,12 @@ public class Clubwork extends StorageObject {
                                 + "löschen?"));
                         if (res == Dialog.YES) {
                             deleteOldCarryOver = true;
-                            to.dataAccess.delete(k);
+                            to.data().delete(k);
                         } else {
                             break;
                         }
                     } else {
-                        to.dataAccess.delete(k);
+                        to.data().delete(k);
                     }
                 }
             }

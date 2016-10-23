@@ -67,9 +67,14 @@ public class DRVConfigFrame extends JDialog implements ActionListener {
     JLabel jLabel22 = new JLabel();
     JLabel jLabel23 = new JLabel();
     JLabel jLabel24 = new JLabel();
+    JLabel jLabel_verband = new JLabel();
+    JTextField efw_verband = new JTextField();
     JTextField efw_script = new JTextField();
     JTextField efw_username = new JTextField();
     JTextField efw_password = new JTextField();
+    JCheckBox efw_testmode = new JCheckBox();
+    JCheckBox efw_readonly = new JCheckBox();
+    
     GridBagLayout gridBagLayout4 = new GridBagLayout();
     JLabel jLabel25 = new JLabel();
     JLabel jLabel26 = new JLabel();
@@ -169,6 +174,11 @@ public class DRVConfigFrame extends JDialog implements ActionListener {
         jLabel22.setText("Script: ");
         jLabel23.setText("Username: ");
         jLabel24.setText("Paßwort: ");
+        jLabel_verband.setText("Verband: ");
+        efw_testmode.setText("Test Modus");
+        efw_readonly.setText("Read-Only Modus");
+        efw_verband.setNextFocusableComponent(efw_username);
+        efw_verband.setPreferredSize(new Dimension(100, 17));
         efw_username.setNextFocusableComponent(efw_password);
         efw_username.setPreferredSize(new Dimension(100, 17));
         efw_script.setNextFocusableComponent(efw_username);
@@ -228,12 +238,16 @@ public class DRVConfigFrame extends JDialog implements ActionListener {
         meldegeldPanel.add(jLabel19, new GridBagConstraints(2, 9, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         meldegeldPanel.add(jLabel20, new GridBagConstraints(2, 10, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         efaWettPanel.add(jLabel21, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-        efaWettPanel.add(jLabel22, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-        efaWettPanel.add(jLabel23, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-        efaWettPanel.add(jLabel24, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-        efaWettPanel.add(efw_script, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-        efaWettPanel.add(efw_username, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-        efaWettPanel.add(efw_password, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        efaWettPanel.add(jLabel_verband, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        efaWettPanel.add(jLabel22, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        efaWettPanel.add(jLabel23, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        efaWettPanel.add(jLabel24, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        efaWettPanel.add(efw_verband, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        efaWettPanel.add(efw_script, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        efaWettPanel.add(efw_username, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        efaWettPanel.add(efw_password, new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        efaWettPanel.add(efw_testmode, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        efaWettPanel.add(efw_readonly, new GridBagConstraints(0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         extProgrammePanel.add(jLabel25, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         extProgrammePanel.add(jLabel26, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         extProgrammePanel.add(jLabel27, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
@@ -341,9 +355,12 @@ public class DRVConfigFrame extends JDialog implements ActionListener {
         this.stoff_erw.setText(Integer.toString(Main.drvConfig.eur_stoff_erw));
         this.stoff_jug.setText(Integer.toString(Main.drvConfig.eur_stoff_jug));
 
+        this.efw_verband.setText(Main.drvConfig.verband);
         this.efw_script.setText(Main.drvConfig.efw_script);
         this.efw_username.setText(Main.drvConfig.efw_user);
         this.efw_password.setText(Main.drvConfig.efw_password);
+        this.efw_testmode.setSelected(Main.drvConfig.testmode);
+        this.efw_readonly.setSelected(Main.drvConfig.readOnlyMode);
 
         this.prog_openssl.setText(Main.drvConfig.openssl);
         this.prog_acrobat.setText(Main.drvConfig.acrobat);
@@ -377,9 +394,12 @@ public class DRVConfigFrame extends JDialog implements ActionListener {
         Main.drvConfig.eur_stoff_erw = EfaUtil.string2int(this.stoff_erw.getText().trim(), 0);
         Main.drvConfig.eur_stoff_jug = EfaUtil.string2int(this.stoff_jug.getText().trim(), 0);
 
+        Main.drvConfig.verband = this.efw_verband.getText().trim();
         Main.drvConfig.efw_script = this.efw_script.getText().trim();
         Main.drvConfig.efw_user = this.efw_username.getText().trim();
         Main.drvConfig.efw_password = this.efw_password.getText().trim();
+        Main.drvConfig.testmode = this.efw_testmode.isSelected();
+        Main.drvConfig.readOnlyMode = this.efw_readonly.isSelected();
 
         Main.drvConfig.openssl = this.prog_openssl.getText().trim();
         Main.drvConfig.acrobat = this.prog_acrobat.getText().trim();

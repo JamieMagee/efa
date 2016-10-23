@@ -67,7 +67,7 @@ public class StatisticEfaWettWriter extends StatisticWriter {
             Logger.log(Logger.DEBUG, Logger.MSG_DEBUG_STATISTICS,
                     "StatisticEfaWettWriter.runEfaWettCompletion(...) - START Step 2");
         }
-        EfaWettSelectAndCompleteDialog dlg2 = new EfaWettSelectAndCompleteDialog((BaseDialog)Dialog.frameCurrent(), efaWett, sr.sAdmin);
+        EfaWettSelectAndCompleteDialog dlg2 = new EfaWettSelectAndCompleteDialog((BaseDialog)Dialog.frameCurrent(), efaWett, sr.sAdmin, sr);
         dlg2.showDialog();
         if (!dlg2.getDialogResult()) {
             return false;

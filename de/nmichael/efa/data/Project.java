@@ -64,6 +64,7 @@ public class Project extends StorageObject {
     private String myIdentifier = null;
     private String myBoathouseName = null;
     private int myBoathouseId = -1;
+    private int myBoathouseIdExplicit = -1;
     private int numberOfBoathouses = -1;
     private Hashtable<Integer, String> boathouseIdToNameMapping = null;
     private volatile boolean _inOpeningProject = false;
@@ -792,6 +793,9 @@ public class Project extends StorageObject {
             for (String bn : boathouseNames) {
                 r = getRecord(getBoathouseRecordKey(bn));
                 if (r != null) {
+                    if (r.getBoathouseId() == myBoathouseIdExplicit) {
+                        return r;
+                    }
                     if (boathouseNames.length == 1 || myIdentifier == null
                             || (myIdentifier.equals(r.getBoathouseIdentifier()))) {
                         myBoathouseName = r.getName();
@@ -817,6 +821,10 @@ public class Project extends StorageObject {
         if (myBoathouseId >= 0) {
             return myBoathouseId;
         }
+        if (myBoathouseIdExplicit >= 0) {
+            myBoathouseId = myBoathouseIdExplicit;
+            return myBoathouseId;
+        }
         ProjectRecord r = getBoathouseRecord();
         if (r == null) {
             return -1;
@@ -835,6 +843,15 @@ public class Project extends StorageObject {
         }
         myBoathouseName = r.getName();
         return myBoathouseName;
+    }
+    
+    public void setMyBoathouseName(String name) {
+        ProjectRecord r = getBoathouseRecord(name);
+        if (r != null) {
+            myBoathouseName = name;
+            myBoathouseId = r.getBoathouseId();
+            myBoathouseIdExplicit = myBoathouseId;
+        }
     }
 
     public void addRecord(ProjectRecord rec, final String type) throws EfaException {

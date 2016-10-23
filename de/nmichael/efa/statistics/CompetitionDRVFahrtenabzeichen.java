@@ -96,6 +96,9 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
         for (int j = 0; sd.sessionHistory != null && j < sd.sessionHistory.size(); j++) {
             LogbookRecord r = sd.sessionHistory.get(j);
             boolean jum = r.getSessionType().equals(EfaTypes.TYPE_SESSION_JUMREGATTA);
+            if (!gruppe3abc && r.getSessionType().equals(EfaTypes.TYPE_SESSION_REGATTA)) {
+                continue;
+            }
             if (gruppe3abc && r.getSessionType().equals(EfaTypes.TYPE_SESSION_REGATTA)) {
                 jum = true;
             }
@@ -327,7 +330,9 @@ public class CompetitionDRVFahrtenabzeichen extends Competition {
                                 if (bestEl.days > 1) {
                                     wafaAnzMTour += bestEl.days;
                                 } else {
-                                    wafaAnzTTour++;
+                                    if (sr.sCompYear >= 2015) {
+                                        wafaAnzTTour++; // erst ab 2015
+                                    }
                                 }
                             } else {
                                 jumAnz++;

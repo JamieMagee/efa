@@ -17,6 +17,7 @@ import de.nmichael.efa.util.*;
 import de.nmichael.efa.util.Dialog;
 import de.nmichael.efa.*;
 import de.nmichael.efa.core.config.AdminRecord;
+import de.nmichael.efa.data.StatisticsRecord;
 import de.nmichael.efa.gui.BaseDialog;
 import de.nmichael.efa.gui.EfaBaseFrame;
 import java.awt.*;
@@ -42,6 +43,7 @@ public class EfaWettSelectAndCompleteDialog extends BaseDialog implements Action
     int anzahl;
     EfaWett efaWett = null;
     AdminRecord admin = null;
+    StatisticsRecord sr = null;
     Hashtable checkboxes;
     Hashtable textfields;
     Hashtable papierFahrtenheftErforderlich;
@@ -95,15 +97,17 @@ public class EfaWettSelectAndCompleteDialog extends BaseDialog implements Action
     JLabel best6 = new JLabel();
     JLabel teiln5Label = new JLabel();
     JLabel teiln5Anz = new JLabel();
-    JLabel jLabel1 = new JLabel();
+    JLabel checkDataLabel = new JLabel();
     GridBagLayout gridBagLayout3 = new GridBagLayout();
 
-    public EfaWettSelectAndCompleteDialog(JDialog parent, EfaWett efaWett, AdminRecord admin) {
+    public EfaWettSelectAndCompleteDialog(JDialog parent, EfaWett efaWett, AdminRecord admin,
+            StatisticsRecord sr) {
         super(parent,
                 International.onlyFor("Meldedaten", "de"),
                 International.onlyFor("Meldedatei erstellen", "de"));
         this.efaWett = efaWett;
         this.admin = admin;
+        this.sr = sr;
     }
 
     protected void iniDialog() throws Exception {
@@ -166,10 +170,10 @@ public class EfaWettSelectAndCompleteDialog extends BaseDialog implements Action
         teiln5Label.setText("Äquatorpreise: ");
         teiln5Anz.setForeground(Color.black);
         teiln5Anz.setText("0");
-        jLabel1.setForeground(Color.red);
-        jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
-        jLabel1.setHorizontalTextPosition(SwingConstants.CENTER);
-        jLabel1.setText("Bitte alle Daten gründlich auf Richtigkeit prüfen (insb. die rot/orange "
+        checkDataLabel.setForeground(Color.red);
+        checkDataLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        checkDataLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+        checkDataLabel.setText("Bitte alle Daten gründlich auf Richtigkeit prüfen (insb. die rot/orange "
                 + "markierten Daten)!");
         teilnehmerInfoPanel.setLayout(gridBagLayout3);
         mainPanel.add(jPanel1, BorderLayout.SOUTH);
@@ -183,7 +187,7 @@ public class EfaWettSelectAndCompleteDialog extends BaseDialog implements Action
         teilnehmerScrollPane.getViewport().add(dataPanel, null);
         mainPanel.add(teilnehmerInfoPanel, BorderLayout.NORTH);
         teilnehmerInfoPanel.add(jLabelTitel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 0, 0), 0, 0));
-        teilnehmerInfoPanel.add(jLabel1, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 5, 0), 0, 0));
+        teilnehmerInfoPanel.add(checkDataLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 5, 0), 0, 0));
         jPanel1.add(gebLabel, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
         jPanel1.add(teiln1Anz, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         jPanel1.add(teiln2Anz, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
@@ -705,6 +709,25 @@ public class EfaWettSelectAndCompleteDialog extends BaseDialog implements Action
         }
 
         calculateValues();
+        
+        if (sr != null && sr.cWarnings != null && sr.cWarnings.size() > 0) {
+            JLabel warningLabel = new JLabel();
+            warningLabel.setForeground(Color.red);
+            warningLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            warningLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+            warningLabel.setText("Einige Fahrten wurden aufgrund von Fehlern NICHT GEWERTET (Details siehe Statistik-Ausgabeart 'intern'):");
+            teilnehmerInfoPanel.add(warningLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
+            String[] warnings = sr.cWarnings.keySet().toArray(new String[0]);
+            
+            JList warningsList = new JList();
+            warningsList.setListData(warnings);
+            warningsList.setForeground(Color.red);
+            JScrollPane warningsScrollPane = new JScrollPane();
+            warningsScrollPane.getViewport().add(warningsList, null);
+            warningsScrollPane.setMaximumSize(new Dimension((int) Dialog.screenSize.getWidth() - 100, 100));
+            warningsScrollPane.setPreferredSize(new Dimension((int) Dialog.screenSize.getWidth() - 100, 100));
+            teilnehmerInfoPanel.add(warningsScrollPane, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
+        }
     }
 
     Hashtable getSelectedMeldungen() {
