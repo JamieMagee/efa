@@ -286,7 +286,9 @@ public class EfaAboutDialog extends BaseDialog {
         if (Daten.applID == Daten.APPL_EFABH) {
             return;
         }
-        BrowserDialog.openInternalBrowser(this, "Browser", "file:" + HtmlFactory.createMailto(Daten.EMAILINFO), 700, 600);
+        if (Daten.INTERNET_EFAMAIL != null) {
+            BrowserDialog.openInternalBrowser(this, "Browser", "file:" + HtmlFactory.createMailto(Daten.EMAILINFO), 700, 600);
+        }
     }
 
     void gplLabel_mouseClicked(MouseEvent e) {

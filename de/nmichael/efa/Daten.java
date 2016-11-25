@@ -40,8 +40,8 @@ import javax.swing.plaf.ColorUIResource;
 public class Daten {
 
     public final static String VERSION            = "2.2.2"; // Version für die Ausgabe (z.B. 2.1.0, kann aber auch Zusätze wie "alpha" o.ä. enthalten)
-    public final static String VERSIONID          = "2.2.2_17";   // VersionsID: Format: "X.Y.Z_MM"; final-Version z.B. 1.4.0_00; beta-Version z.B. 1.4.0_#1
-    public final static String VERSIONRELEASEDATE = "17.09.2016";  // Release Date: TT.MM.JJJJ
+    public final static String VERSIONID          = "2.2.2_20";   // VersionsID: Format: "X.Y.Z_MM"; final-Version z.B. 1.4.0_00; beta-Version z.B. 1.4.0_#1
+    public final static String VERSIONRELEASEDATE = "24.11.2016";  // Release Date: TT.MM.JJJJ
     public final static String MAJORVERSION       = "2";
     public final static String PROGRAMMID         = "EFA.222"; // Versions-ID für Wettbewerbsmeldungen
     public final static String PROGRAMMID_DRV     = "EFADRV.222"; // Versions-ID für Wettbewerbsmeldungen
@@ -150,7 +150,7 @@ public class Daten {
     public final static String ONLINEUPDATE_INFO = "http://efa.nmichael.de/eou/eou.xml";
     public final static String ONLINEUPDATE_INFO_DRV = "http://efa.nmichael.de/eou/eoudrv.xml";
     public final static String EFW_UPDATE_DATA = "http://efa.nmichael.de/efw.data";
-    public final static String INTERNET_EFAMAIL = "http://cgi.snafu.de/nmichael/user-cgi-bin/efamail.pl";
+    public final static String INTERNET_EFAMAIL = null; // @todo "http://cgi.snafu.de/nmichael/user-cgi-bin/efamail.pl";
     public final static String IMAGEPATH = "/de/nmichael/efa/img/";
     public final static String FILEPATH = "/de/nmichael/efa/files/";
     public final static String DATATEMPLATEPATH = "/de/nmichael/efa/data/templates/";
@@ -1405,7 +1405,7 @@ public class Daten {
             }
         }
 
-        if (promptForRegistration) {
+        if (promptForRegistration && Daten.INTERNET_EFAMAIL != null) {
             if (BrowserDialog.openInternalBrowser(null, Daten.EFA_SHORTNAME,
                     "file:" + HtmlFactory.createRegister(),
                     850, 750).endsWith(".pl")) {

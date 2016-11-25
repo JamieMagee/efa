@@ -576,27 +576,16 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
             });
             teilnDataPanel.setLayout(gridBagLayout11);
             fahrtenDataPanel.setLayout(gridBagLayout11);
-            jLabel31.setPreferredSize(new Dimension(81, 22));
             jLabel31.setText("Nachname: ");
-            jLabel32.setPreferredSize(new Dimension(71, 22));
             jLabel32.setText("Vorname: ");
-            jLabel33.setPreferredSize(new Dimension(73, 22));
             jLabel33.setText("Jahrgang: ");
-            jLabel34.setPreferredSize(new Dimension(120, 22));
             jLabel34.setText("Kilomter bisher: ");
-            jLabel35.setPreferredSize(new Dimension(92, 22));
             jLabel35.setText("Fahrtenheft: ");
-            jLabel36.setPreferredSize(new Dimension(86, 22));
             jLabel36.setText("Geschlecht: ");
-            jLabel37.setPreferredSize(new Dimension(60, 22));
             jLabel37.setText("Gruppe: ");
-            jLabel38.setPreferredSize(new Dimension(78, 22));
             jLabel38.setText("Kilometer: ");
-            jLabel39.setPreferredSize(new Dimension(82, 22));
             jLabel39.setText("Abzeichen: ");
-            jLabel40.setPreferredSize(new Dimension(132, 22));
             jLabel40.setText("Abzeichen bisher: ");
-            jLabel41.setPreferredSize(new Dimension(102, 22));
             jLabel41.setText("Äquatorpreis: ");
             mNachname.setPreferredSize(new Dimension(200, 17));
             mVorname.setPreferredSize(new Dimension(200, 17));
@@ -666,7 +655,6 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                     mWirdGewertet_actionPerformed(e);
                 }
             });
-            jLabel53.setPreferredSize(new Dimension(114, 22));
             jLabel53.setText("Teilnehmer-Nr: ");
             mTeilnSuchenButton.setPreferredSize(new Dimension(155, 22));
             mTeilnSuchenButton.setText("Teilnehmer-Nr. suchen");
@@ -2743,7 +2731,21 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
     }
 
     void deleteButton_actionPerformed(ActionEvent e) {
-        Dialog.infoDialog("Noch nicht implementiert", "Diese Funktion ist noch nicht implementiert."); // @todo (P9) efaDRV Meldungen löschen
+        if (ewmCur == null || ewmNr < 0) {
+            Dialog.error("Es ist kein Eintrag ausgewählt.");
+            return;
+        }
+        if (Dialog.yesNoDialog("Eintrag Löschen", "Möchtest du Eintrag " + (ewmNr+1) + " wirklich löschen?") == Dialog.YES) {
+            data.remove(ewmNr);
+            changed = true;
+            if (ewmNr >= data.size()) {
+                ewmNr--;
+            }
+            if (ewmNr < 0) {
+                newButton_actionPerformed(null);
+            }
+            setMFields(ewmNr, false);
+        }
     }
 
     void mUnblockButton_actionPerformed(ActionEvent e) {

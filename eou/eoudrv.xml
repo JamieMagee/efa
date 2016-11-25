@@ -2,6 +2,20 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.2_20</VersionID>
+        <ReleaseDate>24.11.2016</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>4255278</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Neu: Manuell erfaßte sowie importierte Meldungen erfordern, daß der betreffende Verein in efaWett registriert ist, und können jetzt über den DRV-Server synchronisiert werden</ChangeItem>
+            <ChangeItem>Neu: Löschen von Einträgen in Meldungen jetzt möglich</ChangeItem>
+            <ChangeItem>Neu: Download aller Meldungen im Originalzustand möglich</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.2_11</VersionID>
         <ReleaseDate>13.07.2016</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>

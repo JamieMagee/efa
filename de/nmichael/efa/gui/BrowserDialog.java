@@ -166,14 +166,16 @@ public class BrowserDialog extends BaseDialog {
                     if (conn.getContentType().equals("text/html") || conn.getContentType().equals("text/plain")) {
 
                         // check for various email addresses
-                        if (surl.toLowerCase().equals("mailto:" + Daten.EMAILINFO)) {
-                            surl = HtmlFactory.createMailto(Daten.EMAILINFO);
-                        }
-                        if (surl.toLowerCase().equals("mailto:" + Daten.EMAILBUGS)) {
-                            surl = HtmlFactory.createMailto(Daten.EMAILBUGS);
-                        }
-                        if (surl.toLowerCase().equals("mailto:" + Daten.EMAILHELP)) {
-                            surl = HtmlFactory.createMailto(Daten.EMAILHELP);
+                        if (Daten.INTERNET_EFAMAIL != null) {
+                            if (surl.toLowerCase().equals("mailto:" + Daten.EMAILINFO)) {
+                                surl = HtmlFactory.createMailto(Daten.EMAILINFO);
+                            }
+                            if (surl.toLowerCase().equals("mailto:" + Daten.EMAILBUGS)) {
+                                surl = HtmlFactory.createMailto(Daten.EMAILBUGS);
+                            }
+                            if (surl.toLowerCase().equals("mailto:" + Daten.EMAILHELP)) {
+                                surl = HtmlFactory.createMailto(Daten.EMAILHELP);
+                            }
                         }
 
                         if (surl.toLowerCase().startsWith("mailto:")) {

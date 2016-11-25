@@ -68,6 +68,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
     JButton printOverviewButton = new JButton();
     JButton exportButton = new JButton();
     JButton importButton = new JButton();
+    JButton downloadOriginalButton = new JButton();
     JButton addButton = new JButton();
 
     public MeldungenIndexFrame(Frame parent, int meldTyp) {
@@ -139,7 +140,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     editButton_actionPerformed(e);
                 }
             });
-            deleteButton.setText("Meldung löschen");
+            deleteButton.setText("Meldung lokal löschen");
             deleteButton.addActionListener(new java.awt.event.ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
@@ -198,6 +199,14 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                     exportButton_actionPerformed(e);
                 }
             });
+            downloadOriginalButton.setText("Original-Meldungen herunterladen");
+            downloadOriginalButton.addActionListener(new java.awt.event.ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    downloadOriginalButton_actionPerformed(e);
+                }
+            });
+            
             importButton.setText("Meldung importieren");
             importButton.addActionListener(new java.awt.event.ActionListener() {
 
@@ -233,12 +242,13 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             eastPanel.add(addButton, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
             eastPanel.add(importButton, new GridBagConstraints(0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
             eastPanel.add(exportButton, new GridBagConstraints(0, 7, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-            eastPanel.add(jLabel2, new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(50, 0, 0, 0), 0, 0));
-            eastPanel.add(anzBestaetigte, new GridBagConstraints(1, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(50, 0, 0, 0), 0, 0));
-            eastPanel.add(uploadButton, new GridBagConstraints(0, 9, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-            eastPanel.add(checkFahrtenheftButton, new GridBagConstraints(0, 10, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(50, 0, 0, 0), 0, 0));
-            eastPanel.add(meldestatistikButton, new GridBagConstraints(0, 11, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(50, 0, 0, 0), 0, 0));
-            eastPanel.add(printOverviewButton, new GridBagConstraints(0, 12, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+            eastPanel.add(downloadOriginalButton, new GridBagConstraints(0, 8, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+            eastPanel.add(jLabel2, new GridBagConstraints(0, 9, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(50, 0, 0, 0), 0, 0));
+            eastPanel.add(anzBestaetigte, new GridBagConstraints(1, 9, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(50, 0, 0, 0), 0, 0));
+            eastPanel.add(uploadButton, new GridBagConstraints(0, 10, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+            eastPanel.add(checkFahrtenheftButton, new GridBagConstraints(0, 11, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(50, 0, 0, 0), 0, 0));
+            eastPanel.add(meldestatistikButton, new GridBagConstraints(0, 12, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(50, 0, 0, 0), 0, 0));
+            eastPanel.add(printOverviewButton, new GridBagConstraints(0, 13, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
             meldungenAuswahl.addItemListener(new java.awt.event.ItemListener() {
 
                 public void itemStateChanged(ItemEvent e) {
@@ -489,25 +499,25 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                 return;
             }
         }
-        if (!Dialog.okAbbrDialog("Internet-Verbindung", "Bitte stelle eine Verbindung zum Internet her\nund klicke dann OK.")) {
+        if (e != null && !Dialog.okAbbrDialog("Internet-Verbindung", "Bitte stelle eine Verbindung zum Internet her\nund klicke dann OK.")) {
             return;
         }
 
         String errorLog = "";
 
-        Logger.log(Logger.INFO, "START Neue Meldungen aus dem Internet abrufen");
+        Logger.log(Logger.INFO, "START Synchronisierung mit efaWett");
         String listFile = Daten.efaTmpDirectory + "meldungen.list";
         String url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_LIST, null, null, null, null, null, null);
         if ((new File(listFile)).exists() && !(new File(listFile)).delete()) {
             Dialog.error("Datei\n" + listFile + "\nkann nicht gelöscht werden.");
             Logger.log(Logger.ERROR, "Datei\n" + listFile + "\nkann nicht gelöscht werden.");
-            Logger.log(Logger.INFO, "ENDE Neue Meldungen aus dem Internet abrufen");
+            Logger.log(Logger.INFO, "ENDE Synchronisierung mit efaWett");
             return;
         }
         if (!DownloadThread.getFile(this, url, listFile, true) || !EfaUtil.canOpenFile(listFile)) {
             Dialog.error("Download der Meldungen-Indexdatei fehlgeschlagen.");
             Logger.log(Logger.ERROR, "Download der Meldungen-Indexdatei fehlgeschlagen.");
-            Logger.log(Logger.INFO, "ENDE Neue Meldungen aus dem Internet abrufen");
+            Logger.log(Logger.INFO, "ENDE Synchronisierung mit efaWett");
             return;
         }
 
@@ -523,7 +533,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                 if (s.startsWith("ERROR")) {
                     Dialog.error("Fehler beim Download:\n" + s);
                     Logger.log(Logger.ERROR, "Fehler beim Download: " + s);
-                    Logger.log(Logger.INFO, "ENDE Neue Meldungen aus dem Internet abrufen");
+                    Logger.log(Logger.INFO, "ENDE Synchronisierung mit efaWett");
                     f.close();
                     return;
                 }
@@ -531,7 +541,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                 if (v.size() != 8) {
                     Dialog.error("Meldungen-Indexdatei hat ungültiges Format!");
                     Logger.log(Logger.ERROR, "Fehler beim Lesen der Meldungen-Indexdatei: Datei hat ungültiges Format (" + v.size() + " Felder).");
-                    Logger.log(Logger.INFO, "ENDE Neue Meldungen aus dem Internet abrufen");
+                    Logger.log(Logger.INFO, "ENDE Synchronisierung mit efaWett");
                     f.close();
                     return;
                 }
@@ -546,17 +556,29 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
                 if (edituuid == null || edituuid.length() < 10) {
                     edituuid = "0";
                 }
+                String fname = Main.drvConfig.meldungenIndex.getFileName();
                 DatenFelder dtmp = Main.drvConfig.meldungenIndex.getExactComplete(qnr);
                 boolean isRemoteEdited = status.equals("B");
                 boolean isLocalEdited = dtmp != null && 
                         dtmp.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_BEARBEITET));
                 int remoteStatus = (status.equals("B") ? MeldungenIndex.ST_BEARBEITET :
                                    (status.equals("Z") ? MeldungenIndex.ST_ZURUECKGEWIESEN : MeldungenIndex.ST_UNBEARBEITET));
+                String localStatus = dtmp != null ? dtmp.get(MeldungenIndex.STATUS) : "-1";
                 String localUUID = (dtmp == null || dtmp.get(MeldungenIndex.EDITUUID) == null ||
                                     dtmp.get(MeldungenIndex.EDITUUID).length() < 10 ? "0" : dtmp.get(MeldungenIndex.EDITUUID));
+                
+                Logger.log(Logger.INFO, "Meldung " + qnr + ": " +
+                        "remote[edited=" + isRemoteEdited + ", status=" + remoteStatus + ", uuid=" + edituuid + "] " +
+                        "local[edited=" + isLocalEdited + ", status=" + localStatus + ", uuid=" + localUUID + "]");
+                
+                if (remoteStatus == MeldungenIndex.ST_ZURUECKGEWIESEN && dtmp == null) {
+                    // zurückgewiesene Meldung, die lokal nicht existiert
+                    continue;
+                }
+                
                 if (dtmp == null || 
                     dtmp.get(MeldungenIndex.STATUS).equals(Integer.toString(MeldungenIndex.ST_GELOESCHT)) ||
-                    remoteStatus != Integer.parseInt(dtmp.get(MeldungenIndex.STATUS)) ||
+                    (remoteStatus != MeldungenIndex.ST_UNBEARBEITET && remoteStatus != Integer.parseInt(dtmp.get(MeldungenIndex.STATUS))) ||
                     (isRemoteEdited && !edituuid.equals(localUUID))) {
                     url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_GET, "item=" + qnr, "verein=" + (String) v.get(5), null, null, null, null);
                     String localFile = Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efw";
@@ -683,7 +705,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
         showMeldungen();
         Dialog.infoDialog(count + " neue Meldungen heruntergeladen!");
         Logger.log(Logger.INFO, count + " neue Meldungen heruntergeladen.");
-        Logger.log(Logger.INFO, "ENDE Neue Meldungen aus dem Internet abrufen");
+        Logger.log(Logger.INFO, "ENDE Synchronisierung mit efaWett");
     }
 
     void exportField(BufferedWriter f, String field, String label) throws Exception {
@@ -814,50 +836,6 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             }
         } catch (Exception ee) {
             Dialog.error("Fehler beim Exportieren der Meldung: " + ee.getMessage());
-        }
-    }
-
-    void importButton_actionPerformed(ActionEvent e) {
-        String fname = Dialog.dateiDialog(this, "Meldung importieren",
-                "Meldung (*.efw)", "efw", Daten.efaDataDirectory, false);
-        if (fname == null || fname.length() == 0 || !EfaUtil.canOpenFile(fname)) {
-            return;
-        }
-
-        String qnr = null;
-        Pattern p = Pattern.compile(".*[^0-9]([0-9]+).efw.*");
-        Matcher m = p.matcher(fname);
-        if (m.matches()) {
-            qnr = m.group(1);
-        }
-        if (qnr == null || qnr.length() == 0) {
-            qnr = Long.toString((System.currentTimeMillis() / 1000l) * 100l + 99l);
-        }
-        if (Main.drvConfig.meldungenIndex.getExactComplete(qnr) != null) { // sollte nie passieren
-            Dialog.error("Die Quittungsnummer " + qnr + " existiert bereits.");
-            return;
-        }
-        EfaWett efw = new EfaWett(fname);
-        try {
-            if (efw.readFile()) {
-                efw.setFileName(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efw");
-                if (efw.writeFile()) {
-                    Logger.log(Logger.INFO, "Neue Meldungen mit Quittungsnummer " + qnr + " wird importiert.");
-                    DatenFelder d = new DatenFelder(MeldungenIndex._ANZFELDER);
-                    d.set(MeldungenIndex.QNR, qnr);
-                    d.set(MeldungenIndex.DATUM, EfaUtil.getCurrentTimeStampYYYY_MM_DD_HH_MM_SS());
-                    d.set(MeldungenIndex.STATUS, Integer.toString(MeldungenIndex.ST_UNBEARBEITET));
-                    d.set(MeldungenIndex.FAHRTENHEFTE, Integer.toString(MeldungenIndex.FH_PAPIER));
-                    d.set(MeldungenIndex.VEREIN, efw.verein_name);
-                    d.set(MeldungenIndex.MITGLNR, efw.verein_mitglnr);
-                    Main.drvConfig.meldungenIndex.add(d);
-                    Main.drvConfig.meldungenIndex.writeFile();
-                    Dialog.infoDialog("Meldung importiert", "Die Meldung wurde erfolgreich exportiert!");
-                }
-            }
-            showMeldungen();
-        } catch (Exception ee) {
-            Dialog.error("Fehler beim Importieren der Meldung: " + ee.getMessage());
         }
     }
 
@@ -1108,6 +1086,54 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
         showMeldungen();
     }
 
+    void downloadOriginalButton_actionPerformed(ActionEvent e) {
+        if (Main.drvConfig.efw_script == null || Main.drvConfig.efw_script.length() == 0) {
+            Dialog.error("Kein EFW-Script konfiguriert. Bitte vervollständige zunächst die Konfiguration!");
+            return;
+        }
+        if (Main.drvConfig.efw_user == null || Main.drvConfig.efw_user.length() == 0) {
+            Dialog.error("Kein EFW-Nutzer konfiguriert. Bitte vervollständige zunächst die Konfiguration!");
+            return;
+        }
+        if (Main.drvConfig.efw_password == null || Main.drvConfig.efw_password.length() == 0) {
+            Dialog.error("Kein EFW-Paßwort konfiguriert. Bitte vervollständige zunächst die Konfiguration!");
+            return;
+        }
+        if (e != null && !Dialog.okAbbrDialog("Internet-Verbindung", "Bitte stelle eine Verbindung zum Internet her\nund klicke dann OK.")) {
+            return;
+        }
+        try {
+            String dir = Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep +
+                    "orig_" + EfaUtil.getCurrentTimeStampYYYYMMDD_HHMMSS() + Daten.fileSep;
+            if (!(new File(dir).mkdir())) {
+                Dialog.error("Fehler beim Erstellen von Verzeichnis " + dir);
+                return;
+            }
+            DatenFelder d = Main.drvConfig.meldungenIndex.getCompleteFirst();
+            int c = 0;
+            while (d != null) {
+                EfaWett etmp = new EfaWett(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + d.get(MeldungenIndex.QNR) + ".efw");
+                if (etmp.readFile()) {
+                    String qnr = d.get(MeldungenIndex.QNR);
+                    String verein = etmp.verein_user;
+                    if (qnr != null && qnr.length() > 0 && verein != null && verein.length() > 0) {
+                        String url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_GETORIG, "item=" + qnr, "verein=" + verein, null, null, null, null);
+                        String localRestoreFile = dir + qnr + ".efw";
+                        if (!DownloadThread.getFile(this, url, localRestoreFile, true) || !EfaUtil.canOpenFile(localRestoreFile)) {
+                            Dialog.error("Download der Meldung " + qnr + " fehlgeschlagen.");
+                        } else {
+                            c++;
+                        }
+                    }
+                }                
+                d = Main.drvConfig.meldungenIndex.getCompleteNext();
+            }
+            Dialog.infoDialog(c + " Original-Meldungen heruntergeladen und gespeichert in\n" + dir);
+        } catch (Exception ex) {
+            Dialog.error("Fehler beim Herunterladen: " + e);
+        }
+    }
+    
     void uploadButton_actionPerformed(ActionEvent e) {
         if (Main.drvConfig.readOnlyMode) {
             Dialog.error("Diese Funktion ist in diesem Modus nicht erlaubt.");
@@ -2208,7 +2234,122 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
 
     }
 
+    void importButton_actionPerformed(ActionEvent e) {
+        String fname = Dialog.dateiDialog(this, "Meldung importieren",
+                "Meldung (*.efw)", "efw", Daten.efaDataDirectory, false);
+        if (fname == null || fname.length() == 0 || !EfaUtil.canOpenFile(fname)) {
+            return;
+        }
+        EfaWett efw = new EfaWett(fname);
+        try {
+            if (efw.readFile()) {
+                if (addMeldung(efw.verein_user)) {
+                    String qnr = null;
+                    DatenFelder d = Main.drvConfig.meldungenIndex.getCompleteFirst();
+                    while (d != null) {
+                        EfaWett etmp = new EfaWett(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + d.get(MeldungenIndex.QNR) + ".efw");
+                        if (etmp.readFile() && efw.verein_user.equals(etmp.verein_user)) {
+                            qnr = d.get(MeldungenIndex.QNR);
+                            break;
+                            
+                        }
+                        d = Main.drvConfig.meldungenIndex.getCompleteNext();
+                    }
+                    if (qnr == null) {
+                        Dialog.error("Importierte Meldung konnte nicht gefunden werden.");
+                        return;
+                    }
+                    efw.setFileName(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efw");
+                    if (efw.writeFile()) {
+                        Logger.log(Logger.INFO, "Neue Meldungen mit Quittungsnummer " + qnr + " wurde importiert.");
+                        Dialog.infoDialog("Meldung mit Quittungsnummer " + qnr + " für Verein " + efw.verein_user + " erfolgreicht importiert.");
+                        showMeldungen();
+                    } else {
+                        Dialog.error("Importierte Meldung konnte nicht gespeichert werden.");
+                    }
+                }
+            }
+        } catch(Exception ex) {
+            Dialog.error("Fehler beim Importieren der Meldung: " + ex.getMessage());
+        }
+
+        /*
+        String qnr = null;
+        Pattern p = Pattern.compile(".*[^0-9]([0-9]+).efw.*");
+        Matcher m = p.matcher(fname);
+        if (m.matches()) {
+            qnr = m.group(1);
+        }
+        if (qnr == null || qnr.length() == 0) {
+            qnr = Long.toString((System.currentTimeMillis() / 1000l) * 100l + 99l);
+        }
+        if (Main.drvConfig.meldungenIndex.getExactComplete(qnr) != null) { // sollte nie passieren
+            Dialog.error("Die Quittungsnummer " + qnr + " existiert bereits.");
+            return;
+        }
+        EfaWett efw = new EfaWett(fname);
+        try {
+            if (efw.readFile()) {
+                efw.setFileName(Daten.efaDataDirectory + Main.drvConfig.aktJahr + Daten.fileSep + qnr + ".efw");
+                if (efw.writeFile()) {
+                    Logger.log(Logger.INFO, "Neue Meldungen mit Quittungsnummer " + qnr + " wird importiert.");
+                    DatenFelder d = new DatenFelder(MeldungenIndex._ANZFELDER);
+                    d.set(MeldungenIndex.QNR, qnr);
+                    d.set(MeldungenIndex.DATUM, EfaUtil.getCurrentTimeStampYYYY_MM_DD_HH_MM_SS());
+                    d.set(MeldungenIndex.STATUS, Integer.toString(MeldungenIndex.ST_UNBEARBEITET));
+                    d.set(MeldungenIndex.FAHRTENHEFTE, Integer.toString(MeldungenIndex.FH_PAPIER));
+                    d.set(MeldungenIndex.VEREIN, efw.verein_name);
+                    d.set(MeldungenIndex.MITGLNR, efw.verein_mitglnr);
+                    Main.drvConfig.meldungenIndex.add(d);
+                    Main.drvConfig.meldungenIndex.writeFile();
+                    Dialog.infoDialog("Meldung importiert", "Die Meldung wurde erfolgreich exportiert!");
+                }
+            }
+            showMeldungen();
+        } catch (Exception ee) {
+            Dialog.error("Fehler beim Importieren der Meldung: " + ee.getMessage());
+        }
+        */
+    }
+
     void addButton_actionPerformed(ActionEvent e) {
+        String verein = Dialog.inputDialog("Neue Meldung erfassen", 
+                "efaWett-Benutzername des Vereins, für den die Meldung erfaßt werden soll");
+        addMeldung(verein);
+    }
+    
+    boolean addMeldung(String verein) {
+        if (verein == null || verein.trim().length() == 0) {
+            return false;
+        }
+        String wettkey = WETTID + "." + Main.drvConfig.aktJahr;
+        
+        String url = Main.drvConfig.makeScriptRequestString(DRVConfig.ACTION_CREATE, "verein=" + verein, "wettkey=" + wettkey, null, null, null, null);
+        String localFile = Daten.efaTmpDirectory + "efwstatus.tmp";
+        if (!DownloadThread.getFile(this, url, localFile, true) || !EfaUtil.canOpenFile(localFile)) {
+            Logger.log(Logger.ERROR, "Erstellen der Meldung für Verein " + verein + " fehlgeschlagen: Kann efaWett nicht erreichen");
+            Dialog.error("Aktion fehlgeschlagen: Kann efaWett nicht erreichen");
+            return false;
+        }
+        try {
+            BufferedReader f = new BufferedReader(new FileReader(localFile));
+            String s = f.readLine();
+            if (s == null || !s.equals("OK")) {
+                Logger.log(Logger.ERROR, "Erstellen der Meldung für Verein " + verein + " fehlgeschlagen: " + s);
+                Dialog.error("Aktion fehlgeschlagen: " + s);
+                return false;
+            }
+            f.close();
+            EfaUtil.deleteFile(localFile);
+        } catch (Exception ee) {
+            Logger.log(Logger.ERROR, "Erstellen der Meldung für Verein " + verein + " fehlgeschlagen: " + ee.getMessage());
+            Dialog.error("Aktion fehlgeschlagen: " + ee.getMessage());
+            return false;
+        }
+        Dialog.infoDialog("Neue Meldung für Verein " + verein + " erfolgreich erstellt.");
+        downloadButton_actionPerformed(null);
+        return true;
+        /*
         String qnr = Long.toString((System.currentTimeMillis() / 1000l) * 100l + 99l);
         if (Main.drvConfig.meldungenIndex.getExactComplete(qnr) != null) { // sollte nie passieren
             Dialog.error("Die Quittungsnummer " + qnr + " existiert bereits.");
@@ -2261,6 +2402,7 @@ public class MeldungenIndexFrame extends JDialog implements ActionListener {
             Dialog.error("Fehler beim Schreiben der Meldungsdatei: " + eee.toString());
         }
         showMeldungen();
+        */
     }
     
     class WatersStat {

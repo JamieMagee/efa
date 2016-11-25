@@ -33,6 +33,7 @@ public class DRVConfig extends DatenListe {
   public static final int ACTION_REJECT = 4;
   public static final int ACTION_UPLCERT = 5;
   public static final int ACTION_GETORIG = 6;
+  public static final int ACTION_CREATE = 7;
 
   public static final String MELDUNGEN_FA_FILE = "meldungen.idx";
   public static final String MELDUNGEN_WS_FILE = "meldungen_ws.idx";
@@ -226,6 +227,7 @@ public class DRVConfig extends DatenListe {
       case ACTION_REJECT : saction = "efa_rejectMeldung"; break;
       case ACTION_UPLCERT: saction = "efa_uploadCert"; break;
       case ACTION_GETORIG: saction = "efa_getOrigMeldung"; break;
+      case ACTION_CREATE : saction = "efa_createMeldung"; break;
     }
     if (saction == null) return null;
     String s = efw_script+"?verband=" + verband + "&agent=efa&name="+efw_user+"&password="+efw_password+"&action="+saction;

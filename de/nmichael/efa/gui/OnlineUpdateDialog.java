@@ -190,7 +190,7 @@ public class OnlineUpdateDialog extends BaseDialog {
 
     void submitUserInfos() {
         String infos = getTransmitUserInfo();
-        if (infos == null) {
+        if (infos == null || Daten.INTERNET_EFAMAIL == null) {
             return;
         }
         try {
@@ -214,7 +214,6 @@ public class OnlineUpdateDialog extends BaseDialog {
                 // nothing
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return;
         }
     }

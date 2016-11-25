@@ -2,6 +2,20 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.2_19</VersionID>
+        <ReleaseDate>23.10.2016</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa222.zip</DownloadUrl>
+        <DownloadSize>4087846</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Exception beim Online-Update und Versenden von emails behoben</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Exception during Online-Update and emails sending fixed</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.2_18</VersionID>
         <ReleaseDate>22.10.2016</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa222.zip</DownloadUrl>
