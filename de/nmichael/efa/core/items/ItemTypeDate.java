@@ -56,6 +56,7 @@ public class ItemTypeDate extends ItemTypeLabelTextfield {
 
     public void parseValue(String value) {
         try {
+            value = EfaUtil.dateToDMY(value);
             if (value != null && value.trim().length()>0) {
                 value = EfaUtil.replaceString(value, "-", " ");
                 value = EfaUtil.replaceString(value, "+", " ");

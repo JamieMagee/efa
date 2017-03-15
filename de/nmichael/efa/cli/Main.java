@@ -26,6 +26,10 @@ import java.io.File;
 // @i18n complete
 
 public class Main extends Program {
+    
+    static {
+        System.setProperty("java.awt.headless", "true");
+    }
 
     static String username = "admin";
     static String password = null;
@@ -115,7 +119,6 @@ public class Main extends Program {
     }
 
     public static void main(String[] args) {
-        System.setProperty("java.awt.headless", "true");
         new Main(args);
     }
 

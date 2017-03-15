@@ -185,11 +185,13 @@ public class MenuData extends MenuBase {
         DataImport imp = new DataImport(storageObject, filename, encoding, csep, cquo,
                 importMode, updMode, entryNo,
                 System.currentTimeMillis());
-        imp.setProgressDialog(new ProgressDialog() {
-            public void logInfo(String s) {
-                cli.loginfo(s);
-            }
-        }, true);
+        if (Daten.isGuiAppl()) {
+            imp.setProgressDialog(new ProgressDialog() {
+                public void logInfo(String s) {
+                    cli.loginfo(s);
+                }
+            }, true);
+        }
         int count = 0;
         if (DataImport.isXmlFile(filename)) {
             count = imp.runXmlImport();

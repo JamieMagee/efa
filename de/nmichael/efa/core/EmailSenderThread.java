@@ -57,11 +57,18 @@ public class EmailSenderThread extends Thread {
                 attachmentFileNames, deleteAttachmentFiles));
     }
 
-    private void updateMailProperties() {
+    private boolean updateMailProperties() {
         try {
+            if (Daten.efaConfig == null || Daten.project == null || Daten.admins == null
+                    || !Daten.efaConfig.isOpen() || !Daten.project.isOpen() || !Daten.admins.isOpen()
+                    || Daten.project.isInOpeningProject()) {
+                Logger.log(Logger.WARNING, Logger.MSG_WARN_SENDMAIL, 
+                        International.getString("email-Konfiguration konnte nicht ermittelt werden."));
+                return false;
+            }
             long scn = Daten.efaConfig.data().getSCN();
             if (scn == lastScnEfaConfig) {
-                return;
+                return true;
             }
             serverUrl = Daten.efaConfig.getValueEfaDirekt_emailServer();
             serverPort = Integer.toString(Daten.efaConfig.getValueEfaDirekt_emailPort());
@@ -97,16 +104,25 @@ public class EmailSenderThread extends Thread {
                 mailSignature = null;
             }
             lastScnEfaConfig = scn;
+            return true;
         } catch (Exception e) {
             Logger.logdebug(e);
+            return false;
         }
     }
 
-    private void updateAdminEmailAddresses() {
+    private boolean updateAdminEmailAddresses() {
         try {
+            if (Daten.efaConfig == null || Daten.project == null || Daten.admins == null
+                    || !Daten.efaConfig.isOpen() || !Daten.project.isOpen() || !Daten.admins.isOpen()
+                    || Daten.project.isInOpeningProject()) {
+                Logger.log(Logger.WARNING, Logger.MSG_WARN_SENDMAIL, 
+                        International.getString("email-Konfiguration konnte nicht ermittelt werden."));
+                return false;
+            }
             long scn = Daten.admins.data().getSCN();
             if (scn == lastScnAdmins) {
-                return;
+                return true;
             }
             emailAddressesAdmin = new Vector<String>();
             emailAddressesBoatMaintenance = new Vector<String>();
@@ -131,13 +147,27 @@ public class EmailSenderThread extends Thread {
                 emailAddressesBoatMaintenance = null;
             }
             lastScnAdmins = scn;
+            return true;
         } catch(Exception e) {
             Logger.logdebug(e);
+            return false;
         }
     }
 
     private boolean sendMail(MessageRecord msg, Vector addresses) {
         try {
+            if (!updateMailProperties() || !updateAdminEmailAddresses()) {
+                Logger.log(Logger.WARNING, Logger.MSG_ERR_SENDMAILFAILED_CFG,
+                        International.getString("Kein email-Versand möglich!") + " " +
+                        International.getString("email-Konfiguration konnte nicht ermittelt werden."));
+            }
+            if (serverUrl == null || serverPort == null ||
+                mailFromEmail == null || mailFromName == null) {
+                Logger.log(Logger.WARNING, Logger.MSG_ERR_SENDMAILFAILED_CFG,
+                        International.getString("Kein email-Versand möglich!") + " "
+                        + International.getString("Mail-Konfiguration unvollständig."));
+                return false;
+            }
             StringBuilder recipients = new StringBuilder();
             for (int i=0; i<addresses.size(); i++) {
                 recipients.append( (recipients.length() > 0 ? ", " : "") + addresses.get(i));
@@ -213,6 +243,19 @@ public class EmailSenderThread extends Thread {
 
     private boolean sendMail(MultiPartMessage msg) {
         try {
+            if (!updateMailProperties() || !updateAdminEmailAddresses()) {
+                Logger.log(Logger.WARNING, Logger.MSG_ERR_SENDMAILFAILED_CFG,
+                        International.getString("Kein email-Versand möglich!") + " " +
+                        International.getString("email-Konfiguration konnte nicht ermittelt werden."));
+            }
+
+            if (serverUrl == null || serverPort == null ||
+                mailFromEmail == null || mailFromName == null) {
+                Logger.log(Logger.WARNING, Logger.MSG_ERR_SENDMAILFAILED_CFG,
+                        International.getString("Kein email-Versand möglich!") + " "
+                        + International.getString("Mail-Konfiguration unvollständig."));
+                return false;
+            }
             StringBuilder recipients = new StringBuilder();
             for (int i=0; i<msg.addresses.size(); i++) {
                 recipients.append( (recipients.length() > 0 ? ", " : "") + msg.addresses.get(i));

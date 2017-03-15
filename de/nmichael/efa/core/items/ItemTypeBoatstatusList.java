@@ -27,6 +27,7 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
 
     public static final int SEATS_OTHER = 99;
     public static final String TYPE_OTHER = "";
+    public static final String RIGGER_OTHER = "";
 
     EfaBoathouseFrame efaBoathouseFrame;
 
@@ -152,14 +153,19 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
                 bs.seats = seat;
                 bs.variant = variant;
                 bs.type = (r != null ? r.getTypeType(0) : EfaTypes.TYPE_BOAT_OTHER);
+                bs.rigger = (r != null ? r.getTypeRigging(0) : EfaTypes.TYPE_RIGGING_OTHER);
 
                 // for BoatsOnTheWater, don't use the "real" boat name, but rather what's stored in the boat status as "BoatText"
                 bs.name = (sr.getCurrentStatus().equals(BoatStatusRecord.STATUS_ONTHEWATER) || r == null ? sr.getBoatText() : r.getQualifiedName());
 
                 bs.sortBySeats = (Daten.efaConfig.getValueEfaDirekt_sortByAnzahl());
+                bs.sortByRigger = (Daten.efaConfig.getValueEfaDirekt_sortByRigger());
                 bs.sortByType = (Daten.efaConfig.getValueEfaDirekt_sortByType());
                 if (!bs.sortBySeats) {
                     bs.seats = SEATS_OTHER;
+                }
+                if (!bs.sortByRigger) {
+                    bs.rigger = RIGGER_OTHER;
                 }
                 if (!bs.sortByType) {
                     bs.type = TYPE_OTHER;
@@ -247,6 +253,14 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
                 }
             }
 
+            // sort by rigger?
+            if (Daten.efaConfig.getValueEfaDirekt_sortByRigger() && a[i].rigger != null) {
+                if (Daten.efaConfig.getValueEfaDirekt_sortByAnzahl()) {
+                    s = Daten.efaTypes.getValue(EfaTypes.CATEGORY_NUMSEATS, EfaTypes.getSeatsKey(a[i].seats, a[i].rigger));
+                } else {
+                    s = (s == null ? "" : s + " ") + Daten.efaTypes.getValue(EfaTypes.CATEGORY_RIGGING, a[i].rigger);
+                }
+            }
             // sort by type?
             if (Daten.efaConfig.getValueEfaDirekt_sortByType() && a[i].type != null) {
                 s = (s == null ? "" : s + " ") + Daten.efaTypes.getValue(EfaTypes.CATEGORY_BOAT, a[i].type);
@@ -358,11 +372,13 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
         public String name;
         public int seats;
         public boolean sortBySeats;
+        public boolean sortByRigger;
         public boolean sortByType;
         public Object record;
         public int variant;
         public Color[] colors;
         public String type;
+        public String rigger;
 
         private String normalizeString(String s) {
             if (s == null) {
@@ -465,9 +481,11 @@ public class ItemTypeBoatstatusList extends ItemTypeList {
         public int compareTo(Object o) {
             BoatString other = (BoatString) o;
             String sThis = (sortBySeats ? (seats < 10 ? "0" : "") + seats : "") + 
+                    (sortByRigger ? rigger : "") + 
                     (seats == SEATS_OTHER || sortByType ? type + "#" : "") +
                     normalizeString(name);
             String sOther = (sortBySeats ? (other.seats < 10 ? "0" : "") + other.seats : "") + 
+                    (sortByRigger ? other.rigger : "") + 
                     (other.seats == SEATS_OTHER || sortByType ? other.type + "#" : "") +
                     normalizeString(other.name);
             return sThis.compareTo(sOther);

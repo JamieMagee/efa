@@ -9,7 +9,10 @@
  */
 package de.nmichael.efa.data.types;
 
+import de.nmichael.efa.Daten;
 import de.nmichael.efa.core.config.EfaTypes;
+import static de.nmichael.efa.data.types.DataTypeDistance.KILOMETERS;
+import static de.nmichael.efa.data.types.DataTypeDistance.MILES;
 import de.nmichael.efa.util.EfaUtil;
 import de.nmichael.efa.util.International;
 import de.nmichael.efa.util.TMJ;
@@ -17,6 +20,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class DataTypeDate implements Cloneable, Comparable<DataTypeDate> {
+
+    public static final String DAY_MONTH_YEAR = "DD.MM.YYYY";
+    public static final String MONTH_DAY_YEAR = "MM/DD/YYYY";
 
     private int day, month, year;
 
@@ -90,10 +96,17 @@ public class DataTypeDate implements Cloneable, Comparable<DataTypeDate> {
         TMJ tmj = EfaUtil.string2date(s, -1, -1, -1);
         boolean ymd = (tmj.tag > 0 && tmj.jahr > 0 && tmj.tag > 1900 && tmj.jahr < 100);
         if (!ymd) {
-            // day - month - year
-            this.day = tmj.tag;
-            this.month = tmj.monat;
-            this.year = tmj.jahr;
+            if (s != null && s.indexOf("/") > 0) {
+                // month/day/year
+                this.day = tmj.monat;
+                this.month = tmj.tag;
+                this.year = tmj.jahr;
+            } else {
+                // day.month,year
+                this.day = tmj.tag;
+                this.month = tmj.monat;
+                this.year = tmj.jahr;
+            }
         } else {
             // year - month - day
             this.year = tmj.tag;
@@ -185,7 +198,9 @@ public class DataTypeDate implements Cloneable, Comparable<DataTypeDate> {
         if (day == 0) {
             return EfaUtil.int2String(month,2) + "/" + EfaUtil.int2String(year,4);
         }
-        return EfaUtil.int2String(day,2) + "." + EfaUtil.int2String(month,2) + "." + EfaUtil.int2String(year,4);
+        return Daten.dateFormatDMY ?
+                EfaUtil.int2String(day,2) + "." + EfaUtil.int2String(month,2) + "." + EfaUtil.int2String(year,4) :
+                EfaUtil.int2String(month,2) + "/" + EfaUtil.int2String(day,2) + "/" + EfaUtil.int2String(year,4);
     }
 
     public boolean isSet() {
@@ -514,6 +529,20 @@ public class DataTypeDate implements Cloneable, Comparable<DataTypeDate> {
                 return International.getString("Sonntag");
         }
         return EfaTypes.TEXT_UNKNOWN;
+    }
+
+    public static String[] makeDistanceUnitValueArray() {
+        String[] units = new String[2];
+        units[0] = DAY_MONTH_YEAR;
+        units[1] = MONTH_DAY_YEAR;
+        return units;
+    }
+
+    public static String[] makeDistanceUnitNamesArray() {
+        String[] units = new String[2];
+        units[0] = DAY_MONTH_YEAR;
+        units[1] = MONTH_DAY_YEAR;
+        return units;
     }
 
 }

@@ -344,6 +344,7 @@ public class Logger {
     public static final String MSG_WARN_SAVEMESSAGE = "WRN016";
     public static final String MSG_WARN_PREVIOUSEXITIRREGULAR = "WRN017";
     public static final String MSG_WARN_DOWNLOADFAILED = "WRN018";
+    public static final String MSG_WARN_SENDMAIL = "WRN019";
 
     // File Operations
     public static final String MSG_FILE_FILEOPENFAILED = "FLE001";

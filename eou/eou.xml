@@ -2,6 +2,68 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.2_26</VersionID>
+        <ReleaseDate>14.03.2017</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa222.zip</DownloadUrl>
+        <DownloadSize>4089436</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Neu: Datumsformat jetzt konfigurierbar (TT.MM.JJJJ oder MM/DD/YYYY)</ChangeItem>
+            <ChangeItem>Neu: Sortierung von Bootslisten nach Riggerung (und Anzahl von Bootsplätzen) jetzt möglich</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.2_24</VersionID>
+        <ReleaseDate>12.02.2017</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa222.zip</DownloadUrl>
+        <DownloadSize>4088070</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: HeadlessException beim Datenimport über efaCLI behoben</ChangeItem>
+            <ChangeItem>Bugfix: Hinweis auf Überweisung des DRV-Meldegeldes geändert (wird erst nach Bearbeitung überwiesen)</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.2_23</VersionID>
+        <ReleaseDate>07.02.2017</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa222.zip</DownloadUrl>
+        <DownloadSize>4087894</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: NullPointerException beim Auswerten von DRV-Fahrtenabzeichen behoben, wenn für einen Teilnehmer kein Geschlecht erfaßt ist</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.2_22</VersionID>
+        <ReleaseDate>12.12.2016</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa222.zip</DownloadUrl>
+        <DownloadSize>4087958</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Change: Nachfrage beim Erfassen von Fahrten mit mehr als 30 Km: Auswahlmöglichkeit "Kilometernachtrag" wird nicht mehr angeboten, um Mißverständnisse und irrtümliche Kennezeichnung von Fahrten als zusammengefaßte Kilometernachträge zu vermeiden</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
+        <VersionID>2.2.2_21</VersionID>
+        <ReleaseDate>05.12.2016</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa222.zip</DownloadUrl>
+        <DownloadSize>4087877</DownloadSize>
+
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Korrektur für email-Versand aus efaCLI</ChangeItem>
+            <ChangeItem>Bugfix: Vernünftige Fehlermeldung statt NullPointerException beim email-Versand, wenn kein email-Server konfiguriert ist</ChangeItem>
+        </Changes>
+        <Changes lang="en">
+            <ChangeItem>Bugfix: Fix for sending email from efaCLI</ChangeItem>
+            <ChangeItem>Bugfix: Proper error message instead of NullPointerException, if no email server has been configured when sending an email</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.2_19</VersionID>
         <ReleaseDate>23.10.2016</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa222.zip</DownloadUrl>

@@ -199,6 +199,11 @@ public class EfaWettDoneDialog extends BaseDialog implements ActionListener {
             switch (efaWett.wettId) {
                 case WettDefs.DRV_FAHRTENABZEICHEN:
                     this.kontoLabel.setText(Daten.wettDefs.efw_drv_konto);
+                    // Meldegeld für DRV wird erst nach Bearbeitung überwiesen
+                    this.meldegeld1Label.setText("2. Vorraussichtliches Meldegeld");
+                    this.meldegeld2Label.setText("Bitte das Meldegeld erst NACH Bearbeitung und Bestätigung durch DRV überweisen.");
+                    this.meldegeldLabel.setText("Voraussichtliche Höhe des Meldegeldes: " + meldegeld);
+                    this.kontoLabel.setVisible(false);
                     break;
                 case WettDefs.LRVBERLIN_SOMMER:
                 case WettDefs.LRVBERLIN_WINTER:
@@ -221,7 +226,8 @@ public class EfaWettDoneDialog extends BaseDialog implements ActionListener {
         }
 
         // Warnung
-        if (Daten.wettDefs != null && Daten.wettDefs.isDataOld()) {
+        if (Daten.wettDefs != null && Daten.wettDefs.isDataOld() && false) {
+            // nah, don't show this any more
             this.achtung1Label.setVisible(true);
             this.achtung2Label.setVisible(true);
         } else {

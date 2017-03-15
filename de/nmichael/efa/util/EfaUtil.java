@@ -297,6 +297,23 @@ public class EfaUtil {
         }
         return new TMJ(tag, monat, jahr);
     }
+    
+    public static String dateToDMY(String date) {
+        boolean fmtDMY = Daten.dateFormatDMY;
+        if (date != null && date.indexOf("/") > 0) {
+            fmtDMY = false;
+        } else if (date != null && date.indexOf(".") > 0) {
+            fmtDMY = true;
+        }
+        if (!fmtDMY) {
+            TMJ tmj = EfaUtil.string2date(date, 0, 0, 0);
+            if (tmj.tag > 0 && tmj.monat > 0) {
+                return tmj.monat + "." + tmj.tag +
+                        (tmj.jahr > 0 ? ":" + tmj.jahr : "");
+            }
+        }
+        return date;
+    }
 
     // Aus einem String s ein korrektes (gültiges) Datum machen, ggf. aktuelles Datum als Referenzdatum verwenden
     public static String correctDate(String s) {
@@ -1267,6 +1284,19 @@ public class EfaUtil {
         return makeTimeString(cal.get(Calendar.DAY_OF_MONTH), 2) + "."
                 + makeTimeString(cal.get(Calendar.MONTH) + 1, 2) + "."
                 + makeTimeString(cal.get(Calendar.YEAR), 4);
+    }
+
+    public static String getCurrentTimeStampMM_DD_YYYY() {
+        Calendar cal = new GregorianCalendar();
+        return makeTimeString(cal.get(Calendar.MONTH) + 1, 2) + "/"
+                + makeTimeString(cal.get(Calendar.DAY_OF_MONTH), 2) + "/"
+                + makeTimeString(cal.get(Calendar.YEAR), 4);
+    }
+
+    public static String getCurrentTimeStampInDateFormat() {
+        return (Daten.dateFormatDMY ?
+                getCurrentTimeStampDD_MM_YYYY() :
+                getCurrentTimeStampMM_DD_YYYY());
     }
 
     public static String getCurrentTimeStampYYYY() {

@@ -2,6 +2,18 @@
 <efaOnlineUpdate>
 
     <Version>
+        <VersionID>2.2.2_25</VersionID>
+        <ReleaseDate>19.02.2017</ReleaseDate>
+        <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>
+        <DownloadSize>4255605</DownloadSize>
+
+        <!-- Changes (deutsch) -->
+        <Changes lang="de">
+            <ChangeItem>Bugfix: Ansicht "Meldung bearbeiten - Vereinsdaten" zeigt jetzt alle Äquatorpreisträger an (unabhängig von der Anzahl der Erfüllungen)</ChangeItem>
+        </Changes>
+    </Version>
+
+    <Version>
         <VersionID>2.2.2_20</VersionID>
         <ReleaseDate>24.11.2016</ReleaseDate>
         <DownloadUrl>http://efa.nmichael.de/download/efa2drv.zip</DownloadUrl>

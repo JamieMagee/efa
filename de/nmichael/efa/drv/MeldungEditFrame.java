@@ -1199,15 +1199,15 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
 
                 hAequator.put("", "nein");
                 hAequator.put("1", "1. Erreichen");
-                hAequator.put("2", "(2. Erreichen)");
+                hAequator.put("2", "2. Erreichen");
                 hAequator.put("3", "3. Erreichen");
-                hAequator.put("4", "(4. Erreichen)");
-                hAequator.put("5", "(5. Erreichen)");
-                hAequator.put("6", "(6. Erreichen)");
-                hAequator.put("7", "(7. Erreichen)");
-                hAequator.put("8", "(8. Erreichen)");
-                hAequator.put("9", "(9. Erreichen)");
-                hAequator.put("10", "(10. Erreichen)");
+                hAequator.put("4", "4. Erreichen");
+                hAequator.put("5", "5. Erreichen");
+                hAequator.put("6", "6. Erreichen");
+                hAequator.put("7", "7. Erreichen");
+                hAequator.put("8", "8. Erreichen");
+                hAequator.put("9", "9. Erreichen");
+                hAequator.put("10", "10. Erreichen");
                 JTextField t;
                 mFahrten = new JTextField[MAX_FAHRTEN][6];
                 for (int i = 0; i < MAX_FAHRTEN; i++) {
@@ -2090,8 +2090,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
                     papierFahrtenhefteErforderlich++;
                 }
             }
-            if (ewm.drv_aequatorpreis != null && ewm.drv_aequatorpreis.length() > 0
-                    && (ewm.drv_aequatorpreis.equals("1") || ewm.drv_aequatorpreis.equals("3"))) {
+            if (ewm.drv_aequatorpreis != null && ewm.drv_aequatorpreis.length() > 0 &&
+                    EfaUtil.stringFindInt(ewm.drv_aequatorpreis, 0) >= 1) {
                 aequator++;
             }
         }
@@ -3074,8 +3074,8 @@ public class MeldungEditFrame extends JDialog implements ActionListener {
 
         for (int i = 0; i < data.size(); i++) {
             EfaWettMeldung ewm = (EfaWettMeldung) data.get(i);
-            if (ewm.drv_aequatorpreis != null && ewm.drv_aequatorpreis.length() > 0
-                    && (ewm.drv_aequatorpreis.equals("1") || ewm.drv_aequatorpreis.equals("3"))) {
+            if (ewm.drv_aequatorpreis != null && ewm.drv_aequatorpreis.length() > 0 &&
+                EfaUtil.stringFindInt(ewm.drv_aequatorpreis, 0) >= 1) {
                 if (isErfuellt(ewm, false) && ewm.drvint_wirdGewertet) {
                     int km = EfaUtil.string2int(ewm.drv_gesKm, 0) + EfaUtil.string2int(ewm.kilometer, 0);
                     int anzAeq = km / WettDefs.DRV_AEQUATOR_KM;

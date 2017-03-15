@@ -566,6 +566,29 @@ public class EfaTypes extends StorageObject {
 
         return LogbookRecord.CREW_MAX;
     }
+    
+    public static String getSeatsKey(int seats, String rigging_key) {
+        if (TYPE_RIGGING_SCULL.equals(rigging_key)) {
+            switch (seats) {
+                case 1: return TYPE_NUMSEATS_1;
+                case 2: return TYPE_NUMSEATS_2X;
+                case 3: return TYPE_NUMSEATS_3;
+                case 4: return TYPE_NUMSEATS_4X;
+                case 5: return TYPE_NUMSEATS_5;
+                case 6: return TYPE_NUMSEATS_6X;
+                case 8: return TYPE_NUMSEATS_8X;
+            }
+        }
+        if (TYPE_RIGGING_SWEEP.equals(rigging_key)) {
+            switch (seats) {
+                case 2: return TYPE_NUMSEATS_2;
+                case 4: return TYPE_NUMSEATS_4;
+                case 6: return TYPE_NUMSEATS_6;
+                case 8: return TYPE_NUMSEATS_8;
+            }
+        }
+        return null;
+    }
 
     public static String getStringUnknown() {
         return International.getString("unbekannt");

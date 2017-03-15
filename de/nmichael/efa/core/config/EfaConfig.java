@@ -148,6 +148,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     private ItemTypeColor lafButtonFocusColor;
     private ItemTypeStringList standardFahrtart;
     private ItemTypeStringList defaultDistanceUnit;
+    private ItemTypeStringList dateFormat;
     private ItemTypeBoolean debugLogging;
     private ItemTypeString traceTopic;
     private ItemTypeInteger traceLevel;
@@ -201,6 +202,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
     private ItemTypeString efaDirekt_butSpezialCmd;
     private ItemTypeBoolean efaDirekt_showButtonHotkey;
     private ItemTypeBoolean efaDirekt_sortByAnzahl;
+    private ItemTypeBoolean efaDirekt_sortByRigger;
     private ItemTypeBoolean efaDirekt_sortByType;
     private ItemTypeBoolean efaDirekt_boatListIndividualOthers;
     private ItemTypeBoolean efaDirekt_autoPopupOnBoatLists;
@@ -804,6 +806,9 @@ public class EfaConfig extends StorageObject implements IItemFactory {
             addParameter(efaDirekt_sortByAnzahl = new ItemTypeBoolean("BoatListSortBySeats", true,
                     IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_GUI),
                     International.getString("sortiere Boote nach Anzahl der Bootsplätze")));
+            addParameter(efaDirekt_sortByRigger = new ItemTypeBoolean("BoatListSortByRigger", false,
+                    IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_GUI),
+                    International.getString("sortiere Boote nach Riggerung")));
             addParameter(efaDirekt_sortByType = new ItemTypeBoolean("BoatListSortByType", false,
                     IItemType.TYPE_EXPERT,BaseTabbedDialog.makeCategory(CATEGORY_BOATHOUSE, CATEGORY_GUI),
                     International.getString("sortiere Boote nach Bootstyp")));
@@ -1058,6 +1063,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
                     DataTypeDistance.makeDistanceUnitValueArray(), DataTypeDistance.makeDistanceUnitNamesArray(),
                     IItemType.TYPE_PUBLIC,BaseTabbedDialog.makeCategory(CATEGORY_LOCALE),
                     International.getString("Standardeinheit für Entfernungen")));
+            addParameter(dateFormat = new ItemTypeStringList("LocaleDateFormat", DataTypeDate.DAY_MONTH_YEAR,
+                    DataTypeDate.makeDistanceUnitValueArray(), DataTypeDate.makeDistanceUnitNamesArray(),
+                    IItemType.TYPE_PUBLIC,BaseTabbedDialog.makeCategory(CATEGORY_LOCALE),
+                    International.getString("Datumsformat")));
             addParameter(useFunctionalityRowing = new ItemTypeBoolean("CustUsageRowing",
                     (custSettings != null ? custSettings.activateRowingOptions : true),
                     IItemType.TYPE_PUBLIC,BaseTabbedDialog.makeCategory(CATEGORY_LOCALE),
@@ -1470,6 +1479,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
         return defaultDistanceUnit.getValue();
     }
 
+    public String getValueDateFormat() {
+        return dateFormat.getValue();
+    }
+
     public boolean getValueDebugLogging() {
         return debugLogging.getValue();
     }
@@ -1688,6 +1701,10 @@ public class EfaConfig extends StorageObject implements IItemFactory {
 
     public boolean getValueEfaDirekt_sortByAnzahl() {
         return efaDirekt_sortByAnzahl.getValue();
+    }
+    
+    public boolean getValueEfaDirekt_sortByRigger() {
+        return efaDirekt_sortByRigger.getValue();
     }
     
     public boolean getValueEfaDirekt_sortByType() {
@@ -2244,6 +2261,7 @@ public class EfaConfig extends StorageObject implements IItemFactory {
             newUserData += Daten.fileSep;
         }
         boolean changedLang = Daten.efaBaseConfig.language == null || !Daten.efaBaseConfig.language.equals(newLang);
+        boolean changedDateFormat = DataTypeDate.MONTH_DAY_YEAR.equals(dateFormat) == Daten.dateFormatDMY;
         boolean changedUserDir = Daten.efaBaseConfig.efaUserDirectory == null || !Daten.efaBaseConfig.efaUserDirectory.equals(newUserData);
         if (changedLang || changedUserDir) {
             if (changedLang) {
@@ -2271,6 +2289,12 @@ public class EfaConfig extends StorageObject implements IItemFactory {
             if (changedUserDir) {
                 Dialog.infoDialog(International.getString("Verzeichnis für Nutzerdaten"),
                         LogString.onlyEffectiveAfterRestart(International.getString("Verzeichnis für Nutzerdaten")));
+            }
+        } else {
+            if (changedDateFormat) {
+                Dialog.infoDialog(International.getString("Geänderte Einstellungen"),
+                    LogString.onlyEffectiveAfterRestart(International.getString("Geänderte Einstellungen")) +
+                        "\n" + International.getString("Datumsformat"));
             }
         }
 

@@ -1969,7 +1969,7 @@ public class StatisticTask extends ProgressTask {
         } else {
             sr.pStatTitle = sr.getName();
         }
-        sr.pStatCreationDate = EfaUtil.getCurrentTimeStampDD_MM_YYYY();
+        sr.pStatCreationDate = EfaUtil.getCurrentTimeStampInDateFormat();
         sr.pStatCreatedByUrl = Daten.EFAURL;
         sr.pStatCreatedByName = Daten.EFA_LONGNAME + " " + Daten.VERSION;
         sr.pStatDescription = statDescrLong;

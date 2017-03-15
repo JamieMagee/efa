@@ -50,6 +50,7 @@ public class ItemTypeDateTime extends ItemTypeLabelTextfield {
 
     public void parseValue(String value) {
         try {
+            boolean isMDYfmt = false;
             if (value != null && value.trim().length()>0) {
                 String t = "";
                 int pos = 0;
@@ -71,10 +72,19 @@ public class ItemTypeDateTime extends ItemTypeLabelTextfield {
                         }
                         t = "";
                     }
+                    if (value.charAt(i) == '/') {
+                        isMDYfmt = true;
+                    }
                 }
-                dateValue.setDate( (ia[0] >  0 ? ia[0] : referenceDate.getDay()),
-                                   (ia[1] >  0 ? ia[1] : referenceDate.getMonth()),
-                                   (ia[2] >  0 ? ia[2] : referenceDate.getYear()) );
+                if (!isMDYfmt) {
+                    dateValue.setDate( (ia[0] >  0 ? ia[0] : referenceDate.getDay()),
+                                       (ia[1] >  0 ? ia[1] : referenceDate.getMonth()),
+                                       (ia[2] >  0 ? ia[2] : referenceDate.getYear()));
+                } else {
+                    dateValue.setDate( (ia[1] >  0 ? ia[1] : referenceDate.getDay()),
+                                       (ia[0] >  0 ? ia[0] : referenceDate.getMonth()),
+                                       (ia[2] >  0 ? ia[2] : referenceDate.getYear()));
+                }
                 timeValue.setTime( (ia[3] >= 0 ? ia[3] : referenceTime.getHour()),
                                    (ia[4] >= 0 ? ia[4] : referenceTime.getMinute()),
                                    (ia[5] >= 0 ? ia[5] : referenceTime.getSecond()) );

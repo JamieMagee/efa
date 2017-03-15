@@ -15,6 +15,7 @@ import de.nmichael.efa.gui.EnterPasswordDialog;
 import de.nmichael.efa.util.*;
 import de.nmichael.efa.util.Dialog;
 import java.io.*;
+import java.lang.reflect.Method;
 
 // @i18n complete (needs no internationalization -- only relevant for Germany)
 
@@ -57,10 +58,13 @@ public class CA {
             // try Java 8 class name
             String classname = "sun.security.tools.keytool.Main";
             Class[] args = new Class[1];
-            Class.forName(classname).getMethod("main", String[].class).invoke(null, cmdarr);
+            Class c = Class.forName(classname);
+            Method m = c.getMethod("main", String[].class);
+            m.invoke(null, cmdarr);
         }
     } catch(Throwable ex) {
         Logger.log(Logger.ERROR, "Konnte Keytool nicht starten: " + ex);
+        Dialog.error("Konnte Keytool nicht starten: " + ex);
         return false;
     }
     return true;

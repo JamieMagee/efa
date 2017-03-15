@@ -2393,9 +2393,10 @@ public class EfaBaseFrame extends BaseDialog implements IItemListener {
                     if (Daten.efaTypes.isConfigured(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_TRAININGCAMP)) {
                         sessTypeSelection.add(EfaTypes.TYPE_SESSION_TRAININGCAMP);
                     }
-                    if (Daten.efaTypes.isConfigured(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_LATEENTRY)) {
-                        sessTypeSelection.add(EfaTypes.TYPE_SESSION_LATEENTRY);
-                    }
+                    // auf Wunsch von Gabi vom 07.12.2016 entfernt
+                    //if (Daten.efaTypes.isConfigured(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_LATEENTRY)) {
+                    //    sessTypeSelection.add(EfaTypes.TYPE_SESSION_LATEENTRY);
+                    //}
                     if (Daten.efaTypes.isConfigured(EfaTypes.CATEGORY_SESSION, EfaTypes.TYPE_SESSION_REGATTA)) {
                         sessTypeSelection.add(EfaTypes.TYPE_SESSION_REGATTA);
                     }

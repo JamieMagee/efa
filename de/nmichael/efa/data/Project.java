@@ -506,7 +506,8 @@ public class Project extends StorageObject {
                             }
                             String[] clubworkNames = p.getAllClubworkNames();
                             if (clubworkNames != null) {
-                                description.append(International.getString("Vereinsarbeit") + ": ");
+                                description.append("<br>" +
+                                        International.getString("Vereinsarbeit") + ": ");
                                 for (int j = 0; j < clubworkNames.length; j++) {
                                     description.append((j > 0 ? ", " : "") + clubworkNames[j]);
                                 }
