@@ -98,7 +98,7 @@
             <ChangeItem>Neu: Spezial-Button erlaubt jetzt das Wechseln des Projekts, Fahrtenbuchs, oder Bootshauses</ChangeItem>
         </Changes>
         <Changes lang="en">
-            <ChangeItem>New: Special Button now support changing the project, logbook, or boathouse</ChangeItem>
+            <ChangeItem>New: Special Button now support changing the project, logbook, or de.nmichael.efa.boathouse</ChangeItem>
         </Changes>
     </Version>
 
@@ -961,7 +961,7 @@
         </Changes>
 
         <Changes lang="en">
-            <ChangeItem>Neu: Window closing timeout for notification windows (like "Lock boathouse") is now configurable in the expert mode under "efa Boathouse - Appearance"</ChangeItem>
+            <ChangeItem>Neu: Window closing timeout for notification windows (like "Lock de.nmichael.efa.boathouse") is now configurable in the expert mode under "efa Boathouse - Appearance"</ChangeItem>
         </Changes>
     </Version>
 
@@ -1525,7 +1525,7 @@
         <Changes lang="en">
             <ChangeItem>New: Improved formatting of HTML statistics through CSS</ChangeItem>
             <ChangeItem>Neu: Output of statistics in PDF format</ChangeItem>
-            <ChangeItem>Neu: Statistics filter for sessions with start and destination at boathouse</ChangeItem>
+            <ChangeItem>Neu: Statistics filter for sessions with start and destination at de.nmichael.efa.boathouse</ChangeItem>
             <ChangeItem>Neu: For user-defined status it's possible to specify whether this is a member or non-member status</ChangeItem>
             <ChangeItem>Neu: Plugin mechanism to add functionality to efa</ChangeItem>
             <ChangeItem>Neu: Existing plugins updated</ChangeItem>
@@ -1558,7 +1558,7 @@
         </Changes>
 
         <Changes lang="en">
-            <ChangeItem>Bugfix: Empty boathouse record without name will automatically be repaired by efa for existing projects</ChangeItem>
+            <ChangeItem>Bugfix: Empty de.nmichael.efa.boathouse record without name will automatically be repaired by efa for existing projects</ChangeItem>
         </Changes>
     </Version>
 
@@ -1573,7 +1573,7 @@
         </Changes>
 
         <Changes lang="en">
-            <ChangeItem>Bugfix: Empty boathouse record without name for newly created projects caused errors when trying to determine boathouse name</ChangeItem>
+            <ChangeItem>Bugfix: Empty de.nmichael.efa.boathouse record without name for newly created projects caused errors when trying to determine de.nmichael.efa.boathouse name</ChangeItem>
         </Changes>
     </Version>
 
@@ -1670,7 +1670,7 @@
 
         <Changes lang="en">
             <ChangeItem>Bugfix: Error when aborting a session in remote access mode fixed</ChangeItem>
-            <ChangeItem>Bugfix: NullPointerException when determining own boathouse fixed</ChangeItem>
+            <ChangeItem>Bugfix: NullPointerException when determining own de.nmichael.efa.boathouse fixed</ChangeItem>
         </Changes>
     </Version>
 
